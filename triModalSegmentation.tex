@@ -81,6 +81,23 @@ Sofiendalsvej 11, 9200 Aalborg SV, Denmark\\
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
+\section{Introduction}
+\label{sec:introduction}
+
+Segmentation of people in images is still nowadays a very challenging and tough problem for the computer vision community due to the great diversity of poses that they can adopt and their variable appearance. Difficulties also arise from changes in lighting conditions and complex and cluttered backgrounds. The general idea of human body segmentation is to assign a label to every pixel or group of pixels in an image such that pixels with the same label share certain visual characteristics which entitles them to be considered as part of a human. These type of problems are commonly referred to as labeling problems. Despite extensive research done so far, some constraints have still to be taken into account and one often has to make assumptions about the scenario where the segmentation task is to be applied, such as static versus moving camera, indoor versus outdoor, and so on. Ideally, it should be tackled in an automatic fashion rather than relying on user intervention, which makes such task even more challenging. 
+
+There exist a wide range of possible applications for people segmentation such as surveillance, content-based image retrieval, activity recognition, patient caregiving or human-computer interaction among others. Such task is also often related to pose estimation problems, since it can be carried out efficiently once the person is detected and segmented in an image. Furthermore, it can facilitate the task of photo edition, chroma-keying or video compression. Hence, human body segmentation can be considered as an important preprocessing step for other tasks.
+
+State of the art methods that tackle the human segmentation task mostly use color images recorded by RGB cameras as the main cue for further analysis, although they present several widely known intrinsic problems such as intensity similarities between background and foreground. More recently, the release of RGB-Depth devices such as Microsoft\textsuperscript\textregistered Kinect\textsuperscript\texttrademark , a cheap multi-sensor device based on structured light technology, has allowed the community to use RGB images along with per-pixel depth information, often called depth maps, thus increasing the robustness of the methods. Besides, this device has helped boost research in human pose and behavior analysis.
+
+In this context, we propose adding a third modality: thermal imagery got from thermal infrared cameras, thus complementing other information sources and making easier the segmentation task. Although thermal cameras are relatively expensive devices, their market price is lowering substantially every year --as it happens with other sensory devices. Besides, they can capture data similar to standard color cameras but without having illumination problems, that is why infrared cameras are becoming popular in surveillance scenarios and other similar applications. To do so, we introduce a novel tri-modal database provided by researchers from Aalborg University in Denmark and Universitat de Barcelona. Such database contains people acting in three different video sequences, consisting of more than 2,000 frames each one, in which three different subjects appear and interact with objects performing diverse actions such as reading, working with a laptop, speaking on the phone, etc. There may be more than one subject appearing in scene. The dataset comes along with an algorithm that performs the registration among modalities. 
+
+In addition, we present a baseline methodology to automatically segment people in video sequences in indoor scenarios with a fixed camera. With all the available modalities, important features will be extracted using different state of the art descriptors, which are used to learn a probabilistic model so as to predict the image regions belonging to people. We will compare results from applying segmentation to the different modalities separately to results obtained by fusing features from all modalities.
+
+To the best of our knowledge, this is the first dataset and work that combines color, depth and thermal modalities to perform the people segmentation task in videos, aiming to bring further benefits towards developing more robust solutions.
+
+The remainder of this dissertation is organized as follows. Section \ref{sec:relatedwork} reviews the different approaches for human body segmentation that appear in the recent literature. Section \ref{sec:proposedbaseline} introduces and exhaustively explains the proposed baseline methodology, which will be experimentally evaluated in Section \ref{sec:evaluation}. Finally, Section \ref{sec:conclusions} concludes this dissertation.
+
 \section{Acquisition}
 \label{sec:setup}
 The tri-modal data stream is recorded using a Microsoft Kinect for XBOX 360 capturing the RGB and depth image streams, and an AXIS Q1922 thermal camera. The resolution of the imagery is fixed at 640x480 pixels. As seen in Figure \ref{fig:camerasetup}, the cameras are vertically aligned in order to reduce perspective distortion. 
@@ -180,6 +197,8 @@ An example of the registration is seen from Figure \ref{fig:registeredImagery}.
 \caption{Example of $\text{RGB (a)} \Rightarrow \text{thermal (b)}$ registration.}
 \label{fig:registeredImagery}
 \end{figure}
+
+
 
 \section{Evaluation}
 \label{sec:evaluation}
