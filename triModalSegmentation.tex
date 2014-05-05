@@ -320,8 +320,7 @@ The first step of our baseline is to attempt to reduce the search space. A stati
 
 Although this background subtraction technique performs fairly well, it has to deal with the intrinsic problems of the different image modalities. For instance, color-based algorithms may fail due to shadows, similarities in color between foreground and background, highlighted regions, and sudden lighting changes. Thermal imagery may also have this kind of problems, plus the inconvenience of temperature changes in objects. A halo effect is also observed around warm items. Regarding to depth-based approaches, they may produce misdetections due to the presence of foreground objects with similar depth to the background. However, they are more robust to lighting artifacts and shadows. Depth data is quite noisy and many pixels in the image may have no depth due to multiple reflections, transparent objects, or scattering in certain surfaces such as human tissue and hair. Furthermore, a halo effect around humans or objects is usually perceived due to parallax issues. A comparison is shown in Fig. \ref{fig:bscomparison}, where the actual foreground objects are the human and the objects on the table. As we can observe, RGB fails at extracting the human legs due to the similarities in color with the chair at the back. The thermal cue segments the human body more accurately, but includes some undesired reflections and the jar and mugs with a surrounding halo. The pipe tube is also extracted as foreground due to temperature changes along time. Despite its drawbacks, depth-based background subtraction is the one that seems to give the most accurate result. 
 
-Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $\mathbf{d}_i$. The background model $p(\mathbf{d}_i|BG)$ --where 
-G$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{D}$ using the $T$ first frames of a sequence such that $\mathcal{D} = \{\mathbf{d}_1, \ldots, \mathbf{d}_T\}$. This way, the estimated model is denoted by $\hat{p}(\mathbf{d}_i| \mathcal{D}, BG)\}$, modeled as a mixture of gaussians. In particular, we use the available implementation in OpenCV of the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. GMMs are further explained in section \ref{section:gmm}.
+Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $\mathbf{d}_i$. The background model $p(\mathbf{d}_i|BG)$ --where $BG$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{D}$ using the $T$ first frames of a sequence such that $\mathcal{D} = \{\mathbf{d}_1, \ldots, \mathbf{d}_T\}$. This way, the estimated model is denoted by $\hat{p}(\mathbf{d}_i| \mathcal{D}, BG)\}$, modeled as a mixture of gaussians. In particular, we use the available implementation in OpenCV of the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. GMMs are further explained in section \ref{section:gmm}.
 
 Once the binary foreground masks are obtained, a 2-D connected component analysis is performed using basic mathematical morphological operators and setting a minimum value for each connected component area (except in left and rightmost sides of the image which may be caused by a new incoming item) to clean the noisy output mask. On another front, foreground masks for the thermal modality are computed using the provided registration algorithm with the depth/color foreground masks as input. From now on, we will use $FG = \{FG^\mathrm{color}, FG^\mathrm{depth}, FG^\mathrm{thermal}\}$ to refer to them. 
  
@@ -402,26 +401,21 @@ The color cue is nowadays the most popular imagery modality and has been extensi
         %add desired spacing between images, e. g. ~, \quad, \qquad etc.
          %(or a blank line to force the subfigure onto a new line)
         \begin{subfigure}[b]{0.515\textwidth}
-                \includegraphics[width=\textwidth]{opticalflow_final.eps}
+                \includegraphics[width=0.5\textwidth]{opticalflow_final.eps}
                 \caption{Optical flow}
                 \label{fig:opticalflow}
         \end{subfigure}
         \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{ramanan_final}
-                \caption{Ramanan score map}
-                \label{fig:ramanan}
-        \end{subfigure}
-        \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{normals.png}
+                \includegraphics[width=0.5\textwidth]{normals.png}
                 \caption{Depth normals}
                 \label{fig:normals}
         \end{subfigure}
         \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{hihog.png}
+                \includegraphics[width=0.5\textwidth]{hihog.png}
                 \caption{Thermal intensities and oriented gradients}
                 \label{fig:thermals}
         \end{subfigure}	
-        \caption{Example of descriptors from RGB modality: (A) represents the motion vectors using a forward scheme, that is, the optical flow orientation gives insight into where the person is moving to in the next frame; (B) score maps representing the hypothesis of a pixel belonging to a person; (C) the computed surface normal vectors; (D) the intensity and the thermal gradients orientations. }\label{fig:descriptors}
+        \caption{Example of descriptors from RGB modality: (A) represents the motion vectors using a forward scheme, that is, the optical flow orientation gives insight into where the person is moving to in the next frame; (B) the computed surface normal vectors; and (C) the thermal intensities and thermal gradients' orientations. }\label{fig:descriptors}
 \end{figure}
 
 \paragraph{Histogram of oriented gradients (HOG)}
