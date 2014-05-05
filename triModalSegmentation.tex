@@ -104,9 +104,6 @@ The remainder of this dissertation is organized as follows. Section \ref{sec:rel
 \section{Related work}
 \label{sec:relatedwork}
 
-Image segmentation is one of the oldest and most widely studied problems in computer vision \cite{brice1970scene, riseman1977computational, ohlander1978picture, rosenfeld1979image, haralick1985image}. First approaches had a tendency to use region splitting or merging, which correspond to divisive and agglomerative clustering respectively. Later, research focused on methods that try to optimize some criteria, such as inter-region boundary lengths, intra-region consistency or dissimilarity \cite{szeliski2011computer}. Due to the vast work available on image segmentation, in this section we are going to focus in the most recent and relevant works, techniques and methods applied specifically to human body segmentation that determine the state of the art.
-
-\subsection{Methods}
 Within the last decade a great number of novel approaches have emerged to respond to different requirements in the human segmentation context, such as trying to overcome changing illumination conditions, dealing with variable human poses or developing quasi-automatic systems that progressively lose the need for user intervention.
  
  When dealing with indoor scenarios recorded by a stationary camera, the pixel-based background subtraction approach can be applied successfully. We can model the background distribution of the scene and detect moving objects by comparing each pixel to the model, which are considered as foreground. The result is a silhouette of the moving object, which can be further used for other tasks. Pixel intensity is the most commonly used feature in background modeling, though there are many approaches that use other type of information such as edge, motion, stereo or texture features. The parametric model that Stauffer and Grimson proposed in \cite{stauffer1999adaptive}, which models the background using a mixture of gaussians (MoG), has been widely used and many variations have been suggested based on it. In \cite{bouwmans2011recent}, more advanced statistical background modeling techniques are deeply reviewed. 
@@ -117,7 +114,6 @@ Regarding descriptors, other possible representations apart from the already com
 
 Instead of whole body detection, some approaches have been built under the assumption that the human body consists of an ensemble of body parts \cite{ramanan2006learning, pirsiavash2012steerable}. Some of them are based on pictorial structures \cite{andriluka2009pictorial, yang2011articulated}. In particular, \cite{yang2011articulated, yang2012articulated} from Yang and Ramanan along with \cite{felzenszwalb2010object} from Felzenszwalb have outperformed other existing methods using a Deformable Part-based Model (DPM) that consists on a root HOG-like filter and different part-filters that define a score map of an object hyphotesis, using latent SVM as a classifier. Another well-known part-based detector is Poselets \cite{bourdev2009poselets, wang2011learning}, which trains different homonymous parts to fire at a given part of the object at a given pose and viewpoint. Grammar models \cite{girshick2011object} and AND-OR graphs \cite{zhu2008max} have been also used in this context.
 
-
 By the same token, other approaches model objects as an ensemble of local features. In this category there are included methods such as Implicit Shape Models (ISM) \cite{leibe2004combined}, consisting of visual words combined with location information. In addition, they are used in works that estimate the class-specific segmentation based on the detection result after a training stage \cite{leibe2008robust}.  
 
 Conversely, generative classifiers directly deal with the person segmentation problem. They function in a bottom-up manner, learning a model from a initial prior in the form of bounding boxes or seeds, and using it to yield an estimate for the background and target distributions, normally applying Expectation Maximization (EM) \cite{shi2000normalized, carson2002blobworld}. One of the most popular is GrabCut \cite{rother2004grabcut}, an interactive segmentation method based on graph cuts \cite{boykov2001interactive} and Conditional Random Fields (CRF) that, using a bounding box as an initialization region, combines pixel appearance information with neighborhood relations to refine silhouettes up to a very accurate level. Graph cuts method has been further applied to part-based approaches \cite{hernandez2012graph}.
@@ -127,73 +123,6 @@ Conversely, generative classifiers directly deal with the person segmentation pr
 Having considered the properties of each one of the aforementioned segmentation categories, it is reasonable that several approaches have been proposed towards their combination, that is, top-down and bottom-up segmentation \cite{lin2007interactive, mori2004recovering, ladicky2010and, levin2006learning}. Just to name a few, ObjCut \cite{kumar2005obj} combines pictorial structures and Markov Random Fields (MRF) to obtain the final segmentation. PoseCut \cite{bray2006posecut} is also based on MRF and graph cuts but it has the added ability to deal with 3-D pose estimation from multiple views.
  
 According to the nature of our proposal, we find appropriate to dedicate a few lines regarding thermal imagery and associated descriptors. In contrast to color or depth cues, thermal infrared imagery has not been used that widely for human detection and segmentation purposes, although it is experiencing a growing interest by the research community. Several specific descriptors have been proposed so far. For example, in \cite{zhang2007pedestrian}, the authors extended the combination of edgelets and HOG features with AdaBoost and SVM cascade to infrared images. Background subtraction has been also adapted to deal with this kind of imagery in \cite{davis2004robust}, which presented a statistical contour-based technique that eliminates typical halo artifacts produced by infrared sensors by combine foreground and background gradient information into a contour saliency map so as to find the strongest salient contours. More recently, \cite{mogelmosetri} presented a person re-identification method that for the first time combined RGB, depth, and thermal features. An extensive survey of thermal cameras and their applications can be found in \cite{gade2014thermal}, including technological aspects and the nature of thermal radiation. 
- 
- \begin{figure}
-	 \centering
-	 \begin{subfigure}[b]{0.25\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/hog.eps}
- 		\caption{}
-    		\label{fig:soa_hog}
- 	\end{subfigure}
-	 ~
-	\begin{subfigure}[b]{0.22\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/felzenszwalb2010object.eps}
- 		\caption{}
-    		\label{fig:soa_dpm}
- 	\end{subfigure}
-	 ~
-	\begin{subfigure}[b]{0.42\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/yang2012articulated.eps} 			
-		\caption{}
-    		\label{fig:soa_mop}
- 	\end{subfigure}
-	\\
-%	\begin{subfigure}[b]{0.6\textwidth}
-% 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/girshick2011object.eps} 			
-%		\caption{}
-%    		\label{fig:gull}
-% 	\end{subfigure}
-%	~
-	\begin{subfigure}[b]{0.4\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/andriluka2009pictorial.eps} 			
-		\caption{}
-    		\label{fig:soa_ps}
- 	\end{subfigure}
-	~
-	\begin{subfigure}[b]{0.55\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/wang2011learning.eps} 			
-		\caption{}
-    		\label{fig:soa_poselets}
- 	\end{subfigure}
-	\\
-	\begin{subfigure}[b]{0.45\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/grabcut.eps} 			
-		\caption{}
-    		\label{fig:soa_grabcut}
- 	\end{subfigure}
-	~
-	\begin{subfigure}[b]{0.49\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/bray2006posecut.eps} 			
-		\caption{}
-    		\label{fig:soa_posecut}
- 	\end{subfigure}
-	\\
- 	\begin{subfigure}[b]{1\textwidth}
- 		\includegraphics[width=1\textwidth]{pictures/stateoftheart/leibe2008robust.eps}
- 		\caption{}
-    		\label{fig:soa_ism}
- 	\end{subfigure}
- 	\\
-  	\begin{subfigure}[b]{1\textwidth}
-		\includegraphics[width=1\textwidth]{pictures/stateoftheart/ladicky2010and.eps}
- 		%\includegraphics[width=\textwidth]{pictures/stateoftheart/wang2011learning.eps}
- 		\caption{}
-         	\label{fig:soa_crf}
- 	\end{subfigure}
-% \includegraphics[width=1\textwidth]{pictures/stateoftheart/yang2012articulated.eps}
- 	\caption{Examples of recent methods and descriptors: (A) HOG \cite{dalal2005histograms}: Person and his computed HOG descriptor, and the descriptor weighted by positive SVM weights; (B) Deformable Part-based Model \cite{felzenszwalb2010object}: coarse root filter, spatial model for the location of each part and cost of placing the center of a part at different locations relative to the root, respectively; (C) Mixture of parts from \cite{yang2012articulated}: different trees obtained from the mixture of parts and estimation of parts and pose; (D) Pictorial structures \cite{andriluka2009pictorial}: pedestrian detection and upper-body and full body pose estimations, respectively; (E) Poselets \cite{wang2011learning}: each part shows its inferred poselet and the SVM HOG template; (F) GrabCut \cite{rother2004grabcut}: rectangle defined by the user that acts as a bounding box prior and object extracted based on it; (G) PoseCut \cite{bray2006posecut} in order of appearance: original image, pixel likelihood for being labeled as foreground or background, segmentation after using the GMM models, optimal estimated pose, shape prior corresponding to the optimal pose, likelihood after fusing the previous information, and final segmentation; (H) ISM for segmentation \cite{leibe2008robust}: training procedure, where local features are extracted from interest points and clustered to create an appearance codebook, which allows to learn a spatial occurrence distribution for each entry; (I) bottom-up top-down segmentation \cite{ladicky2010and}: CRF structure, original image, and results before and after applying GrabCut to each detected bounding box, respectively.}
- 	\label{fig:stateoftheartmethods}
-\end{figure}
  
 \subsection{Benchmark datasets}
  
@@ -322,8 +251,6 @@ Although this background subtraction technique performs fairly well, it has to d
 
 Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $\mathbf{d}_i$. The background model $p(\mathbf{d}_i|BG)$ --where $BG$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{D}$ using the $T$ first frames of a sequence such that $\mathcal{D} = \{\mathbf{d}_1, \ldots, \mathbf{d}_T\}$. This way, the estimated model is denoted by $\hat{p}(\mathbf{d}_i| \mathcal{D}, BG)\}$, modeled as a mixture of gaussians. In particular, we use the available implementation in OpenCV of the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. GMMs are further explained in section \ref{section:gmm}.
 
-Once the binary foreground masks are obtained, a 2-D connected component analysis is performed using basic mathematical morphological operators and setting a minimum value for each connected component area (except in left and rightmost sides of the image which may be caused by a new incoming item) to clean the noisy output mask. On another front, foreground masks for the thermal modality are computed using the provided registration algorithm with the depth/color foreground masks as input. From now on, we will use $FG = \{FG^\mathrm{color}, FG^\mathrm{depth}, FG^\mathrm{thermal}\}$ to refer to them. 
- 
  \begin{figure}[!h]
 {\includegraphics[width=\linewidth]{bs.eps}}
 \caption{Background subtraction for different visual
@@ -331,23 +258,35 @@ modalities of the same scene (RGB, depth and thermal respectively).
 \label{fig:bscomparison}}
 \end{figure}
 
-\subsubsection{Bounding box generation from regions of interest}
-\label{sssec:bbgen}
-To further process the information of each connected component of the previously extracted depth-based foreground masks, rectangular bounding boxes are to be generated encapsulating such components individually over time, whose function is to denote the regions of interest of a foreground mask. This way, we define the set of bounding boxes of the $i$-th frame generated from the depth-based masks as $B^\mathrm{depth}_i = \{b_{ij}\text{ }|\text{ }\forall j = \{1, \ldots, n\} \}$, being $b_{ij}$ the $j$-th bounding box and $n$ the number of bounding boxes generated in that frame, which is equal to the number of connected components. Similarly, bounding boxes generated from the resulting thermal masks are denoted by $B^\mathrm{thermal}_i$. Since color and depth modalities share the same foreground masks, $B^\mathrm{depth}_i = B^\mathrm{color}_i$, having also the same number of bounding boxes, condition that $B^\mathrm{thermal}_i$ does not currently fulfill. At the end, each frame will have to contain the same number of bounding boxes in each one of the modalities, which in turn have to correspond to the same regions of interest among them in order to allow a proper comparison. This issue will be tackled in section \ref{sssec:cpcode}.
+\subsubsection{Extraction of regions of interest}
+\label{sssec:extreg}
+Once the binary foreground masks are obtained, a 2-D connected component analysis is performed using basic mathematical morphological operators and setting a minimum value for each connected component area (except in left and rightmost sides of the image which may be caused by a new incoming item) to clean the noisy output mask. 
 
-A region of interest $r \in R$ should contain a separated person or object. However, different subjects or objects may overlap in space, resulting in a bigger component containing more than one item, for this reason each component has to be analyzed to find the correct bounding boxes that surround each region of interest. One of the advantages of the depth cue is that we can use the depth value in each range pixel to know whether an item is farther or not than other. We can assume that a given connected component belongs to just one item if its disparity distribution has a low standard deviation, that is, there is no rapid change in disparity. For those that have a greater standard deviation, Otsu's method \cite{otsu1975threshold} can be used to split the blob by automatically finding a threshold assuming a bimodal distribution. It calculates the optimal threshold separating the two classes such that their intra-class variance is minimal. We will define $\pi$ as the function that applies this method to a set of bounding boxes.
+A region of interest $r \in R$ should contain a separated person or object. However, different subjects or objects may overlap in space, resulting in a bigger component containing more than one item, for this reason each component has to be analyzed to find each item separately and therefore obtain the correct bounding boxes that surround them.
+%On another front, foreground masks for the thermal modality are computed using the provided registration algorithm with the depth/color foreground masks as input. From now on, we will use $FG = \{FG^\mathrm{color}, FG^\mathrm{depth}, FG^\mathrm{thermal}\}$ to refer to them. 
+ 
+
+
+%\subsubsection{Bounding box generation from regions of interest}
+%\label{sssec:bbgen}
+%To further process the information of each connected component of the previously extracted depth-based foreground masks, rectangular bounding boxes are to be generated encapsulating such components individually over time, whose function is to denote the regions of interest of a foreground mask. This way, we define the set of bounding boxes of the $i$-th frame generated from the depth-based masks as $B^\mathrm{depth}_i = \{b_{ij}\text{ }|\text{ }\forall j = \{1, \ldots, n\} \}$, being $b_{ij}$ the $j$-th bounding box and $n$ the number of bounding boxes generated in that frame, which is equal to the number of connected components. Similarly, bounding boxes generated from the resulting thermal masks are denoted by $B^\mathrm{thermal}_i$. Since color and depth modalities share the same foreground masks, $B^\mathrm{depth}_i = B^\mathrm{color}_i$, having also the same number of bounding boxes, condition that $B^\mathrm{thermal}_i$ does not currently fulfill. At the end, each frame will have to contain the same number of bounding boxes in each one of the modalities, which in turn have to correspond to the same regions of interest among them in order to allow a proper comparison. This issue will be tackled in section \ref{sssec:cpcode}.
+
+%A region of interest $r \in R$ should contain a separated person or object. However, different subjects or objects may overlap in space, resulting in a bigger component containing more than one item, for this reason each component has to be analyzed to find the correct bounding boxes that surround each region of interest. 
+One of the advantages of the depth cue is that we can use the depth value in each range pixel to know whether an item is farther or not than other. We can assume that a given connected component belongs to just one item if its disparity distribution has a low standard deviation, that is, there is no rapid change in disparity. For those that have a greater standard deviation, Otsu's method \cite{otsu1975threshold} can be used to split the blob by automatically finding a threshold assuming a bimodal distribution. It calculates the optimal threshold separating the two classes such that their intra-class variance is minimal. We will define $\pi$ as the function that applies this method to a set of bounding boxes.
 
 For such purpose, we define $\mathbf{c}$ as a vector containing the depth range values that correspond to a given connected component, with mean $\mu_{c}$ and standard deviation $\sigma_{c}$, and $\sigma_\mathrm{otsu}$ as a parameter that defines the maximum $\sigma_{c}$ allowed to not apply $\pi$. Note that erroneous white or black pixels do not have to be taken into account in $\mathbf{c}$ when finding the Otsu's threshold because they would change the disparity distribution, thus leading to incorrect divisions. Hence, if $\sigma_{c} > \sigma_\mathrm{otsu}$,  $\pi$ is applied. However, the assumption of bimodal distribution may not hold, so to take into account the possibility of more than two overlapping items the process is applied recursively to the divided regions in order to extract all of them. 
 
-Once the different items are found, the regions belonging to them are labeled using a different id per item. Besides, they are again surrounded by new bounding boxes denoted by: 
+Once the different items are found, the regions belonging to them are labeled using a different id per item. Besides, rectangular bounding boxes are to be generated encapsulating such items individually over time, whose function is to denote the regions of interest of a given foreground mask. This way, we define the set of bounding boxes of the $i$-th frame generated from the depth-based masks as $B^\mathrm{depth}_i = \{b_{ij}\text{ }|\text{ }\forall j = \{1, \ldots, n\} \}$, being $b_{ij}$ the $j$-th bounding box and $n$ the number of bounding boxes generated in that frame, which is equal to the number of items.
 
-\begin{gather}
-O^\mathrm{depth}_i = \big\{ o_{im} | \forall m = \{1, \ldots, M_n \}_j \big\}
-\end{gather}
-where $\{o_{im}\}_j$ is the set of new $M_n$ bounding boxes generated by the bounding box $b_{ij}$.
+% Besides, they are again surrounded by new bounding boxes denoted by: 
 
-\subsubsection{Bounding box transformation and correspondence to other modalities} 
-\label{sssec:cpcode}
+%\begin{gather}
+%O^\mathrm{depth}_i = \big\{ o_{im} | \forall m = \{1, \ldots, M_n \}_j \big\}
+%\end{gather}
+%where $\{o_{im}\}_j$ is the set of new $M_n$ bounding boxes generated by the bounding box %$b_{ij}$.
+
+\subsubsection{Correspondence to other modalities} 
+\label{sssec:correspondence}
 %in Section \ref{sect:bs} 
 As stated previously, depth and color cues use the same foreground masks, so we can take advantage of the same bounding boxes for both modalities. However, since the thermal cue uses a transformation of these masks by applying the registration algorithm frame by frame, new bounding boxes with different coordinates are computed for that modality, which must correspond to the same regions of interest of the depth and color cues. In case of overlapping items, it would suffice by finding the registered labeled connected components to generate the new bounding boxes. Unfortunately, the algorithm cannot register connected components up to a pixel level, meaning that those that have more than one id in depth or color masks would have just one id in thermal ones, thus being surrounded by just one big bounding box. The problem here is twofold: (1) find the correspondence between $B^\mathrm{depth}_i$ and $B^\mathrm{thermal}_i$ such that a bounding box of $B^\mathrm{depth}_i$ and the matched one of $B^\mathrm{thermal}_i$ contain the same region of interest $r$; and (2), if a bounding box from $B^\mathrm{depth}_i$ was modified after $\pi$, compute the corresponding sub bounding boxes that belong to the matching bounding box in $B^\mathrm{thermal}_i$.   
 
@@ -398,6 +337,7 @@ Each modality involves its own specific feature extraction processes. In the cas
 The color cue is nowadays the most popular imagery modality and has been extensively used to extract a range of different feature descriptions. It is usually represented by the RGB color space, which expresses the color as a triplet $(\text{red}, \text{green}, \text{blue})$, but other models are also available. Notwithstanding its simplicity and properties, it suffer from some drawbacks such as illumination changes, shadows, camouflage, among others, which may inconvenience some tasks.
 
 \begin{figure}
+\center
         %add desired spacing between images, e. g. ~, \quad, \qquad etc.
          %(or a blank line to force the subfigure onto a new line)
         \begin{subfigure}[b]{0.515\textwidth}
