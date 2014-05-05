@@ -478,10 +478,9 @@ The sign of $\mathbf{n}$ can be either positive or negative, and it can not be d
 
 A 3-D normal vector got from the previous calculations is expressed in cartesian coordinates $(n_x, n_y, n_z)$. Nonetheless, a normal vector can be also expressed in spherical coordinates using three parameters: the radius $s$, the inclination $\theta$, and the azimuth $\varphi$. In our case, $s$ is a constant value, so this parameter can be omitted. Regarding $\theta$ and $\varphi$, the cartesian to spherical coordinates transformation is calculated as:
 
-% fix atan
 \begin{gather}	
-	\theta  = \atan{\left( \frac{n_z}{n_y} \right)},
-	\varphi = \acos{\frac{ \sqrt{(n_y^2 + n_z^2)} }{n_x}}
+	\theta  = \arctan{\left( \frac{n_z}{n_y} \right)},
+	\varphi = \arccos{\frac{ \sqrt{(n_y^2 + n_z^2)} }{n_x}}
 \end{gather}
 
 Therefore, a 3-D normal vector can be characterized by a pair ($\theta$, $\varphi$) and the depth description of a cell consists of a pair of concatenated $\delta_\theta$-bin and $\delta_\varphi$-bin histograms, describing the two angular distributions of the body surface normals within the cell. Moreover, each of the two histograms is normalized before the concatenation, dividing by the number of elements, to end up with a relative angles frequency count.
