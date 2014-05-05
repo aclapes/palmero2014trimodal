@@ -16,6 +16,8 @@
 \usepackage[draft,inline,nomargin]{fixme} % Enable fixme-notes.
 \usepackage{units}
 
+\usepackage{multicol}
+
 \makeatletter
 \newcommand*\rel@kern[1]{\kern#1\dimexpr\macc@kerna}
 \newcommand*\widebar[1]{%
@@ -471,7 +473,7 @@ where $\lambda_j \in \mathbb{R}$ and $\mathbf{u}_j \in \mathbb{R}^3$ represent t
 
 % fix argmin
 \begin{gather}
-	\mathbf{n} = \mathbf{u}_z, \;\; \mathrm{where}  z = \argmin_{j}{\lambda_j}, j \in \{0,1,2\}
+	\mathbf{n} = \mathbf{u}_z, \;\; \mathrm{where}  z = \arg\,\min_{j}{\lambda_j}, j \in \{0,1,2\}
 \end{gather}
 
 The sign of $\mathbf{n}$ can be either positive or negative, and it can not be disambiguated from the calculations. We adopt the convention of re-orienting consistently all the computed normal vectors towards the depth sensor's viewpoint $\mathbf{z}$. The computed normal vectors over a human body region is shown in Figure~\ref{fig:normals}. Points are illustrated in white, whereas normal vectors are red lines (instead of arrows for the sake of the visual comprehension). The next step is to build the histogram describing the distribution of the normal vectors' orientations.
@@ -700,22 +702,9 @@ The proposed baseline has been validated by means of a K-fold cross-validation (
 Moreover, in order to select the $\alpha$ and $\eta$ parameters for the individual prediction of the SM descriptor, a coarser-to-fine search strategy has been followed. The first coarse grid search is utilized to roughly estimate their value. In this search, a K-fold CV has tested $6 
 \times 5$ combinations; $\alpha$ took the middle 6 of the 8 equidistant values in the range $[\mathrm{score}_{\mathrm{min}}, \mathrm{score}_{\mathrm{max}}]$ and $\eta$ the middle 5 of 7 equidistant values in the range $[0,1]$. Posteriorly, the fine search around the best coarse combination in each fold has been performed to find the best fine combination. A second K-fold CV tested the fine combinations, which consisted of a $7 \times 5$ grid centered in the corresponding best coarse combination. In this case the criterion to guide the search of the parameters selection is simply the subject detection accuracy, got comparing the result of the prediction to the ground truth.
 
-Another coarse-to-fine grid search has been applied in order to select the SVM parameters $\gamma$ and $\zeta$. The coarse search is first used to identify a better region on the grid. For linear SVM, $\zeta$ is searched in the range $[2^{-5}, 2^{15}]$ in steps of $2^2$, that is, 11 values. RBF SVM uses in turn the same range of values for $\zeta$, whereas $\gamma$ is searched in the interval $[2^-13, 2^3]$ in steps of $2^2$, thus testing $11 \times 9$ combinations. After finding the best combination, a finer grid search on that region has been conducted, varying in $2^{1.5}$ in each direction centered on the value that produced the highest classification accuracy. Both procedures have been validated with K-fold CV, using the computed ground truth labels $t_{r}^m \in T$ to train the models. 
+Another coarse-to-fine grid search has been applied in order to select the SVM parameters $\gamma$ and $\zeta$. The coarse search is first used to identify a better region on the grid. For linear SVM, $\zeta$ is searched in the range $[2^{-5}, 2^{15}]$ in steps of $2^2$, that is, 11 values. RBF SVM uses in turn the same range of values for $\zeta$, whereas $\gamma$ is searched in the interval $[2^-13, 2^3]$ in steps of $2^2$, thus testing $11 \times 9$ combinations. After finding the best combination, a finer grid search on that region has been conducted, varying in $2^{1.5}$ in each direction centered on the value that produced the highest classification accuracy. Both procedures have been validated with K-fold CV, using the computed ground truth labels $t_{r}^m \in T$ to train the models.
 
-\begin{table}[h]\footnotesize
-\center
-\caption{Best cross-validation results for parameter selection of SVM models}
-\label{table:svmgridsearch}
-\begin{tabular}{|c|c|c|c|c|c|c|}
-\cline{2-7} 
-\multicolumn{1}{c|}{}&\multicolumn{3}{c|}{\textbf{Linear}}&\multicolumn{3}{c|}{\textbf{RBF}} \\
-\hline
-SVM Type & \gamma & \zeta & accuracy & \gamma & \zeta & accuracy \\ \hline
-\textbf{Simple} & - & 45.2548 & 96.56 \% & 5.6569 & 22.6274 & 97.65   \% \\
-\textbf{Stacked} & - & 1024 & 96.78 \% & 0.5 & 512 & 97.67  \% \\
-\hline
-  \end{tabular}
-\end{table}
+% A table of results here
 
 Lastly, we have used the Jaccard Index \cite{tan2002selecting}, also known as the Jaccard similarity coefficient, in order to compare the similarity between the groundtruth masks and the predicted masks in terms of overlap, thus assessing the performance of the proposed baseline. The degree of overlap between two binary sets $A$ and $B$ is computed as the ratio between the size of the intersection divided by the size of the union:
 \begin{equation} \label{eq:jaccard}
