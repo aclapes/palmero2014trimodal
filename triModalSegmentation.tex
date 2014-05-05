@@ -344,12 +344,12 @@ Since we are working with video sequences, the color cue also allows us to obtai
 \subsubsection{Depth modality}
 \label{sssec:depth}
 
-The grid cells in the depth modality $\mathbf{G}^\mathrm{depth}$ are depth dense maps represented as planar images of pixels that take depth values in millimeters, thus having 3-D points in projective coordinates. From the depth representation in projective coordinates it is possible to obtain the "real world" ones by using the intrinsic parameters of the depth sensor. This conversion generates the set of 3-D point cloud structures $\mathcal{P}$ in which distances among points are actual distances -- those that can be measured in the real world. 
+The grid cells in the depth modality $G^\mathrm{depth}$ are depth dense maps represented as planar images of pixels that take depth values in millimeters, thus having 3-D points in projective coordinates. From the depth representation in projective coordinates it is possible to obtain the "real world" ones by using the intrinsic parameters of the depth sensor. This conversion generates the set of 3-D point cloud structures $\mathcal{P}$ in which distances among points are actual distances -- those that can be measured in the real world. 
 
-After having the former conversion, for each particular point cloud $\mathcal{P}_{rij}$ (representing an arbitrary grid cell $\mathbf{G}_rij$) the surface normals are computed and their angles' distribution summarized in a $\delta$-bin histogram, eventually describing the cell from the depth modality point of view.
+After having the former conversion done, for each particular point cloud $\mathcal{P}_{rij}$ (representing an arbitrary grid cell $\mathbf{G}_{rij}$) the surface normals are computed and their angles' distribution summarized in a $\delta$-bin histogram, eventually describing the cell from the depth modality point of view.
 
 \paragraph{Histogram of oriented depth normals (HON)} 
-In order to describe an arbitrary point cloud $\mathcal{P}_rij$ the surface normals vectors have to be computed first. A surface normal of a 3-D point is a perpendicular vector to a 3-D plane which is tangent to the surface in that point. Thus, the normal 3-D vector at a given point $\mathbf{p} = (p_x, p_y, p_z) \in \mathcal{P}$ can be seen as the problem of determining the normal of a 3-D plane tangent to $\mathbf{p}$. A plane is represented by the origin point $\mathbf{q}$ and the normal vector $\mathbf{n}$. From the neighboring points $\mathcal{K}$ of $\mathbf{p} \in \mathcal{P}$, we first set $\mathbf{q}$ to be the average of those points:
+In order to describe an arbitrary point cloud $\mathcal{P}_{rim}$ the surface normal vector for each 3-D point have to be computed first. A surface normal of a 3-D point is a perpendicular vector to a 3-D plane which is tangent to the surface in that point. Thus, the normal 3-D vector at a given point $\mathbf{p} = (p_x, p_y, p_z) \in \mathcal{P}$ can be seen as the problem of determining the normal of a 3-D plane tangent to $\mathbf{p}$. A plane is represented by the origin point $\mathbf{q}$ and the normal vector $\mathbf{n}$. From the neighboring points $\mathcal{K}$ of $\mathbf{p} \in \mathcal{P}$, we first set $\mathbf{q}$ to be the average of those points:
 
 \begin{gather}
 	\mathbf{q} \equiv \bar{\mathbf{p}} = \frac{1}{|\mathcal{K}|} \sum_{\mathbf{p} \in \mathcal{P}^{\mathcal{K}}} \mathbf{p}
@@ -369,7 +369,7 @@ where $\lambda_j \in \mathbb{R}$ and $\mathbf{u}_j \in \mathbb{R}^3$ represent t
 
 % fix argmin
 \begin{gather}
-	\mathbf{n} = \mathbf{u}_z, \;\; \mathrm{where}  z = \arg\,\min_{j}{\lambda_j}, j \in \{0,1,2\}
+	\mathbf{n} = \mathbf{u}_z, \;\; \mathrm{where}\;  z = \arg\,\min_{j}{\lambda_j},\; j \in \{0,1,2\}
 \end{gather}
 
 The sign of $\mathbf{n}$ can be either positive or negative, and it can not be disambiguated from the calculations. We adopt the convention of re-orienting consistently all the computed normal vectors towards the depth sensor's viewpoint $\mathbf{z}$. The computed normal vectors over a human body region is shown in Figure~\ref{fig:normals}. Points are illustrated in white, whereas normal vectors are red lines (instead of arrows for the sake of the visual comprehension). The next step is to build the histogram describing the distribution of the normal vectors' orientations.
@@ -377,7 +377,7 @@ The sign of $\mathbf{n}$ can be either positive or negative, and it can not be d
 A 3-D normal vector got from the previous calculations is expressed in cartesian coordinates $(n_x, n_y, n_z)$. Nonetheless, a normal vector can be also expressed in spherical coordinates using three parameters: the radius $s$, the inclination $\theta$, and the azimuth $\varphi$. In our case, $s$ is a constant value, so this parameter can be omitted. Regarding $\theta$ and $\varphi$, the cartesian to spherical coordinates transformation is calculated as:
 
 \begin{gather}	
-	\theta  = \arctan{\left( \frac{n_z}{n_y} \right)},
+	\theta  = \arctan{\left( \frac{n_z}{n_y} \right)},\;\;
 	\varphi = \arccos{\frac{ \sqrt{(n_y^2 + n_z^2)} }{n_x}}
 \end{gather}
 
