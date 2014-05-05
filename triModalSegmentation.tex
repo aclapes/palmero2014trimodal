@@ -437,7 +437,7 @@ The gradient magnitude $\mathbf{M}$ and orientation $\mathbf{\Theta}$ of the gra
 
 \begin{gather}
 \mathbf{M}_{\mathbf{p}} = \sqrt{(\mathcal{G}_{\mathbf{p}}^{\mathrm{x}})^2 + (\mathcal{G}_{\mathbf{p}}^{\mathrm{y}})^2} \label{eq:magnitude}\\[2ex]
-\mathbf{\Theta}_{\mathbf{p}} = \tan^{-1} \Big(\frac{\mathcal{G}_{\mathbf{p}}^{\mathrm{y}}}{\mathcal{G}_{\mathbf{p}}^{\mathrm{x}}}\Big) \label{eq:orientation}
+\mathbf{\Theta}_{\mathbf{p}} = \arctan \Big(\frac{\mathcal{G}_{\mathbf{p}}^{\mathrm{y}}}{\mathcal{G}_{\mathbf{p}}^{\mathrm{x}}}\Big) \label{eq:orientation}
 \end{gather}
 
 Gradient orientation is also computed for each pixel in the dominant channel and assigned into a $\kappa$-bin histogram over each cell using unsigned gradients such that bins are evenly spaced over $0^\circ$ and $180^\circ$. As stated in \cite{dalal2005histograms}, signed contrast is uninformative for humans due to the wide range of clothing and background colors. For each gradient vector, its contribution to the histogram is given by the vector magnitude, that is, stronger magnitudes have a bigger impact on the histogram. Owing to local variations in illumination and foreground-background contrast gradient strengths vary over a wide range so cells are grouped into larger, spatially connected blocks. Hence, the information of each cell is concatenated. Then, the gradient strengths are locally normalized applying the L2-norm over each block. Block overlap is not applied in this case so as to lower the final descriptor dimensions. 
