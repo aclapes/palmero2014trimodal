@@ -683,9 +683,21 @@ As explained in the last section, we assess the performance of the proposed base
 	\label{fig:overlapgraph}
 \end{figure}
 
+\subsection{Discussion}
+\label{ssec:discussion}
+
+%add more comments
+Furthermore, an upward trend is observed as the \emph{don't care region} (DCR) grows, although at higher DCR levels it stabilizes. This is comprehensible because usually the contours of the predicted masks are not accurately defined. Indeed, an accurate pixel-level segmentation is a rather complex task in state of the art techniques.
+
+Having analyzed the experimental results, it is worth investigating the causes of somemisclassifications. One of the problems is originated in the beginning of the chain. Sincebackground subtraction reduces the search space, it may reject some actual person parts.That mainly happens when a person is in the same depth than something which belongsto the background model. Another issue is that some regions considered as unknown Ðmostly those generated when one person overlaps other Ð considerably differ from thosethat are used to train the different models. Consequently, the classification of such regionsis not a trivial task.
+
 \section{Conclusions}
 \label{sec:conclusions}
+A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal data set of several video sequences has been introduced, which contains severalsubjects interacting with everyday objects.
 
+The first contribution of this work was an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest comingfrom the different data modalities, different state of the art descriptors have been usedand adapted to describe different feature vectors from each region. In particular, HOG and HOOF have been computed from RGB still images and image sequences, histogram of intensity gradients from thermal data, and histograms of normal vectors from depth maps coming from infrared sensors. The set of descriptors have been selected as the most discriminative ones given the results previously reported in literature.
+
+Despite the obtained results, this proposal clearly leaves further room of improvement. Tobegin with, the first background subtraction stage could combine the different modalitiesin order to learn the model. Furthermore, a clustering of poses at cell-level could beadded before learning the GMMs. GrabCuts could also be applied to the predictedsegmentation binary masks to refine and smooth the contours, which would also producea rise in the segmentation accuracy.
 {\small
 \bibliographystyle{ieee}
 \bibliography{references}
