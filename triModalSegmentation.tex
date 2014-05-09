@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{bbm}
+\usepackage{mathtools}
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -241,7 +242,7 @@ The first step of our baseline is to attempt to reduce the search space. A stati
 
 Although this background subtraction technique performs fairly well, it has to deal with the intrinsic problems of the different image modalities. For instance, color-based algorithms may fail due to shadows, similarities in color between foreground and background, highlighted regions, and sudden lighting changes. Thermal imagery may also have this kind of problems, plus the inconvenience of temperature changes in objects. A halo effect is also observed around warm items. Regarding to depth-based approaches, they may produce misdetections due to the presence of foreground objects with similar depth to the background. However, they are more robust to lighting artifacts and shadows. Depth data is quite noisy and many pixels in the image may have no depth due to multiple reflections, transparent objects, or scattering in certain surfaces such as human tissue and hair. Furthermore, a halo effect around humans or objects is usually perceived due to parallax issues. A comparison is shown in Fig. \ref{fig:bscomparison}, where the actual foreground objects are the human and the objects on the table. As we can observe, RGB fails at extracting the human legs due to the similarities in color with the chair at the back. The thermal cue segments the human body more accurately, but includes some undesired reflections and the jar and mugs with a surrounding halo. The pipe tube is also extracted as foreground due to temperature changes along time. Despite its drawbacks, depth-based background subtraction is the one that seems to give the most accurate result. 
 
-Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $\mathbf{d}_i$. The background model $p(\mathbf{d}_i|BG)$ --where $BG$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{D}$ using the $T$ first frames of a sequence such that $\mathcal{D} = \{\mathbf{d}_1, \ldots, \mathbf{d}_T\}$. This way, the estimated model is denoted by $\hat{p}(\mathbf{d}_i| \mathcal{D}, BG)$, modeled as a mixture of gaussians. In particular, we use the available implementation in OpenCV of the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. GMMs are further explained in section \ref{section:gmm}.
+Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $z_i$. The background model $p(\mathbf{z}_i|BG)$ --where $BG$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{Z}$ using the $T$ first frames of a sequence such that $\mathcal{Z} = \{z_1, \ldots, z_T\}$. This way, the estimated model is denoted by $\hat{p}(\mathbf{z}_i| \mathcal{Z}, BG)$, modeled as a mixture of gaussians. In particular, we use the available implementation in OpenCV of the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. GMMs are further explained in section \ref{section:gmm}.
 
  \begin{figure}[!h]
 {\includegraphics[width=\linewidth]{bs.eps}}
@@ -273,7 +274,7 @@ As stated previously in Section \ref{sect:bs}, depth and color cues use the same
 
 Given the precision got in the registration, particularly because of the depth-to-thermal transformation, we are not able to make a pixel-to-pixel correspondence among all the modalities. Instead, the association is made among greater information units: grid cells. 
 
-Each region of interest $r \in R$ associated to either a segmented subject or object is partitioned in a grid of cells. We write $G_{rij}$ to refer to the position $(i,j)$ in the $r$-th region, such that $i \in \{ 1,...,v_\mathrm{grid} \}$ and $j \in \{ 1,...,h_\mathrm{grid} \}$. Regarding to the whole set of $(i,j)$-cells $\{G_{rij}\}_{\forall r \in R}$, it is denoted by $G_{ij}$.
+Each region of interest $r \in R$ associated to either a segmented subject or object is partitioned in a grid of cells. We write $G_{rij}$ to refer to the position $(i,j)$ in the $r$-th region, such that $i \in \{ 1,...,n \}$ and $j \in \{ 1,...,m \}$. Regarding to the whole set of $(i,j)$-cells $\{G_{rij}\}_{\forall r \in R}$, it is denoted by $G_{ij}$.
 
 In turn, a grid cell $G_{rij}$ consists in a set of image subregions $\{\mathbf{G}_{rij}^c\}_{\forall{c} \in \mathcal{C}}$, got from the set of imagery cues $\mathcal{C} = \{\mathrm{color}, \mathrm{depth}, \mathrm{thermal}\}$. Accordingly, $\{\mathbf{G}_{rij}^c\}_{\forall r \in R}$, the set of $(i,j)$-cells in the modality $c$, is indicated by $G_{ij}^c$.
 
@@ -282,7 +283,16 @@ The grid cell is the unit of information processed in the different modalities' 
 \subsection{Feature extraction}
 \label{ssec:feature extraction}
 
-Each modality involves its own specific feature extraction processes. In the case of the color modality two kinds of descriptors are extracted for each cell, Histogram of Oriented Gradients (HOG) and Histogram of Oriented Optical Flows (HOOF), whereas in the depth and thermal modality the Histogram of Oriented Normals (HON) and Histogram of Intensities and Oriented Gradients (HIOG) are respectively computed. Eventually, from this feature extraction procedure, a set of descriptions is obtained $D_{rij} = \{\mathbf{D}_{rij}^d\}_{\forall d \in \mathcal{D}}$ for each grid position $(i,j)$, being $\mathcal{D}$ the set of considered descriptors $\{\mathrm{HOG}, \mathrm{HOOF}, \mathrm{HON}, \mathrm{HIOG}\}$.
+Each modality involves its own specific feature extraction/description processes. In fact, a feature extraction process can be seen as a mathematical function $f$, such that
+
+\begin{align}
+\begin{split}
+f \colon & \mathbbm{R}^{n \times m} \to \mathbbm{R}^\delta \\
+& \mathbf{G} \xmapsto{\phantom{\mathbbm{R}^{n \times m}}} \mathbf{d}
+\end{split}
+\end{align}
+
+where $\mathbf{d}$ is a $\delta$-dimensional vector, representing the description of $\mathbf{G}$ in a certain feature space (the output space of $f$). Concretely, for the color modality two kinds of descriptions are extracted for each cell, Histogram of Oriented Gradients (HOG) and Histogram of Oriented Optical Flows (HOOF), whereas in the depth and thermal modality the Histogram of Oriented Normals (HON) and Histogram of Intensities and Oriented Gradients (HIOG) are respectively computed; hence, defining a set of four different kinds of descriptions $\mathcal{D} = \{\mathrm{HOG}, \mathrm{HOOF}, \mathrm{HON}, \mathrm{HIOG}\}$. Thus, for a particular cell $\mathbf{G}$, we come up with the set of descriptions $D_{\mathbf{G}} = \{f^d(\mathbf{G}) \;|\; \forall d \in \mathcal{D}\} = \{\mathbf{d}^d \;|\; \forall d \in \mathcal{D}\}$.
 
 \subsubsection{Color modality}
 \label{sssec:color}
@@ -381,12 +391,16 @@ Therefore, a 3-D normal vector can be characterized by a pair ($\theta$, $\varph
 The thermal cue is a very informative feature for the task of people detection/segmentation. A pixel part of a human region gives off heat and hence a relatively large value in terms of thermal intensity.
 
 \paragraph{Histogram of thermal intensities and oriented gradients (HIOG)} 
-The descriptor got from a cell in the thermal cue $\mathbf{G}_{rij}^{\mathrm{thermal}}$ is the concatenation of two histograms. The first one is an histogram summarizing the thermal intensities, which range in the interval $[0, 255]$. The intensities are the ones in the masked region of the cell, i.e. not taking into account the background pixels. Instead, the second histogram is summarizing the orientations of thermal gradients. These gradients are computed convolving a first derivative kernel in both directions (as in Eq.~\ref{eq:gx}-\ref{eq:gy}). Then, their orientation is calculated and binned in the histogram weighted by their magnitude. Finally, the two histograms are normalized dividing by the sum of the accumulations in the bins and concatenated. We used $\tau_{\mathrm{i}}$ bins for the intensities part and $\tau_{\mathrm{g}}$ bins for the gradients' orientations.
+The descriptor got from a cell in the thermal cue $\mathbf{G}_{rij}^{\mathrm{thermal}}$ is the concatenation of two histograms. The first one is an histogram summarizing the thermal intensities, which range in the interval $[0, 255]$. The intensities are the ones in the masked region of the cell, i.e. not taking into account the background pixels. Instead, the second histogram is summarizing the orientations of thermal gradients. These gradients are computed convolving a first derivative kernel in both directions (as in Eq.~\ref{eq:gx}-\ref{eq:gy}). Then, their orientation is calculated and binned in the histogram weighted by their magnitude. Finally, the two histograms are normalized dividing by the sum of the accumulations in the bins and concatenated. We used $\upsilon_{\mathrm{i}}$ bins for the intensities part and $\upsilon_{\mathrm{g}}$ bins for the gradients' orientations.
+
+% TODO: specify the value of \upsilon in the experiments
 
 \subsection{Cell classification}
-Since we are intended to segment human body regions, we need to distinguish those from the other foreground regions segmented by the background subtraction algorithm. These other foreground regions, apart from subjects, are the objects -- they could be other living beings, e.g. cats or dogs, though these are not considered in this work.
+Since we are intended to segment human body regions, we need to distinguish those from the other foreground regions segmented by the background subtraction algorithm. These other foreground regions, apart from subjects, are the objects -- they could be other living beings, e.g. cats or dogs, though those are not considered in this work.
 
-From the previous step, each grid cell has been described using the different descriptors $\mathcal{D}$. For the purpose of classification, we train several Gaussian Mixture Models for each grid position $(i,j)$, kind of description $d \in \mathcal{D}$, and foreground class either subject or orbject. Concretely, the set of GMMs modeled from the set of grid cells positioned in $(i,j)$ is $\mathcal{M}_{ij} = \{\mathcal{M}_{ij}^{d,\mathrm{sub}},\mathcal{M}_{ij}^{d,\mathrm{obj}}\}_{\forall d \in \mathcal{D}}$. In Fig.~\ref{fig:baseline}, the different steps of the baseline up to this point are illustrated.
+From the previous step, each grid cell has been described using the different descriptors $\mathcal{D}$. For the purpose of classification, we train a Gaussian Mixture Model for each grid position $(i,j)$ and kind of description $d \in \mathcal{D}$. Thus, obtaining the set of all the modeled GMMs $\mathcal{M} = \{\mathcal{M}_{ij}^{d} \;|\; \forall i \in \{1,...,n\}, \forall j \in \{1,...,m\}, \forall d \in \mathcal{D} \}$. In Fig.~\ref{fig:baseline}, the different steps of the baseline up to this point are illustrated.
+
+% TODO: correct the baseline's figure, removing the objects' GMM
 
 \begin{figure}[ht!]
 	\centering
@@ -395,11 +409,13 @@ From the previous step, each grid cell has been described using the different de
 	\label{fig:baseline}
 \end{figure}
 
-Then, in testing time, an unseen cell can be predicted to be a subject or an object depending on the likelihood got in the probability density function (PDF) of the different mixtures. We will denote the likelihood values got from the GMMs $\mathcal{M}_{ij}^{d,\mathrm{sub}}$ and $\mathcal{M}_{ij}^{d,\mathrm{obj}}$ by $\mathcal{L}_{ij}^{d,\mathrm{sub}}$ and $\mathcal{L}_{ij}^{d,\mathrm{obj}}$ respectively. The final classification of a $G_{rij}$ is performed by combining somehow and comparing $\{\mathcal{L}_{rij}^{d,\mathrm{sub}}\}_{\forall d \in \mathcal{D}}$ and $\{\mathcal{L}_{rij}^{d,\mathrm{obj}}\}_{\forall d \in \mathcal{D}}$. How to intelligently combine the previous classification results is explained in Section~\ref{ssec:fusion}.
+Then, in order to predict a new unseen cell $\mathbf{G}$ to be either a subject or an object, it is evaluated the log-likelihood value in the probability density functions (PDFs) modeled for the different descriptions' mixtures. We will denote the log-likelihood values got by a particular cell $\mathbf{G}_{rij}$ in its corresponding GMMs $\{\mathcal{M}_{ij}^{d} \;|\; \forall d \in \mathcal{D}\}$ by $\{\ell_{ij}^{d} \;|\; \forall d \in \mathcal{D}\}$. The category -- either subject or object -- according $d$ is predicted by comparing the log-likelihood $\ell_{rij}^{d}$ (got by $\mathbf{G}_{rij}$ in $\mathcal{M}_{ij}^{d}$) to an experimentally selected threshold value $\tau_{ij}^d$. 
+
+Since, for each cell, $|\mathcal{D}|$ predictions are obtained, an strategy to fuse them has to be developed. Some approaches are proposed in Section~\ref{ssec:fusion}, but first the details about the log-likelihoods computation in Gaussian Mixture Models are detailed.
 
 \subsubsection{Gaussian Mixture Models} \label{section:gmm}
 
-Gaussian Mixture Models (GMMs) is an unsupervised learning method for fitting multiple Gaussians to a set of multi-dimensional data points\footnote{This technique uses properties of gaussians, thus its generalization to fit other functions is not straightforward.}. It is often used as a probabilistic clustering and an alternative to the k-means algorithm. As in the case of k-means, the number of components $K$ (or gaussians) in the mixture is a parameter that needs to be specified to the algorithm. The GMMs are trained using the very general Expectation-Maximization algorithm~\cite{moon1996expectation}. The goal is to end up maximizing the overall likelihood $\mathcal{L}$ of the model:
+Gaussian Mixture Models (GMM) is an unsupervised learning method for fitting multiple Gaussians to a set of multi-dimensional data points\footnote{This technique uses properties of gaussians, thus its generalization to fit other functions is not straightforward.}. It is often used as a probabilistic clustering and an alternative to the k-means algorithm. As in the case of k-means, the number of components $K$ (or gaussians) in the mixture is a parameter that needs to be specified to the algorithm. The GMMs are trained using the very general Expectation-Maximization algorithm~\cite{moon1996expectation}. The goal is to end up maximizing the overall likelihood $\mathcal{L}$ of the model:
 
 \begin{gather}
 	\mathcal{L} = \prod_{\mathbf{x} \in \mathbf{X}}^{N} p(\mathbf{x})
@@ -442,83 +458,130 @@ Moreover, though not explained, dealing with likelihoods may cause underflow pro
 
 \subsection{Multi-modal fusion} 
 \label{ssec:fusion}
-Having different modalities and descriptions allow us to fuse them to have a more informative and richer representation of the scenario which in turn can improve the final segmentation result. Such fusion can be achieved using several approaches, which are detailed below.  
+
+Our hypothesis is that the fusion of different modalities and descriptions -- which provide a more informative and richer representation of the scenario -- will improve the final segmentation result. Such fusion can be achieved using several approaches, which are detailed below.
  
-Before fusing the results got in the GMMs from different modalities and classes, a normalization step is required. The more simple possible strategy that normally yields good results is to perform a min-max normalization. This is done simply by subtracting the min value of a set of values and dividing by the difference between the max and the min. In our case, the normalization is done within the set of log-likelihoods $\Delta_{ij}^d = \{\mathcal{L}_{ij}^{d,\mathrm{sub}},\mathcal{L}_{ij}^{d,\mathrm{obj}}\}$ obtained subject and object GMMs using a kind of description $d \in \mathcal{D}$. Concretely, a log-likelihood $\xi \in \Delta_{ij}^d$ is min-max normalized:
+Nonetheless, before fusing the results got from the different descriptions, a normalization step is required. This normalization consists in centering and scaling the log-likelihood values corresponding to the predictions, since they are got from different descriptions' GMMs. More precisely, the log-likelihood values are centered around $\tau_{ij}^{d}$ and scaled dividing this centered value by a deviation-like term. This deviation term is simply the mean squared difference in the sample respect to $\tau_{ij}^{d}$. In such a way, the normalized log-likelihood $\varrho$ of the two categories (object and subject) conveniently differ in their sign.
 
-\begin{gather}
-	\hat{\xi} = \frac{ \xi - \min (\Delta_{ij}^d) } { \max (\Delta_{ij}^d) - \min (\Delta_{ij}^d)}
-\end{gather}
+\subsubsection{Description-level predictions}
+\label{sssec:descriptionlevelpredictions}
 
-The normalized log-likelihoods $\hat{\mathcal{L}}_{ij}^{d,\mathrm{sub}},\hat{\mathcal{L}}_{ij}^{d,\mathrm{obj}}$ range in the interval $[0, 1]$, which will be further used to obtain the prediction $\hat{t}_{r}^{d} = \{0, 1\}$ of a region $r$, which denotes if such region belongs to an object or a subject respectively, and the predicted set of binary masks $\hat{S}$, which defines the human body segmentation.
+Prior to the fusion step, it might be necessary to provide a prediction at grid-level (instead of cell-level) for each of the four descriptions individually, thus a strategy is needed to achieve the grid cells' predictions consensus. 
 
-SM description has not been taken into account thus far owing to its uniqueness. However, it only can be combined with the other descriptions if they are represented in an equal manner. For this purpose, a set of object score maps is computed from the original subject score maps, by taking the maximum score $\text{score}_\text{max}$ of the whole set and computing the inverse, such that:
+The consensus is achieved by voting, and in case of draw the magnitude of the mean normalized log-likelihoods got for both categories are compared; since normalized log-likelihood values $\varrho$ are centered at the decision threshold $\tau$, $\varrho$, which is in fact a distance to the predictor's margin, can be interpreted as a \textit{confidence} value. Thus, a grid consensus function $g(\cdot)$ is defined as follows:
 
-\begin{gather}
-\text{score}(p)^{obj} = \text{score}_\text{max} - \text{score}(p)^{sub}
-\end{gather}
+\begin{gather*}\tiny
+v_r^{(0)} = \sum_{i,j} \mathbbm{1}\{\varrho_{rij} < 0\} \;,\;\; v_r^{(1)} = \sum_{i,j} \mathbbm{1}\{\varrho_{rij} > 0\}  \\
+\varrho_{r}^{(0)} = \sum_{(i,j) \,|\, \varrho_{rij} < 0} \varrho_{rij} \;,\;\; \varrho_{r}^{(1)} = \sum_{(i,j) \,|\, \varrho_{rij} > 0} \varrho_{rij} \\
+g(r) =
+\left\{
+	\begin{array}{ll}
+		0  & \mbox{if }  v_r^{(0)} > v_r^{(1)} \\
+		\mathbbm{1}\left\{ |\varrho_{r}^{(0)}| < |\varrho_{r}^{(1)}| \right\} &  \mbox{if } v_r^{(0)} = v_r^{(1)} \\
+		1 & \mbox{if }  v_r^{(0)} < v_r^{(1)} \\
+	\end{array}
+\right.
+\end{gather*}
+where $v_r^{(0)}$ and $v_r^{(1)}$ are counting the $r$ grid cells' votes for object (negative normalized log-likelihood) and subject (positive normalized log-likelihood) respectively and $\varrho_r^{(0)}$ and $\varrho_r^{(1)}$ are the accumulations of negative and positive normalized log-likelihoods respectively. Eventually, the consensus log-likelihood $\hat{\varrho}$ is also computed for further usage:
 
-Afterwards, to modify the description to a cell level, the scores are first normalized applying, again, min-max normalization. Then, the mean is computed for each cell to obtain a value per cell, as happens in the rest of the descriptions. 
+\begin{gather*}\scriptsize
+\hat{\varrho}_r =
+\left\{
+	\begin{array}{ll}
+		\frac{1}{nm / 2} \, \varrho_{r}^{(0)}  & \mbox{if }  g(r) = 0  \\
+		\frac{1}{nm / 2} \, \varrho_{r}^{(1)} & \mbox{if }  g(r) = 1
+	\end{array}
+\right.
+\end{gather*}
 
-For the sake of simplicity, from this point we will consider the normalized version of SM to be part of the set of descriptors $\mathcal{D}$, and the cell probability-like values to be also part of $\Delta_{ij}^d$, even though they do not represent exactly the same.
+From this calculations, it is determined the category of a grid $r$ from each of the description's point of view and the associated consensus log-likelihoods. Having those calculated, the next step is to establish how their are fused to provide the final category of $r$.
 
-\subsubsection{Individual prediction}
-The first step is to compute the individual prediction of each of the descriptions separately. 
+\subsubsection{Heuristic fusion approaches}
 
-A grid cell voting is performed using the normalized log-likelihoods of subject and object of each of them, comparing both to decide if that cell contains a person, such that
+The heuristic approaches for the fusion of the different descriptors' predictions has been analogously defined to the grid cells' consensus strategy. We defined three different approaches to tackle the fusion problem in an heuristic-like manner.
 
-\begin{gather}
-v =  \sum_{i,j} \mathbbm{1}\{\hat{\mathcal{L}}_{ij}^{d,\mathrm{sub}} >\hat{\mathcal{L}}_{ij}^{d,\mathrm{obj}}\}
-\end{gather}
+\paragraph{Grid cells' pre-consensus}
 
-We also define a threshold $v_{thr}$ that refers to the minimum number of positive votes needed to assign the subject label to the given region. Such threshold is given by
+In the grid cells' pre-consensus strategy, the categories determined from the different descriptions' point of view in Section~\ref{sssec:descriptionlevelpredictions} are directly used to perform another voting and the draws are dealt using the consensus log-likelihoods. In this case, the votes are got from the different descriptions, not the cells. A fusion function $\mathcal{F}(\cdot)$ is defined as follows:
 
-\begin{gather} \label{eq:votethr}
-v_{thr} = \frac{v_\mathrm{grid}h_\mathrm{grid}}{2}
-\end{gather}
+\begin{gather*}\tiny
+\vartheta_r^{(0)} = \sum_{d} \mathbbm{1}\{ g^{d}(r) = 0 \} \; , \;\; \vartheta_r^{(1)} = \sum_{d} \mathbbm{1}\{ g^{d}(r) = 1 \} \\
+\hat{\varrho}_r^{(0)} = \sum_{d \,|\, g^{d}(r) = 0} \hat{\varrho}_r^d \; , \;\; \hat{\varrho}_r^{(1)}  =\sum_{d \,|\, g^{d}(r) = 1} \hat{\varrho}_r^d \\
+\mathcal{F}(r) =
+\left\{
+	\begin{array}{ll}
+		0  &  \mbox{if } \vartheta_r^{(0)} < \vartheta_r^{(1)}   \\
+		\mathbbm{1}\left\{ | \hat{\varrho}_r^{(0)} | < | \hat{\varrho}_r^{(1)} | \right\} &  \mbox{if } \vartheta_r^{(0)} = \vartheta_r^{(1)}   \\
+		1 &  \mbox{if } \vartheta_r^{(0)} > \vartheta_r^{(1)}   \\
+	\end{array}
+\right.
+\end{gather*}
+where $\vartheta_r^{(0)}$ and $\vartheta_r^{(1)}$ are counting the descriptions' votes for obj0ect ( category in the cells' consensus function $g(\cdot)$ and subject (1 category in the cells' consensus function $g(\cdot)$) and $\hat{\varrho}_r^{(0)}$ respectively and $\hat{\varrho}_r^{(1)}$ are the accumulations of negative and positive consensus log-likelihoods respectively.
 
-However, the decision of a cell can be given by a little difference between both log-likelihoods. For this reason, in order to decide whether the region belongs to a person, such differences are taken into account if an agreement is not reached by the cells. The final decision is thus described as:
+\paragraph{Grid cells' post-consensus}
+
+An alternative approach to the pre-consensus is simply performing the fusion at cell-level by voting first and, then, performing another voting to achieve the cells' consensus.
+
+%\begin{gather*}\tiny
+%\vartheta_{rij}^{(0)} = \sum_{d} \mathbbm{1}\{ \ell_{rij}^d < 0 \} \; , \;\; \vartheta_{rij}^{(1)} = \sum_{d} \mathbbm{1}\{ \ell_{rij}^d > 0 \} \\
+%\ell_{rij}^{(0)} = \sum_{d \,|\, \ell_{rij}^d < 0} \ell_{rij}^d \;,\;\; \ell_{rij}^{(1)} = \sum_{d \,|\, \ell_{rij}^d > 0} \ell_{rij}^d \\
+%h(r,i,j) =
+%\left\{
+%	\begin{array}{ll}
+%		0  & \mbox{if }  \vartheta_{rij}^{(0)} > \vartheta_{rij}^{(1)} \\
+%		\mathbbm{1}\left\{ |\ell_{rij}^{(0)}| < |\ell_{rij}^{(1)}| \right\} &  \mbox{if }  \vartheta_{rij}^{(0)} = \vartheta_{rij}^{(1)} \\
+%		1 & \mbox{if }  \vartheta_{rij}^{(0)} < \vartheta_{rij}^{(1)} \\
+%	\end{array}
+%\right.\\
+%\hat{\ell}_{rij} =
+%\left\{
+%	\begin{array}{ll}
+%		\frac{1}{|\mathcal{D}| / 2} \, \ell_{rij}^{(0)}  & \mbox{if }  g(r) = 0  \\
+%		\frac{1}{|\mathcal{D}| / 2} \, \ell_{rij}^{(1)} & \mbox{if }  g(r) = 1
+%	\end{array}
+%\right.\\
+%v_r^{(0)} = \sum_{i,j} \mathbbm{1}\{h(r,i,j) = 0\} \;,\;\; v_r^{(1)} = \sum_{i,j} \mathbbm{1}\{h(r,i,j) = 1\}  \\
+%\ell_{r}^{(0)} = \sum_{(i,j) \,|\, h(r,i,j) = 0} \ell_{rij}^{(0)} \;,\;\; \ell_{r}^{(1)} = \sum_{(i,j) \,|\, h(r,i,j) = 1} \ell_{rij}^{(1)} \\
+%\mathcal{G}(r) =
+%\left\{
+%	\begin{array}{ll}
+%		0  &  \mbox{if } \vartheta_r^{(0)} < \vartheta_r^{(1)}   \\
+%		\mathbbm{1}\left\{ | \hat{\ell}_r^{(0)} | < | \hat{\ell}_r^{(1)} | \right\} &  \mbox{if } \vartheta_r^{(0)} = \vartheta_r^{(1)}   \\
+%		1 &  \mbox{if } \vartheta_r^{(0)} > \vartheta_r^{(1)}   \\
+%	\end{array}
+%\right.
+%\end{gather*}
+
+
+\paragraph{Distance-based fusion and cells' post-consensus}
+
+The difference between this last approach and the former one is the way to fuse the information at description-level. While the former was determining the category at cell-level by voting, thus not taking into account the normalized log-likelihood value but the sign (except for draw cases), this later approach seeks to base in the magnitude of the normalized log-likelihood value's in the descriptions' fusion process. As in \textit{cells' post-consensus} the grid cells' decisions are consensued by voting.
+
+The problem with the heuristic fusion approaches is the impossibility determining the importance of each of the description-level predictions when fusing or the relevance of the cell predictions when performing the grid cells' consensus. For instance, the thermal cue could be providing the most reliable description or the grid cells comprising the upper body could provide more reliable results than the lower body ones. In this sense it is proposed the next approach, which consists in using state-of-the-art statistical learning algorithms to get grid category predictions somehow from the GMMs' predictions, and hopefully achieve a better performance in terms of subject detection than the previous described approaches.
+
+\subsubsection{The learning-based fusion approach}
+
+As before, the category of a grid $r$ is intended to be predicted, but instead of directly making use of the descriptors computed from the different modalities, the predictions got from the GMMs in different cells and each kind of description are taken advantage of. This approach follows the Stacked Learning scheme \cite{cohen2005stacked, gatta2011multi}, which involves training a new learning algorithm combining previous predictions obtained with other learning algorithms. More precisely, each grid $r$ is represented by a vector $\mathbf{v}_r$ of normalized log-likelihoods:
+
+$$\mathbf{v}_r = (\varrho_{r11}^{(1)}, ..., \varrho_{rNM}^{(1)}, ..., \varrho_{r11}^{(|\mathcal{D}|)}, ..., \varrho_{rNM}^{(|\mathcal{D}|)}, y_r)$$
+where $y_r$ is the actual category of the $r$ grid. Using this vectorized-form representation, the data sample containing the $R$ instances is built. Therefore any supervised learning algorithm can be used to try to learn from these data and infer more reliable predictions than using the previous handcrafted heuristics. 
+
+Among many existing state-of-the-art supervised learning algorithms for classification, we selected three of them: Adaptive Boosting (gentle version)~\cite{freund1999short}, Artificial Neural Networks (Multi-Layer Perceptron~\cite{rosenblatt1961principles} with both sigmoidal and radial basis activation function), and Support Vector Machines~\cite{cortes1995support} (linear and radial basis function kernels).
+
+%\paragraph{Adaptive Boosting (AdaBoost)} is a learning meta-algorithm that builds a strong classifiers by combining many weak classifiers. This combination can be a simple weighted sum of the weak classifiers' outputs. The idea is the aggregation weak predictions (barely better than random guessing) boosts the strong decision. Decision trees are the most popular weak classifiers used in boosting schemes, ...
 %
-%\begin{gather}
-%\hat{t}_{r}^{d} = \mathbbm{1} \Bigg\{ \bigg\{ v > v_{thr} \bigg\} \bigvee \bigg\{v = v_{thr} \land   \mathbbm{1}\big\{ \big( \sum_{i,j} \hat{\mathcal{L}}_{ij}^{d,\mathrm{sub}} - \hat{\mathcal{L}}_{ij}^{d,\mathrm{obj}} \big) > 0 \bigg\} \Bigg\}
-%\end{gather}
-
-\begin{gather}
-\hat{t}_{r}^{d} = \mathbbm{1} \bigg\{ v > v_{thr} \bigg\} \bigvee \bigg\{ \mathbbm{1}\big\{v = v_{thr}\big\} \cdot   \mathbbm{1}\big\{ \big( \sum_{i,j} \hat{\mathcal{L}}_{ij}^{d,\mathrm{sub}} - \hat{\mathcal{L}}_{ij}^{d,\mathrm{obj}} \big) > 0 \bigg\}
-\end{gather}
-
-That is, in the event of a tie, the sum of the difference in log-likelihoods among cells would decide the final label for that region. 
-
-In order to create the predicted segmentation masks, we use the extracted foreground masks $FG$ from the background subtraction step. For each frame, regions that belong to that frame are masked to 0 if they were predicted to be a subject, and left as they are otherwise. A prediction conflict could arise if there is an overlap between the bounding boxes that denote the regions and their labels differ. In that case, the overlapped region would be masked to 0 --thereby being considered as a subject --if, as applied before, the sum of the difference between subject and object likelihoods is negative, and kept unchanged in any other way.
-
-\subsubsection{Naive fusion approach}
-A basic fusion approach is to combine the descriptors in such a way that all contribute with equal weight. We propose a cell-level fusion using the normalized subject and object log-likelihoods and modified score maps. Consequently, a voting stage is first performed among all descriptors, whose individual predictions $\hat{t}_{r}^{d}$ are the votes, such that:
-
-\begin{gather}
-v = \sum_{d \in \mathcal{D}} \hat{t}_{r}^{d}
-\end{gather}
- 
-Note that some of the predictions may be wrong, thereby affecting negatively the voting. If the majority of the votes consider the region to be a person, meaning that there is a strong agreement between descriptions, those descriptions that consider the given region to be a subject will not be taken into account in the cell-level fusion stage. Defining the selected descriptions as $\mathcal{D}' \subset \mathcal{D}$, their combination $\bar{\mathcal{L}}_{ij}^{d,\mathrm{sub}}$ and $\bar{\mathcal{L}}_{ij}^{d,\mathrm{obj}}$ is given by:
-
-\begin{gather}
-\bar{\mathcal{L}}_{ij}^{d,\mathrm{sub}} = \sum_{d \in \mathcal{D}'} \hat{\mathcal{L}}_{ij}^{d,\mathrm{sub}}\\[2ex]
-\bar{\mathcal{L}}_{ij}^{d,\mathrm{obj}} = \sum_{d \in \mathcal{D}'} \hat{\mathcal{L}}_{ij}^{d,\mathrm{obj}}  
-\end{gather}
- 
-Once the combined log-likelihoods are obtained, the approach follows the same procedure as the individual prediction for cell-based descriptions to obtain a final prediction $\hat{t}_r$ for each region, and similarly to obtain the segmentation masks. Note that this time, since a fused result is obtained , there will only be one set of segmented masks for all the descriptions --except for the thermal description whose $FG$ masks were different owing to the non-accurate pixel-wise registration among modalities.
-
-\subsection{Learning-based approach}
-Support vector machines is a non-probabilistic supervised binary classifier that learns a model which represents the instances as points in space, mapped in such a way that instances of different classes are separated by a hyperplane in a high dimensional space. However, if the dataset is not linearly separable in that space the hyperplane will fail in classifying properly. This can be solved by mapping the dataset instances into a higher dimensional space using a kernel function, thus making easier the dataset division \cite{hearst1998support}. 
-
-SVM is often used in the literature as a discriminative classifier for object recognition, and particularly in human detection approaches, usually yielding successful results.  We therefore propose a fusion using SVM with different types of kernel. In particular, our baseline includes linear kernel and radial basis function (RBF). Linear SVM just requires one parameter, the penalty parameter $\zeta$, which specifies a trade-off between model complexity and misclassification of training examples and can take values in the interval $[0, inf]$. Higher values of $\zeta$ causes closer fitting to the training set, which may tend to overfitting. The performance of the RBF kernel is also influenced by the $\gamma$ parameter, which controls the shape of the separating hyperplane. Higher values usually increase the number of support vectors. Weights $\mathbf{w}$ obtained from linear SVM represent the hyperplane used to separate between classes, but they can also give us an insight of the level of importance or level of influence that each feature has when classifying the instance \cite{guyon2003introduction}. The SVM models has been trained using the available implementation of the LibSVM\footnote{\url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/ }} library \cite{chang2011libsvm}.
+%\paragraph{Multi-Layer Perceptron (MLP)} is a feed-forward artificial neural network model, graph-like represented, which maps a multi-dimensional input to the proper multi-dimensional output~\cite{rosenblatt1961perceptrons}. A MLP consists of more than two fully connected layers of nodes (or neurons). Particularly, the MLP aggregates and stacks many perceptrons in order to, respectively, deal with the output multi-dimensionality and the non-linear separability of the data. Each layer is composed of neurons (except for the input layer), each of them fully connected to the next one; that is, a given neuron receives the input of all the neurons of the previous layer's neurons and in turn this neuron emits a synchronous signal directed to each of the neurons in the next layer. The training of an artificial neural network model consists in setting the weights in the neural connections so as to maximize the prediction performance, and it is typically done with the so-called backpropagation algorithm~\cite{rumelhart1986learning}; this technique iteratively inputs data to the network and backpropagates the error got in the output, adapting somehow the weights so as to minimize the error the output error is minimized after each iteration.
+%
+%While the number of neurons in the hidden layer $h$ is a parameter that has to be selected, the number of neurons in both the input layer and output layer are determined, respectively, by the input data dimensionality and the number of output variables that need to be predicted (number of classes in classification problems). Other model parameters are the number of epochs $e$ (iterations of error backpropagation), and the weight update factor $\alpha$.
+%
+%% TODO: add to the bib: rosenblatt1961perceptrons, rumelhart1986learning
+%
+%\paragraph{Support Vector Machine (SVM)} is a non-probabilistic supervised binary classifier that learns a model which represents the instances as points in space, mapped in such a way that instances of different classes are separated by a hyperplane in a high dimensional space. However, if the dataset is not linearly separable in that space the hyperplane will fail in classifying properly. This can be solved by mapping the dataset instances into a higher dimensional space using a kernel function, thus making easier the dataset division \cite{hearst1998support}. 
+%
+%In particular, our baseline includes linear kernel and radial basis function (RBF)\footnote{The SVM models has been trained using the available implementation of the LibSVM\footnote{\url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/ }} library \cite{chang2011libsvm}.}. Linear SVM just requires one parameter, the penalty parameter $\zeta$, which specifies a trade-off between model complexity and misclassification of training examples and can take values in the interval $[0, inf)$. Higher values of $\zeta$ causes closer fitting to the training set, which may tend to overfitting. The performance of the RBF kernel is also influenced by the $\gamma$ parameter, which controls the shape of the separating hyperplane. Higher values usually increase the number of support vectors. Weights $\mathbf{w}$ obtained from linear SVM represent the hyperplane used to separate between classes, but they can also give us an insight of the level of importance or level of influence that each feature has when classifying the instance \cite{guyon2003introduction}.
 
 %Such parameters have influence on the model accuracy, for that reason a proper parameter selection has to be performed
 
-Let $\mathcal{R}$ be the data set of regions and features that will be used in the SVM approach. Each region will be described by the different probabilities of subject and object of the different descriptions $\{\hat{\mathcal{L}}_{ij}^{d,\mathrm{sub}}, \hat{\mathcal{L}}_{ij}^{d,\mathrm{obj}}\}$ such that each region $r$ will be described by $2 \times |\mathcal{D}| \times v_\mathrm{grid} \times h_\mathrm{grid}$ feature values. The computed ground truth labels $t_{r}^{m} \in T$ will be used in the training stage to indicate the class of $r$. Note that some regions have an unknown label $\{-1\}$; such regions are not used for training. Region prediction will be again denoted by $\hat{t}_r$.
-
-However, we are not taken into account the previous predictions obtained for each description individually. In order to take into account this information, which may help in the classification stage, the set of individual predictions $\hat{t}_{r}^{d}$ can be included in the data set $\mathcal{R}$, such that each region $r$ is described by $2 \times |\mathcal{D}| \times v_\mathrm{grid} \times h_\mathrm{grid} + |\mathcal{D}|$. This approach follows the Stacked Learning scheme \cite{cohen2005stacked, gatta2011multi}, which involves training a new learning algorithm combining previous predictions obtained with other learning algorithms. 
-
-Accordingly, we use four SVM classifiers: (1) simple linear SVM, (2) simple RBF SVM, (3) stacked linear SVM, and (4) stacked RBF SVM. Segmented masks are created following, again, the aforementioned procedure.
 
 \section{Evaluation}
 \label{sec:evaluation}
@@ -551,7 +614,7 @@ Scene & Frames 	& Annotated frames 	& Depth range \\ \hline
 %The frames are annotated using a pixel annotator tool ***ANDREAS TEXT HERE****
 %
  %For each scene, human objects are annotated in the RGB modality. Each person is given a unique ID which he maintains throughout the scene. To obtain the corresponding masks in the thermal and depth modalities, the RGB masks are mapped using the registration algorithm of Section \ref{sec:registration}.
-The acquired video was manually annotated frame-by-frame in a custom annotation program called Pixel Annotator. The dataset contains a large number of frames divided over a number of different sequences. All sequences have three modalities: RGB, depth, and thermal. The focus of the annotation has been on the persons in the scene and a mask-based annotation philosophy has been employed. That means that each person is covered by a mask and each mask (person) has a unique ID, which is consistent over frames. In this way the dataset can be used not only for background subtraction, but also for tracking and re-identification purposes. Since the main purpose of the dataset is background subtraction, a pixel-level annotation scheme was necessary - bounding boxes would not be sufficient.
+The acquired video was manually annotated frame-by-frame in a custom annotation program called Pixel Annotator. The dataset contains a large number of frames divided over a number of different sequences. All sequences have three modalities: RGB, depth, and thermal. The focus of the annotation has been on the people in the scene and a mask-based annotation philosophy has been employed. That means that each person is covered by a mask and each mask (person) has a unique ID, which is consistent over frames. In this way the dataset can be used not only for background subtraction, but also for tracking and re-identification purposes. Since the main purpose of the dataset is background subtraction, a pixel-level annotation scheme was necessary - bounding boxes would not be sufficient.
  
 As seen from Figure \ref{fig:pixelannotator}, Pixel Annotator provides a view of each modality with the current mask overlaid, as well as a raw view of the mask. It implements the registration algorithm described above so that the annotator can judge whether the mask fits in all modalities. Because the modalities are registered to each other, there is not specific masks for each modality, but a single mask for all.
 
@@ -568,19 +631,19 @@ The data set and the registration algorithm is freely available at \cite{vapgrou
 \subsection{Parameters and settings}
 \label{ssec:parametersandsettings}
 
-After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, we set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, or  $\sigma_\text{otsu} = 12$ for other cases.
+After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, we set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, or  $\sigma_\text{otsu} = 12$ for other cases. % Ref or convincing rational explanation?
 
-Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $M \times N$ cells, being $M = 2$ and $N = 2$. The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
+Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $m \times n$ cells, being $m = 2$ and $n = 2$. The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
 
-For the HOG descriptor, we defined: $H_\text{w} = 64 \times 128$, $H_\text{b} = 32 \times 32$, $H_\text{c}=16 \times 16$ and $H_{h} = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell $=$ 288 components. 
+For the HOG descriptor, we defined $H_\text{w} = 64 \times 128$, $H_\text{b} = 32 \times 32$, $H_\text{c}=16 \times 16$, and $H_{h} = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. % Ref or convincing rational explanation?
 
-In order to compute the optical flow, and based on the tests performed in \cite{brkic2013combining}, we set the parameters of the given implementation according to the values that gave the best performance. In particular, the averaging window size was set to 2, the size of the pixel neighborhood considered when finding polynomial expansion in each pixel was set to 5 and the standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion to 1.1.  The remaining parameters were set to their default OpenCV values. For the HOOF descriptor, we defined $V_\text{b}$ = 8, to finally produce an 8-D feature vector.
+In order to compute the optical flow, and based on the tests performed in \cite{brkic2013combining}, we set the parameters of the given implementation according to the values that gave the best performance. In particular, the averaging window size was set to 2, the size of the pixel neighborhood considered when finding polynomial expansion in each pixel was set to 5 and the standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion to 1.1.  The remaining parameters were set to their default OpenCV values. For the motion descriptor (HOOF), we defined $V_\text{b}$ = 8, to finally produce an 8-dimensional feature vector. 
 
-For the depth descriptors, we defined $\theta_{I} = 8$ and $\phi_{G} = 8$.
+Then, for the depth descriptors (HON), we defined $\theta_{I} = 8$ and $\phi_{G} = 8$, whereas for the thermal descriptors (HIOG), we defined $T_{I} = 8$ and $T_{G} = 8$. A very large number of bins is not convenient for generalization. Besides, we wanted the number of bins describing orientations in the different descriptions to coincide for comparison purposes in the later experiments; and 8 bins for describing normal vectors' orientations seem a quite reasonable amount of bins in view of the depth sensor's noisy measurements.
 
-For the thermal descriptors, we defined $T_{I} = 8$ and $T_{G} = 8$.
+Other parameters have to be empirically selected, as the number of mixtures $k$ for GMMs, the $\tau$ parameters, or the corresponding classifiers' parameters in the learning-based fusion approaches. The number of mixtures $k$ tried $\{2,3, ..., 9, 11, 13\}$, whereas $\tau$ takes $32$ values in the range $(-2,2)$.
 
-The parameter set up in the training of the GMMs is simply the number of mixtures, which have been set to a typical value of 3 mixture components.
+
 
 \subsection{Experimental methodology and validation measures}
 \label{ssec:validation}
@@ -689,15 +752,30 @@ As explained in the last section, we assess the performance of the proposed base
 %add more comments
 Furthermore, an upward trend is observed as the \emph{don't care region} (DCR) grows, although at higher DCR levels it stabilizes. This is comprehensible because usually the contours of the predicted masks are not accurately defined. Indeed, an accurate pixel-level segmentation is a rather complex task in state of the art techniques.
 
-Having analyzed the experimental results, it is worth investigating the causes of somemisclassifications. One of the problems is originated in the beginning of the chain. Sincebackground subtraction reduces the search space, it may reject some actual person parts.That mainly happens when a person is in the same depth than something which belongsto the background model. Another issue is that some regions considered as unknown Ðmostly those generated when one person overlaps other Ð considerably differ from thosethat are used to train the different models. Consequently, the classification of such regionsis not a trivial task.
+Having analyzed the experimental results, it is worth investigating the causes of some
+misclassifications. One of the problems is originated in the beginning of the chain. Since
+background subtraction reduces the search space, it may reject some actual person parts.
+That mainly happens when a person is in the same depth than something which belongs
+to the background model. Another issue is that some regions considered as unknown Ð
+mostly those generated when one person overlaps other Ð considerably differ from those
+that are used to train the different models. Consequently, the classification of such regions
+is not a trivial task.
 
 \section{Conclusions}
 \label{sec:conclusions}
-A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal data set of several video sequences has been introduced, which contains severalsubjects interacting with everyday objects.
+A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal data set of several video sequences has been introduced, which contains several
+subjects interacting with everyday objects.
 
-The first contribution of this work was an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest comingfrom the different data modalities, different state of the art descriptors have been usedand adapted to describe different feature vectors from each region. In particular, HOG and HOOF have been computed from RGB still images and image sequences, histogram of intensity gradients from thermal data, and histograms of normal vectors from depth maps coming from infrared sensors. The set of descriptors have been selected as the most discriminative ones given the results previously reported in literature.
+The first contribution of this work was an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest coming
+from the different data modalities, different state of the art descriptors have been used
+and adapted to describe different feature vectors from each region. In particular, HOG and HOOF have been computed from RGB still images and image sequences, histogram of intensity gradients from thermal data, and histograms of normal vectors from depth maps coming from infrared sensors. The set of descriptors have been selected as the most discriminative ones given the results previously reported in literature.
 
-Despite the obtained results, this proposal clearly leaves further room of improvement. Tobegin with, the first background subtraction stage could combine the different modalitiesin order to learn the model. Furthermore, a clustering of poses at cell-level could beadded before learning the GMMs. GrabCuts could also be applied to the predictedsegmentation binary masks to refine and smooth the contours, which would also producea rise in the segmentation accuracy.
+Despite the obtained results, this proposal clearly leaves further room of improvement. To
+begin with, the first background subtraction stage could combine the different modalities
+in order to learn the model. Furthermore, a clustering of poses at cell-level could be
+added before learning the GMMs. GrabCuts could also be applied to the predicted
+segmentation binary masks to refine and smooth the contours, which would also produce
+a rise in the segmentation accuracy.
 {\small
 \bibliographystyle{ieee}
 \bibliography{references}
