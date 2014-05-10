@@ -227,7 +227,7 @@ An example of the registration is seen from Figure \ref{fig:registeredImagery}.
 \section{Tri-modal human body segmentation}
 \label{sec:trimodalhumanbodysegmentation}
 
-Let us write $\mathbf{F}_i = \{\mathbf{C}_i, \mathbf{D}_i, \mathbf{T}_i\}$ for a determined tri-modal frame, and $\mathbf{p}$ a pixel at an arbitrary location $(x,y)$ in an image.
+%Let us write $\mathbf{F}_i = \{\mathbf{C}_i, \mathbf{D}_i, \mathbf{T}_i\}$ for a determined tri-modal frame, and $\mathbf{p}$ a pixel at an arbitrary location $(x,y)$ in an image.
 %continue this intro
 
 \subsection{Extraction of masks and regions of interest} 
@@ -697,20 +697,20 @@ First, we illustrate the results obtained in the subject detection accuracy expe
     \hline
     Prediction approach & & Accuracy $\pm$ CI \\
     \hline
-    \multirow{2}{*}{Description-level} & Color & 0.72 $\pm$ 0.008 \\
-    & Motion & 0.787 $\pm$ 0.011\\
-    & Depth & 0,786 $\pm$ 0.019\\
-    & Motion & 0.891 $\pm$ 0.007\\
+    \multirow{2}{*}{Description-level} & Color & 54.17\% $\pm$ 0.77 \\
+    & Motion & 78.69\% $\pm$ 1.12\\
+    & Depth & 78.63\% $\pm$ 1.94\\
+    & Motion & 89.10\% $\pm$ 0.70\\
     \hline
-    \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 0.866 $\pm$ 0.010 \\
-    & Pos-consensus & 0.882 $\pm$ 0.008\\
-    & Distance-based & 0.882 $\pm$ 0.008\\
+    \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 86.61\% $\pm$ 1.05 \\
+    & Pos-consensus & 88.23\% $\pm$ 0.84 \\
+    & Distance-based & 88.19\% $\pm$ 0.75 \\
     \hline
-    \multirow{2}{*}{Learning-based fusion} & AdaBoost & 0.950 $\pm$ 0.011 \\
-    & MLP (sigmoid) & 0.957 $\pm$ 0.007\\
-    & MLP (gaussian) & 0.949 $\pm$ 0.030\\
-    & SVM (linear) & 0.920 $\pm$ 0.020\\
-    & SVM (rbf) & 0.960 $\pm$ 0.010\\
+    \multirow{2}{*}{Learning-based fusion} & AdaBoost & 94.97\% $\pm$ 1.14 \\
+    & MLP (sigmoid) & 95.68\% $\pm$ 0.70 \\
+    & MLP (gaussian) & 94.94\% $\pm$ 2.98 \\
+    & SVM (linear) & 91.96\% $\pm$ 2.03 \\
+    & SVM (rbf) & 96.03\% $\pm$ 0.99 \\
     \hline
 \end{tabular}
 \end{center}
