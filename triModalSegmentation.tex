@@ -254,7 +254,7 @@ modalities of the same scene (RGB, depth and thermal respectively).
 \label{sssec:extreg}
 Once the binary foreground masks are obtained, a 2-D connected component analysis is performed using basic mathematical morphological operators and setting a minimum value for each connected component area (except in left and rightmost sides of the image which may be caused by a new incoming item) to clean the noisy output mask. 
 
-A region of interest $r \in R$ should contain a separated person or object. However, different subjects or objects may overlap in space, resulting in a bigger component containing more than one item, for this reason each component has to be analyzed to find each item separately and therefore obtain the correct bounding boxes that surround them.
+A region of interest should contain a separated person or object. However, different subjects or objects may overlap in space, resulting in a bigger component containing more than one item, for this reason each component has to be analyzed to find each item separately and therefore obtain the correct bounding boxes that surround them.
 
 One of the advantages of the depth cue is that we can use the depth value in each range pixel to know whether an item is farther or not than other. We can assume that a given connected component belongs to just one item if its disparity distribution has a low standard deviation, that is, there is no rapid change in disparity. For those that have a greater standard deviation, Otsu's method \cite{otsu1975threshold} can be used to split the blob by automatically finding a threshold assuming a bimodal distribution. It calculates the optimal threshold separating the two classes such that their intra-class variance is minimal. We will define $\pi$ as the function that applies this method to a set of bounding boxes.
 
@@ -266,7 +266,26 @@ Once the different items are found, the regions belonging to them are labeled us
 \subsubsection{Correspondence to other modalities} 
 \label{sssec:correspondence}
 %in Section \ref{sect:bs} 
-As stated previously in Section \ref{sect:bs}, depth and color cues use the same foreground masks, so we can take advantage of the same bounding boxes for both modalities. On another front, foreground masks for the thermal modality are computed using the provided registration algorithm with the depth/color foreground masks as input. For each frame, each item is registered individually to the thermal modality and then merged into one mask, preserving the same item id than depth foreground masks. This way, we achieve a one-to-one correspondence between items from both modalities and the constraint of having the same number of items in all the modalities is fulfilled. Bounding boxes are also generated the same way as done for the depth modality, which although not having the same coordinates denote the same regions of interest $R$. Henceforth, we will simply use $R$ to refer to such regions. From now on, we will use $FG = \{FG^\mathrm{color}, FG^\mathrm{depth}, FG^\mathrm{thermal}\}$ to refer to the set of foreground masks.
+As stated previously in Section \ref{sect:bs}, depth and color cues use the same foreground masks, so we can take advantage of the same bounding boxes for both modalities. On another front, foreground masks for the thermal modality are computed using the provided registration algorithm with the depth/color foreground masks as input. For each frame, each item is registered individually to the thermal modality and then merged into one mask, preserving the same item id than depth foreground masks. This way, we achieve a one-to-one correspondence between items from both modalities and the constraint of having the same number of items in all the modalities is fulfilled. Bounding boxes are also generated the same way as done for the depth modality, which although not having the same coordinates denote the same regions of interest. Henceforth, we will simply use $R$ to refer to such regions. From now on, we will use $FG = \{FG^\mathrm{color}, FG^\mathrm{depth}, FG^\mathrm{thermal}\}$ to refer to the set of foreground masks.
+
+\subsubsection{Tagging regions of interest}
+\label{sssec:tagging}
+The extracted regions of interest are to be further analyzed to decide whether they are objects or subjects. In order to train and test our models and determine final accuracy results, we need to have a ground truth labeling of the bounding boxes apart from the ground truth masks. 
+
+This labeling is done in a semiautomatic manner. First, bounding boxes are extracted from regions of interest of GT masks and compared to those extracted previously from the foreground masks and the overlap between them is computed. The overlap measure is further explained in Section \ref{ssec:validation}. The labeling is therefore applied automatically as follows: 
+
+\begin{gather}
+\text{label} = \left\{ 
+  \begin{array}{c l l}
+    0  & \text{(Object)} & \quad \text{if overlap $\leq$ 0.1 }\\
+    -1 & \text{(Unknown)} & \quad \text{if 0.1 $<$ overlap $<$ 0.6}\\
+    1 & \text{(Subject)} & \quad \text{if overlap $\geq$ 0.6 }
+  \end{array} \right.
+ \end{gather}
+
+This way, regions with low overlap are considered to be objects, and those with high overlap, subjects. A special case named \emph{unknown} has been added to denote those regions that are not clear to classify straightforwardly, such as regions with subjects holding objects, multiple subjects overlapping, and so on. 
+
+However, such conditions may not always hold, since some regions which overlap value is lower than 0.1 compared to GT masks could actually be part of human beings. It is for that reason that the applied labels are revised manually to check for possible erroneous tags.
 
 \subsection{Grid partitioning}
 \label{ssec:gridpartitioning}
@@ -630,11 +649,11 @@ The data set and the registration algorithm is freely available at \cite{vapgrou
 \subsection{Parameters and settings}
 \label{ssec:parametersandsettings}
 
-After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, we set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, or  $\sigma_\text{otsu} = 12$ for other cases. % Ref or convincing rational explanation?
+After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, we set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, or  $\sigma_\text{otsu} = 12$ for other cases. This settings were established in order to maintain a trade-off between finding the maximum number of overlapping people situations without dividing a subject in different regions depending on the variation of depth of the body parts.
 
 Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $m \times n$ cells, being $m = 2$ and $n = 2$. The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
 
-For the HOG descriptor, we defined $H_\text{w} = 64 \times 128$, $H_\text{b} = 32 \times 32$, $H_\text{c}=16 \times 16$, and $H_{h} = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. % Ref or convincing rational explanation?
+For the HOG descriptor our purpose was to have a low dimensional - lower than the original - yet descriptive feature vector, so we defined $H_\text{w} = 64 \times 128$, $H_\text{b} = 32 \times 32$, $H_\text{c}=16 \times 16$, and $H_{h} = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. 
 
 In order to compute the optical flow, and based on the tests performed in \cite{brkic2013combining}, we set the parameters of the given implementation according to the values that gave the best performance. In particular, the averaging window size was set to 2, the size of the pixel neighborhood considered when finding polynomial expansion in each pixel was set to 5 and the standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion to 1.1.  The remaining parameters were set to their default OpenCV values. For the motion descriptor (HOOF), we defined $V_\text{b}$ = 8, to finally produce an 8-dimensional feature vector. 
 
@@ -659,7 +678,7 @@ As said before, we used an overlap measure in order to compare the similarity be
 overlap(A, B) = \frac{|A \cap B|}{|A \cup B|}
 \end{equation}
 
-This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect agreement between sets. $GT$ represents connected components of the ground truth binary masks, and $\hat{S}$ those of predicted binary masks from the different modalities individually or from the different fusion approaches. For each frame, the overlap is computed per person id and connected component, in such a way that connected components that have the same person id  or are connected in the ground truth constitute a set $A$, and they are compared to the blobs that coincide in the predicted binary masks, which constitute a set $B$. The overlap of each frame is then averaged by the number of sets found. It is therefore a pessimistic measure because a very tiny blob misclassified as a person in the predicted binary masks will account for 0 overlap, thus decreasing the mean overlap of the frame, so it can be considered as a lower bound on how accurate the prediction is. The final overlap is computed as the mean overlap of all frames having at least one blob, whether they be in the ground truth or in the predicted binary mask.
+This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect agreement between sets. For each frame, connected components of the GT masks are compared to the predicted binary masks from the different modalities individually or from the different fusion approaches. The overlap is computed per person id and connected component, in such a way that connected components that have the same person id or are connected in the ground truth constitute a set $A$, and they are compared to the blobs that coincide in the same coordinates in the predicted binary masks, which constitute a set $B$. The overlap of each frame is then averaged by the number of sets found. It is therefore a pessimistic measure because a very tiny blob misclassified as a person in the predicted binary masks will account for 0 overlap, thus decreasing the mean overlap of the frame, so it can be considered as a lower bound on how accurate the prediction is. The final overlap is computed as the mean overlap of all frames of each fold having at least one blob, whether they be in the ground truth or in the predicted binary mask.
 
 As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect around people or objects, thus complicating an accurate pixel-level segmentation at blob contours when applying background subtraction. This lack of accuracy is also caused by possible distortions, noise or other problems, and decreases the final overlap. Hence, a \emph{do not care region} (DCR) is often used. Such region is taken per frame by centering a morphology operator of different sizes at the ground truth binary masks blob contours and subtract it from those masks and from the predicted ones to compute the overlap. This way, we can compare the effect of using a growing DCR to the actual overlap.
 
@@ -697,7 +716,7 @@ First, we illustrate the results obtained in the subject detection accuracy expe
 \label{tab:subject_detection_accuracy}
 \end{table}
 
-Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predictions and fusion predictions with different fusion approaches. Tables \ref{table:individual} and \ref{table:linearstacked} are included to compare the differences between using the descriptors separately and after fusing them. Notice that in plots showing fusion results, only two cases are considered, owing to color and depth modalities share the same original $FG$ masks.
+Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predictions and fusion predictions with different fusion approaches. Tables \ref{table:individual} and \ref{table:linearstacked} are included to compare the differences between using the descriptors separately and after fusing them. Notice that in plots showing fusion results, only two cases are considered, owing to color and depth modalities share the same original foreground masks $FG$.
 
 \begin{table}[h]\footnotesize
 \center
