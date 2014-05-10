@@ -17,8 +17,10 @@
 \usepackage[draft,inline,nomargin]{fixme} % Enable fixme-notes.
 \usepackage{units}
 
+\usepackage{array}
 \usepackage{multicol}
 \usepackage{multirow}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
 \makeatletter
 \newcommand*\rel@kern[1]{\kern#1\dimexpr\macc@kerna}
@@ -719,80 +721,149 @@ First, we illustrate the results obtained in the subject detection accuracy expe
 
 Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predictions and fusion predictions with different fusion approaches. Tables \ref{table:individual} and \ref{table:linearstacked} are included to compare the differences between using the descriptors separately and after fusing them. Notice that in plots showing fusion results, only two cases are considered, owing to color and depth modalities share the same original foreground masks $FG$.
 
-\begin{table}[h]\footnotesize
-\center
-\caption{Overlap results of the individual predictions for each description}
-\label{table:individual}
-\begin{tabular}{|l|l|l|l|l|l|}
-\hline
-&\textbf{HOG}&\textbf{SM}&\textbf{HOOF}&\textbf{HIOG}&\textbf{HON}\\\hline
-\textbf{0}&62.10 \% &63.12 \%&56.97 \%&46.35 \%&56.76 \%\\\hline
-\textbf{1}&64.71 \%&65.85 \%&59.41 \%&47.99 \%&59.09 \%\\\hline
-\textbf{3}&67.59 \%&69.02 \%&62.13 \%&50.85 \%&61.70 \%\\\hline
-\textbf{5}&68.65 \%&70.40 \%&63.20 \%&53.02 \%&62.77 \%\\\hline
-\textbf{7}&68.65 \%&70.72 \%&63.28 \%&54.45 \%&62.94 \%\\\hline
+\begin{table*}[ht]
+\caption{Overlap and confidence interval results of the different modalities individually depending on the DCR used}
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+    \hline
+    DCR & Color & Motion & Depth & Thermal \\
+    \hline
+    -  & 0.365 $\pm$ 0.019 & 0.545 $\pm$ 0.007 & 0.444 $\pm$ 0.019 & 0.438 $\pm$ 0.003 \\
+    3 & 0.382 $\pm$  0.019 & 0.571 $\pm$ 0.007 & 0.467 $\pm$ 0.019 & 0.455 $\pm$ 0.003 \\
+    5 & 0.394 $\pm$ 0.020 & 0.590 $\pm$ 0.008 & 0.482 $\pm$ 0.020 & 0.472 $\pm$ 0.003 \\
+    7 & 0.402 $\pm$ 0.021 & 0.603 $\pm$ 0.008 & 0.494 $\pm$ 0.020 & 0.487 $\pm$ 0.003 \\
+    9 & 0.408 $\pm$ 0.021 & 0.612 $\pm$ 0.008 & 0.502 $\pm$ 0.020 & 0.500 $\pm$ 0.003 \\
+    11 & 0.412 $\pm$ 0.021 & 0.618 $\pm$ 0.008 & 0.507 $\pm$ 0.021 & 0.512 $\pm$ 0.003 \\
+    13 & 0.414 $\pm$ 0.021 & 0.621 $\pm$ 0.008 & 0.511 $\pm$ 0.021 & 0.522 $\pm$ 0.004 \\
+    15 & 0.416 $\pm$ 0.021 & 0.623 $\pm$ 0.008 & 0.513 $\pm$ 0.021 & 0.530 $\pm$ 0.004 \\
+    17 & 0.416 $\pm$ 0.021 & 0.624 $\pm$ 0.008 & 0.515 $\pm$ 0.021 & 0.537 $\pm$ 0.004 \\
 \end{tabular}
-\end{table}
+\end{center}
+\label{tab:individual}
+\end{table*}
 
+\begin{table*}[ht]
+\caption{Overlap and confidence interval results of the heuristic fusion approach depending on the DCR used}
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|c}
+    & \multicolumn{2}{c|}{Pre-consensus} & \multicolumn{2}{c|}{Post-consensus} & \multicolumn{2}{c}{Distance-based} \\
 
-\begin{table}[h]\footnotesize
-\center
-\caption{Overlap results of fusion using Stacked Linear SVM for each modality}
-\label{table:linearstacked}
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{DCR}&\textbf{Thermal}&\textbf{Color/Depth}\\\hline
-\textbf{0}&49.64 \%&64.65 \%\\\hline
-\textbf{1}&51.33 \%&67.39 \%\\\hline
-\textbf{3}&54.29 \%&70.43 \%\\\hline
-\textbf{5}&56.56 \%&71.58 \%\\\hline
-\textbf{7}&58.11 \%&71.63 \%\\\hline
+    \cline{1-7}
+    DCR & Color/Depth & Thermal & Color/Depth & Thermal & Color/Depth & Thermal\\
+    \hline
+    -  & 0.517 $\pm$ 0.007 & 0.428 $\pm$ 0.006 & 0.526 $\pm$ 0.005 & 0.434 $\pm$ 0.004 & 0.528 $\pm$ 0.005 & 0.435 $\pm$ 0.004 \\
+    3 & 0.541 $\pm$ 0.007 & 0.445 $\pm$ 0.006  & 0.551 $\pm$ 0.005 & 0.452 $\pm$ 0.004 & 0.553 $\pm$ 0.005 & 0.453 $\pm$ 0.004 \\
+    5 & 0.559 $\pm$ 0.007 & 0.462 $\pm$ 0.007  & 0.569 $\pm$ 0.006 & 0.468 $\pm$ 0.004 & 0.571 $\pm$ 0.006 & 0.469 $\pm$ 0.004 \\
+    7 & 0.571 $\pm$ 0.007 & 0.476 $\pm$ 0.007  & 0.582 $\pm$ 0.006 & 0.483 $\pm$ 0.005 & 0.584 $\pm$ 0.006 & 0.484 $\pm$ 0.005 \\
+    9 & 0.580 $\pm$ 0.007 & 0.490 $\pm$ 0.007  & 0.591 $\pm$ 0.006 & 0.496 $\pm$ 0.005 & 0.593 $\pm$ 0.006 & 0.498 $\pm$ 0.005 \\
+    11 & 0.587 $\pm$ 0.008 & 0.501 $\pm$ 0.007  & 0.597 $\pm$ 0.006 & 0.508 $\pm$ 0.005 & 0.599 $\pm$ 0.006 & 0.509 $\pm$ 0.005 \\
+    13 & 0.591 $\pm$ 0.008 & 0.511 $\pm$ 0.007  & 0.601 $\pm$ 0.006 & 0.518 $\pm$ 0.005 & 0.603 $\pm$ 0.006 & 0.520 $\pm$ 0.005 \\
+    15 & 0.593 $\pm$ 0.008 & 0.520 $\pm$ 0.007  & 0.604 $\pm$ 0.006 & 0.527 $\pm$ 0.005 & 0.606 $\pm$ 0.006 & 0.528 $\pm$ 0.005 \\
+    17 & 0.594 $\pm$ 0.008 & 0.527 $\pm$ 0.007  & 0.605 $\pm$ 0.006 & 0.534 $\pm$ 0.005 & 0.607 $\pm$ 0.006 & 0.536 $\pm$ 0.005 \\
 \end{tabular}
-\end{table}
+\end{center}
+\label{tab:simplefusion}
+\end{table*}
+
+\begin{table*}[ht]
+\caption{Overlap and confidence interval results of the learning-based fusion depending on the DCR used}
+\begin{center}
+\begin{tabular}{c|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}}
+& \multicolumn{2}{c|}{AdaBoost} & \multicolumn{2}{c|}{MLP Gaussian} & \multicolumn{2}{c|}{MLP Sigmoid} & \multicolumn{2}{c|}{Linear SVM} & \multicolumn{2}{c}{RBF SVM}  \\
+
+\cline{1-11}
+DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal\\
+\hline
+-  & 0.597 \par$\pm$ 0.003\strut & 0.487 \par$\pm$ 0.002\strut & 0.588 \par$\pm$ 0.005\strut & 0.480 \par$\pm$ 0.003\strut & 0.589 \par$\pm$ 0.005\strut & 0.481\par$\pm$ 0.003\strut & 0.597 \par$\pm$ 0.004\strut & 0.488 \par$\pm$ 0.002\strut & 0.600 \par$\pm$ 0.002\strut & 0.489 \par$\pm$ 0.001\strut \\
+3 & 0.626 \par$\pm$ 0.003\strut & 0.506 \par$\pm$ 0.002\strut & 0.616 \par$\pm$ 0.005\strut & 0.500 \par$\pm$ 0.003\strut & 0.617 \par$\pm$ 0.005\strut & 0.501 \par$\pm$ 0.003\strut & 0.626 \par$\pm$ 0.004\strut & 0.507 \par$\pm$ 0.002\strut & 0.629 \par$\pm$ 0.003\strut & 0.508 \par$\pm$ 0.001\strut \\
+5 & 0.646 \par$\pm$ 0.003\strut & 0.524 \par$\pm$ 0.002\strut & 0.636 \par$\pm$ 0.005\strut & 0.518 \par$\pm$ 0.004\strut & 0.638 \par$\pm$ 0.005\strut & 0.519 \par$\pm$ 0.004\strut & 0.647 \par$\pm$ 0.005\strut & 0.525 \par$\pm$ 0.002\strut & 0.649 \par$\pm$ 0.003\strut & 0.526 \par$\pm$ 0.002\strut \\
+7 & 0.661 \par$\pm$ 0.003\strut & 0.541 \par$\pm$ 0.002\strut & 0.651 \par$\pm$ 0.006\strut & 0.534 \par$\pm$ 0.004\strut & 0.652 \par$\pm$ 0.005\strut & 0.535 \par$\pm$ 0.004\strut & 0.662 \par$\pm$ 0.005\strut & 0.542 \par$\pm$ 0.003\strut & 0.664 \par$\pm$ 0.003\strut & 0.543 \par$\pm$ 0.002\strut \\
+9 & 0.672 \par$\pm$ 0.003\strut & 0.556 \par$\pm$ 0.002\strut & 0.661 \par$\pm$ 0.006\strut & 0.549 \par$\pm$ 0.004\strut & 0.663 \par$\pm$ 0.005\strut & 0.550 \par$\pm$ 0.004\strut & 0.673 \par$\pm$ 0.005\strut & 0.557 \par$\pm$ 0.003\strut & 0.675 \par$\pm$ 0.003\strut & 0.558 \par$\pm$ 0.002\strut \\
+11 & 0.679 \par$\pm$ 0.003\strut & 0.569 \par$\pm$ 0.002\strut & 0.669 \par$\pm$ 0.006\strut & 0.562 \par$\pm$ 0.004\strut & 0.670 \par$\pm$ 0.005\strut & 0.563 \par$\pm$ 0.004\strut & 0.680 \par$\pm$ 0.005\strut & 0.570 \par$\pm$ 0.003\strut & 0.683 \par$\pm$ 0.003\strut & 0.571 \par$\pm$ 0.002\strut \\
+13 & 0.684 \par$\pm$ 0.003\strut & 0.580 \par$\pm$ 0.002\strut & 0.673 \par$\pm$ 0.006\strut & 0.573 \par$\pm$ 0.004\strut & 0.675 \par$\pm$ 0.005\strut & 0.575 \par$\pm$ 0.004\strut & 0.684 \par$\pm$ 0.005\strut & 0.582 \par$\pm$ 0.003\strut & 0.687 \par$\pm$ 0.003\strut & 0.583 \par$\pm$ 0.002\strut \\
+15 & 0.686 \par$\pm$ 0.003\strut & 0.590 \par$\pm$ 0.002\strut & 0.676 \par$\pm$ 0.005\strut & 0.583 \par$\pm$ 0.004\strut & 0.678 \par$\pm$ 0.005\strut & 0.584 \par$\pm$ 0.004\strut & 0.687 \par$\pm$ 0.005\strut & 0.591 \par$\pm$ 0.003\strut & 0.689 \par$\pm$ 0.003\strut & 0.592 \par$\pm$ 0.002\strut \\ 
+17 &  0.687 \par$\pm$ 0.003\strut & 0.598 \par$\pm$ 0.002\strut & 0.677 \par$\pm$ 0.005\strut & 0.591 \par$\pm$ 0.004\strut & 0.679 \par$\pm$ 0.005\strut & 0.592 \par$\pm$ 0.004\strut & 0.687 \par$\pm$ 0.005\strut & 0.599 \par$\pm$ 0.003\strut & 0.690 \par$\pm$ 0.003\strut & 0.600 \par$\pm$ 0.002\strut \\
+         
+\end{tabular}
+\end{center}
+\label{tab:learningfusion}
+\end{table*}
+
+%
+%\begin{table}[h]\footnotesize
+%\center
+%\caption{Overlap results of the individual predictions for each description}
+%\label{table:individual}
+%\begin{tabular}{|l|l|l|l|l|l|}
+%\hline
+%&\textbf{HOG}&\textbf{SM}&\textbf{HOOF}&\textbf{HIOG}&\textbf{HON}\\\hline
+%\textbf{0}&62.10 \% &63.12 \%&56.97 \%&46.35 \%&56.76 \%\\\hline
+%\textbf{1}&64.71 \%&65.85 \%&59.41 \%&47.99 \%&59.09 \%\\\hline
+%\textbf{3}&67.59 \%&69.02 \%&62.13 \%&50.85 \%&61.70 \%\\\hline
+%\textbf{5}&68.65 \%&70.40 \%&63.20 \%&53.02 \%&62.77 \%\\\hline
+%\textbf{7}&68.65 \%&70.72 \%&63.28 \%&54.45 \%&62.94 \%\\\hline
+%\end{tabular}
+%\end{table}
+%
+%
+%\begin{table}[h]\footnotesize
+%\center
+%\caption{Overlap results of fusion using Stacked Linear SVM for each modality}
+%\label{table:linearstacked}
+%\begin{tabular}{|c|c|c|}
+%\hline
+%\textbf{DCR}&\textbf{Thermal}&\textbf{Color/Depth}\\\hline
+%\textbf{0}&49.64 \%&64.65 \%\\\hline
+%\textbf{1}&51.33 \%&67.39 \%\\\hline
+%\textbf{3}&54.29 \%&70.43 \%\\\hline
+%\textbf{5}&56.56 \%&71.58 \%\\\hline
+%\textbf{7}&58.11 \%&71.63 \%\\\hline
+%\end{tabular}
+%\end{table}
 
 %Linear SVM is used as baseline classifier. It offers good performance relative to other linear classifiers and %fast to run.
 
 
- \begin{figure}[ht]
-	 \centering
-	 \begin{subfigure}[b]{0.47\textwidth}
- 		\includegraphics[width=1\textwidth]{results/individualprediction.eps}
- 		\caption{Individual prediction}
-    		\label{fig:individualprediction}
- 	\end{subfigure}
-	 ~
-	\begin{subfigure}[b]{0.47\textwidth}
- 		\includegraphics[width=1\textwidth]{results/naivefusion.eps}
- 		\caption{Naive fusion}
-    		\label{fig:naivefusion}
- 	\end{subfigure}
-	 \\
-	\begin{subfigure}[b]{0.47\textwidth}
- 		\includegraphics[width=1\textwidth]{results/simplelinearsvm.eps} 			
-		\caption{Fusion using Simple linear SVM}
-    		\label{fig:simplelinearsvm}
- 	\end{subfigure}
-	~
-	\begin{subfigure}[b]{0.47\textwidth}
- 		\includegraphics[width=1\textwidth]{results/simplerbfsvm.eps} 			
-		\caption{Fusion using Simple RBF SVM}
-    		\label{fig:simplerbfsvm}
- 	\end{subfigure}
-	\\
-	\begin{subfigure}[b]{0.47\textwidth}
- 		\includegraphics[width=1\textwidth]{results/stackedlinearsvm.eps} 			
-		\caption{Fusion using Stacked Linear SVM}
-    		\label{fig:stackedlinearsvm}
- 	\end{subfigure}
-	~
-	\begin{subfigure}[b]{0.47\textwidth}
- 		\includegraphics[width=1\textwidth]{results/stackedrbfsvm.eps} 			
-		\caption{Fusion using Stacked RBF SVM}
-    		\label{fig:stackedrbfsvm}
- 	\end{subfigure}
-	\caption{Overlap results for the different individual and fusion prediction approaches.}
-	\label{fig:overlapgraph}
-\end{figure}
+% \begin{figure}[ht]
+%	 \centering
+%	 \begin{subfigure}[b]{0.47\textwidth}
+% 		\includegraphics[width=1\textwidth]{results/individualprediction.eps}
+% 		\caption{Individual prediction}
+%    		\label{fig:individualprediction}
+% 	\end{subfigure}
+%	 ~
+%	\begin{subfigure}[b]{0.47\textwidth}
+% 		\includegraphics[width=1\textwidth]{results/naivefusion.eps}
+% 		\caption{Naive fusion}
+%    		\label{fig:naivefusion}
+% 	\end{subfigure}
+%	 \\
+%	\begin{subfigure}[b]{0.47\textwidth}
+% 		\includegraphics[width=1\textwidth]{results/simplelinearsvm.eps} 			
+%		\caption{Fusion using Simple linear SVM}
+%    		\label{fig:simplelinearsvm}
+% 	\end{subfigure}
+%	~
+%	\begin{subfigure}[b]{0.47\textwidth}
+% 		\includegraphics[width=1\textwidth]{results/simplerbfsvm.eps} 			
+%		\caption{Fusion using Simple RBF SVM}
+%    		\label{fig:simplerbfsvm}
+% 	\end{subfigure}
+%	\\
+%	\begin{subfigure}[b]{0.47\textwidth}
+% 		\includegraphics[width=1\textwidth]{results/stackedlinearsvm.eps} 			
+%		\caption{Fusion using Stacked Linear SVM}
+%    		\label{fig:stackedlinearsvm}
+% 	\end{subfigure}
+%	~
+%	\begin{subfigure}[b]{0.47\textwidth}
+% 		\includegraphics[width=1\textwidth]{results/stackedrbfsvm.eps} 			
+%		\caption{Fusion using Stacked RBF SVM}
+%    		\label{fig:stackedrbfsvm}
+% 	\end{subfigure}
+%	\caption{Overlap results for the different individual and fusion prediction approaches.}
+%	\label{fig:overlapgraph}
+%\end{figure}
 
 \subsection{Discussion}
 \label{ssec:discussion}
