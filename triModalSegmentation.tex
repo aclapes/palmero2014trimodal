@@ -292,16 +292,17 @@ However, such conditions may not always hold, since some regions which overlap v
 
 Given the precision got in the registration, particularly because of the depth-to-thermal transformation, we are not able to make a pixel-to-pixel correspondence among all the modalities. Instead, the association is made among greater information units: grid cells. 
 
-Each region of interest $r \in R$ associated to either a segmented subject or object is partitioned in a grid of cells. We write $G_{rij}$ to refer to the position $(i,j)$ in the $r$-th region, such that $i \in \{ 1,...,n \}$ and $j \in \{ 1,...,m \}$. Regarding to the whole set of $(i,j)$-cells $\{G_{rij}\}_{\forall r \in R}$, it is denoted by $G_{ij}$.
+Each region of interest $r \in R$ associated to either a segmented subject or object is partitioned in a grid of $n \times m$ cells. Let $G_r$ denote the grid, which in turn is a set of cells, corresponding to the region of interest $r$. Hence, we write $G_{rij}$ to refer to the position $(i,j)$ in the $r$-th region, such that $i \in \{ 1,...,n \}$ and $j \in \{ 1,...,m \}$. 
+%Regarding to the whole set of $(i,j)$-cells $\{G_{rij}\}_{\forall r \in R}$, it is denoted by $G_{ij}$.
 
-In turn, a grid cell $G_{rij}$ consists in a set of image subregions $\{\mathbf{G}_{rij}^c\}_{\forall{c} \in \mathcal{C}}$, got from the set of imagery cues $\mathcal{C} = \{\mathrm{color}, \mathrm{depth}, \mathrm{thermal}\}$. Accordingly, $\{\mathbf{G}_{rij}^c\}_{\forall r \in R}$, the set of $(i,j)$-cells in the modality $c$, is indicated by $G_{ij}^c$.
+Besides, a grid cell $G_{rij}$ consists in a set of images $\{\mathbf{G}_{rij}^{(c)} \,|\, \forall{c} \in \mathcal{C}\}$, corresponding to the set of imagery cues $\mathcal{C} = \{\mathrm{"color"}, \mathrm{"depth"}, \mathrm{"thermal"}\}$. Accordingly, $\{\mathbf{G}_{rij}^{(c)} \,|\, \forall r \in R\}$, the set of $(i,j)$-cells in the modality $c$, is indicated by $G_{ij}^{(c)}$.
 
-The grid cell is the unit of information processed in the different modalities' description and classification procedures. The next section provides the details about the feature extraction computed from different visual cues at cell level.
+The grid cell is the unit of information processed in the feature extraction and classification procedures. Next section provides the details about the feature extraction computed from the different visual cues at this cell level.
 
 \subsection{Feature extraction}
 \label{ssec:feature extraction}
 
-Each modality involves its own specific feature extraction/description processes. In fact, a feature extraction process can be seen as a mathematical function $f$, such that
+Each modality involves its own specific feature extraction/description processes. In fact, a feature extraction process can be seen as a mathematical function $f$ such that
 
 \begin{align}
 \begin{split}
@@ -310,7 +311,7 @@ f \colon & \mathbbm{R}^{n \times m} \to \mathbbm{R}^\delta \\
 \end{split}
 \end{align}
 
-where $\mathbf{d}$ is a $\delta$-dimensional vector, representing the description of $\mathbf{G}$ in a certain feature space (the output space of $f$). Concretely, for the color modality two kinds of descriptions are extracted for each cell, Histogram of Oriented Gradients (HOG) and Histogram of Oriented Optical Flows (HOOF), whereas in the depth and thermal modality the Histogram of Oriented Normals (HON) and Histogram of Intensities and Oriented Gradients (HIOG) are respectively computed; hence, defining a set of four different kinds of descriptions $\mathcal{D} = \{\mathrm{HOG}, \mathrm{HOOF}, \mathrm{HON}, \mathrm{HIOG}\}$. Thus, for a particular cell $\mathbf{G}$, we come up with the set of descriptions $D_{\mathbf{G}} = \{f^d(\mathbf{G}) \;|\; \forall d \in \mathcal{D}\} = \{\mathbf{d}^d \;|\; \forall d \in \mathcal{D}\}$.
+where $\mathbf{d}$ is a $\delta$-dimensional vector, representing the description of $\mathbf{G}$ in a certain feature space (the output space of $f$). Concretely, for the color modality two kinds of descriptions are extracted for each cell, Histogram of Oriented Gradients (HOG) and Histogram of Oriented Optical Flows (HOOF), whereas in the depth and thermal modality the Histogram of Oriented Normals (HON) and Histogram of Intensities and Oriented Gradients (HIOG) are respectively computed; hence, defining a set of four different kinds of descriptions $\mathcal{D} = \{\mathrm{HOG}, \mathrm{HOOF}, \mathrm{HON}, \mathrm{HIOG}\}$. Thus, for a particular cell $G_{rij}$, we extract the set of descriptions $D_{rij} = \{f^d(\mathbf{G}_{rij}^{(d)}) \;|\; \forall d \in \mathcal{D}\} = \{\mathbf{d}_{rij}^d \;|\; \forall d \in \mathcal{D}\}$.
 
 \subsubsection{Color modality}
 \label{sssec:color}
