@@ -18,6 +18,7 @@
 \usepackage{units}
 
 \usepackage{multicol}
+\usepackage{multirow}
 
 \makeatletter
 \newcommand*\rel@kern[1]{\kern#1\dimexpr\macc@kerna}
@@ -103,7 +104,7 @@ The rest of this paper is organized as follows: Section~\ref{sec:relatedwork} re
 \section{Related work}
 \label{sec:relatedwork}
 
-Within the last decade a great number of novel approaches have emerged to respond to different requirements in the human segmentation context, such as trying to overcome changing illumination conditions, dealing with variable human poses or developing quasi-automatic systems that progressively lose the need for user intervention.
+Within the last decade a great number of novel approaches have emerged to respond to different requirements in the human body segmentation context, such as trying to overcome changing illumination conditions, dealing with variable human poses, or developing quasi-automatic systems that progressively lose the need for user intervention.
  
  When dealing with indoor scenarios recorded by a stationary camera, the pixel-based background subtraction approach can be applied successfully. We can model the background distribution of the scene and detect moving objects by comparing each pixel to the model, which are considered as foreground. The result is a silhouette of the moving object, which can be further used for other tasks. Pixel intensity is the most commonly used feature in background modeling, though there are many approaches that use other type of information such as edge, motion, stereo or texture features. The parametric model that Stauffer and Grimson proposed in \cite{stauffer1999adaptive}, which models the background using a mixture of gaussians (MoG), has been widely used and many variations have been suggested based on it. In \cite{bouwmans2011recent}, more advanced statistical background modeling techniques are deeply reviewed. 
  
@@ -140,7 +141,7 @@ The image streams are captured using custom recording software that invokes the 
 The calibration of the thermal and RGB cameras have been accomplished using a thermal-visible calibration device inspired by \cite{vidas2012mask}. The calibration device consists of two parts; an A3-sized 10 mm polystyrene foam board is used as a backdrop and an equally sized board with cut-out squares is used as the checkerboard. Before using the calibration device, the backdrop is heated and the checkerboard plate is kept at room temperature, thus keeping a suitable thermal contrast when joined, as is seen from Figure \ref{fig:calibrationDevice}. %The depth sensor of the Kinect is factory calibrated and a subsequent calibration is thus not needed.
 Using the Camera Calibration Toolbox of \cite{bouguet2004camera}, we are able to extract corresponding points in the thermal and RGB modalities. The sets of corresponding points are used to undistort both image streams and for the subsequent registration of the modalities. 
 
-\begin{figure}[htpb]
+\begin{figure}[ht]
 \centering
 \begin{subfigure}[b]{0.48\columnwidth}
 	\includegraphics[width=\columnwidth]{RGB00064.png}%
@@ -297,27 +298,27 @@ where $\mathbf{d}$ is a $\delta$-dimensional vector, representing the descriptio
 
 The color cue is nowadays the most popular imagery modality and has been extensively used to extract a range of different feature descriptions. It is usually represented by the RGB color space, which expresses the color as a triplet $(\text{red}, \text{green}, \text{blue})$, but other models are also available. Notwithstanding its simplicity and properties, it suffer from some drawbacks such as illumination changes, shadows, camouflage, among others, which may inconvenience some tasks.
 
-\begin{figure}
+\begin{figure*}[ht]
 	\center
         %add desired spacing between images, e. g. ~, \quad, \qquad etc.
          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.45\textwidth}
+        \begin{subfigure}[b]{0.33\textwidth}
                 \includegraphics[width=\textwidth]{opticalflow_final.eps}
                 \caption{Optical flow}
                 \label{fig:opticalflow}
-        \end{subfigure}
-        \begin{subfigure}[b]{0.45\textwidth}
+        \end{subfigure}\,
+        \begin{subfigure}[b]{0.32\textwidth}
                 \includegraphics[width=\textwidth]{normals.png}
                 \caption{Depth normals}
                 \label{fig:normals}
-        \end{subfigure}
-        \begin{subfigure}[b]{0.45\textwidth}
+        \end{subfigure}\,
+        \begin{subfigure}[b]{0.33\textwidth}
                 \includegraphics[width=\textwidth]{hihog.png}
-                \caption{Thermal intensities and oriented gradients}
+                \caption{Thermal intensities \& oriented gradients}
                 \label{fig:thermals}
         \end{subfigure}	
         \caption{Example of descriptors computed in a frame for the different modalities: (a) represents the motion vectors using a forward scheme, that is, the optical flow orientation gives insight into where the person is moving to in the next frame; (b) the computed surface normal vectors; and (c) the thermal intensities and thermal gradients' orientations. }\label{fig:descriptors}
-\end{figure}
+\end{figure*}
 
 \paragraph{Histogram of oriented gradients (HOG)}
 For RGB cue, a simple implementation of HOG \cite{dalal2005histograms} is to be computed for each grid cell, known as detection window in the HOG context. Each window is resized to a $h_\mathrm{w}^\mathrm{HOG} \times v_\mathrm{w}^\mathrm{HOG}$ pixel area and divided in rectangular blocks of $h_\mathrm{b}^\mathrm{HOG} \times v_\mathrm{b}^\mathrm{HOG}$ pixels, which are in turn divided into rectangular local spatial regions called cells of size $h_\mathrm{c}^\mathrm{HOG} \times v_\mathrm{c}^\mathrm{HOG}$ pixels, thus having 4 cells per block and 8 blocks per window. We use RGB color space with no gamma correction. In order to compute the gradients, two kernels in the x and y directions with no smoothing are used for each channel so as to find and take the channel with the greatest gradient magnitude for each pixel. The gradient at point $\mathbf{p}$ of detection window is:
@@ -555,14 +556,14 @@ An alternative approach to the pre-consensus is simply performing the fusion at 
 
 The difference between this last approach and the former one is the way to fuse the information at description-level. While the former was determining the category at cell-level by voting, thus not taking into account the normalized log-likelihood value but the sign (except for draw cases), this later approach seeks to base in the magnitude of the normalized log-likelihood value's in the descriptions' fusion process. As in \textit{cells' post-consensus} the grid cells' decisions are consensued by voting.
 
-The problem with the heuristic fusion approaches is the impossibility determining the importance of each of the description-level predictions when fusing or the relevance of the cell predictions when performing the grid cells' consensus. For instance, the thermal cue could be providing the most reliable description or the grid cells comprising the upper body could provide more reliable results than the lower body ones. In this sense it is proposed the next approach, which consists in using state-of-the-art statistical learning algorithms to get grid category predictions somehow from the GMMs' predictions, and hopefully achieve a better performance in terms of subject detection than the previous described approaches.
+The problem with the heuristic fusion approaches is the impossibility determining the importance of each of the description-level predictions when fusing or the relevance of the cell predictions when performing the grid cells' consensus. For instance, the thermal cue could be providing the most reliable description or the grid cells comprising the upper body could provide more reliable results than the lower body ones. In this sense it is proposed the next approach, which consists in using state-of-the-art statistical learning algorithms to get grid category predictions somehow from \textit{stacked} GMMs' predictions, and hopefully achieve a better performance.
 
 \subsubsection{The learning-based fusion approach}
 
 As before, the category of a grid $r$ is intended to be predicted, but instead of directly making use of the descriptors computed from the different modalities, the predictions got from the GMMs in different cells and each kind of description are taken advantage of. This approach follows the Stacked Learning scheme \cite{cohen2005stacked, gatta2011multi}, which involves training a new learning algorithm combining previous predictions obtained with other learning algorithms. More precisely, each grid $r$ is represented by a vector $\mathbf{v}_r$ of normalized log-likelihoods:
 
 $$\mathbf{v}_r = (\varrho_{r11}^{(1)}, ..., \varrho_{rNM}^{(1)}, ..., \varrho_{r11}^{(|\mathcal{D}|)}, ..., \varrho_{rNM}^{(|\mathcal{D}|)}, y_r)$$
-where $y_r$ is the actual category of the $r$ grid. Using this vectorized-form representation, the data sample containing the $R$ instances is built. Therefore any supervised learning algorithm can be used to try to learn from these data and infer more reliable predictions than using the previous handcrafted heuristics. 
+where $y_r$ is the actual category of the $r$ grid. Using this vector form representation of the normalized log-likelihoods in the different grid cells and modalities, a data sample containing the $R$ feature vectors of this kind is built. Therefore any supervised learning algorithm can be used to try to learn from these data and infer more reliable predictions than using the previous handcrafted heuristics. 
 
 Among many existing state-of-the-art supervised learning algorithms for classification, we selected three of them: Adaptive Boosting (gentle version)~\cite{freund1999short}, Artificial Neural Networks (Multi-Layer Perceptron~\cite{rosenblatt1961principles} with both sigmoidal and radial basis activation function), and Support Vector Machines~\cite{cortes1995support} (linear and radial basis function kernels).
 
@@ -649,11 +650,11 @@ The proposed baseline has been validated by means of cross-validation (CV). For 
 
 In addition, we performed a model selection in each training partition to find the optimal values for the GMMs' experimental parameters ($k$ and $\tau$). We used again the cross-validation strategy, but with a smaller number of partitions (3). In each inner fold, a grid search has been carried out to measure the performance of each $k$-$\tau$ combination. The optimal combination, i.e. the one performing better in average across these inner folds, was used to train the final models eventually validated in the test partitions. In this case, and since we measured the subject prediction accuracy, the data was partitioned at region-level.
 
-The parameters of the learning-based fusion's classifiers were also selected in each iteration of outer CV, and this is done in the exact same inner 3-fold cross-validation partitions. While the selection of $k$ and $\tau$ were  enough exhaustive, the parameters involved in these supervised learning algorithms often require an even more exhaustive search to fine tune their values. A common strategy to keep the number of parameter combinations manageable is to perform a two-level grid search, which consists of a first coarse grid search followed by a second narrow grid search around the coarse's optimal values.
+The parameters of the learning-based fusion's classifiers were also selected for each training partition of the outer CV, and this is done in the exact same inner 3-fold cross-validation partitions. While the selection of $k$ and $\tau$ were  enough exhaustive, the parameters involved in these supervised learning algorithms often required an even more exhaustive search to fine tune their values. A common strategy to keep the number of parameter combinations manageable is to perform a two-level grid search, which consists of a first coarse grid search followed by a second narrow grid search around the coarse's optimal values.
 
 % A table of results here
 
-As said before, we have used an overlap measure in order to compare the similarity between the groundtruth masks and the predicted masks, thus assessing the performance of the proposed baseline. Concretely, the Jaccard Index \cite{tan2002selecting}, also known as the Jaccard similarity coefficient. The degree of overlap between two binary sets $A$ and $B$ is computed as the ratio between the size of the intersection divided by the size of the union:
+As said before, we used an overlap measure in order to compare the similarity between the groundtruth masks and the predicted masks, thus assessing the performance of the proposed baseline. Concretely, the Jaccard Index \cite{tan2002selecting}, also known as the Jaccard similarity coefficient. The degree of overlap between two binary sets $A$ and $B$ is computed as the ratio between the size of the intersection divided by the size of the union:
 \begin{equation} \label{eq:jaccard}
 overlap(A, B) = \frac{|A \cap B|}{|A \cup B|}
 \end{equation}
@@ -665,7 +666,38 @@ As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect 
 \section{Experimental results}
 \label{ssec:experimentalresults}
 
-As explained in the last section, we assess the performance of the proposed baseline using both a detection accuracy and the Jaccard overlap measure (Eq. \ref{eq:jaccard}). Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predictions and fusion predictions with different fusion approaches. Tables \ref{table:individual} and \ref{table:linearstacked} are included to compare the differences between using the descriptors separately and after fusing them. Notice that in plots showing fusion results, only two cases are considered, owing to color and depth modalities share the same original $FG$ masks.
+As explained in the last section, we assess the performance of the proposed baseline using both a detection accuracy and overlap measure (Eq. \ref{eq:jaccard}). 
+
+First, we illustrate the results obtained in the subject detection accuracy experiments in Table~\ref{tab:subject_detection_accuracy}. Note we achieve nearly perfect subject detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction.
+
+\begin{table}[ht]
+\caption{Subject detection accuracy}
+\begin{center}
+\begin{tabular}{lll}
+    \hline
+    Prediction approach & & Accuracy $\pm$ CI \\
+    \hline
+    \multirow{2}{*}{Description-level} & Color & 0.72 $\pm$ 0.008 \\
+    & Motion & 0.787 $\pm$ 0.011\\
+    & Depth & 0,786 $\pm$ 0.019\\
+    & Motion & 0.891 $\pm$ 0.007\\
+    \hline
+    \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 0.866 $\pm$ 0.010 \\
+    & Pos-consensus & 0.882 $\pm$ 0.008\\
+    & Distance-based & 0.882 $\pm$ 0.008\\
+    \hline
+    \multirow{2}{*}{Learning-based fusion} & AdaBoost & 0.950 $\pm$ 0.011 \\
+    & MLP (sigmoid) & 0.957 $\pm$ 0.007\\
+    & MLP (gaussian) & 0.949 $\pm$ 0.030\\
+    & SVM (linear) & 0.920 $\pm$ 0.020\\
+    & SVM (rbf) & 0.960 $\pm$ 0.010\\
+    \hline
+\end{tabular}
+\end{center}
+\label{tab:subject_detection_accuracy}
+\end{table}
+
+Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predictions and fusion predictions with different fusion approaches. Tables \ref{table:individual} and \ref{table:linearstacked} are included to compare the differences between using the descriptors separately and after fusing them. Notice that in plots showing fusion results, only two cases are considered, owing to color and depth modalities share the same original $FG$ masks.
 
 \begin{table}[h]\footnotesize
 \center
@@ -701,7 +733,7 @@ As explained in the last section, we assess the performance of the proposed base
 %Linear SVM is used as baseline classifier. It offers good performance relative to other linear classifiers and %fast to run.
 
 
- \begin{figure}[H]
+ \begin{figure}[ht]
 	 \centering
 	 \begin{subfigure}[b]{0.47\textwidth}
  		\includegraphics[width=1\textwidth]{results/individualprediction.eps}
