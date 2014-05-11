@@ -126,7 +126,36 @@ Having considered the properties of each one of the aforementioned segmentation 
  
 According to the nature of our proposal, we find appropriate to dedicate a few lines regarding thermal imagery and associated descriptors. In contrast to color or depth cues, thermal infrared imagery has not been used that widely for human detection and segmentation purposes, although it is experiencing a growing interest by the research community. Several specific descriptors have been proposed so far. For example, in \cite{zhang2007pedestrian}, the authors extended the combination of edgelets and HOG features with AdaBoost and SVM cascade to infrared images. Background subtraction has been also adapted to deal with this kind of imagery in \cite{davis2004robust}, which presented a statistical contour-based technique that eliminates typical halo artifacts produced by infrared sensors by combine foreground and background gradient information into a contour saliency map so as to find the strongest salient contours. More recently, \cite{mogelmosetri} presented a person re-identification method that for the first time combined RGB, depth, and thermal features. An extensive survey of thermal cameras and their applications can be found in \cite{gade2014thermal}, including technological aspects and the nature of thermal radiation. 
  
-\section{Acquisition}
+\section{The tri-modal dataset}
+\label{sec:dataset}
+
+The proposed method is evaluated on a data set with a total of 11537 frames, of which 5724 frames are annotated as this requires a significant amount of resources. Sample imagery of the scenes is pictured in Figure \ref{fig:samplescenes} whereas Table \ref{tab:scenes} shows the number of annotated frames and the depth range. Activity in scene 1 and 3 is using the full depth range of the Kinect sensor whereas activity in scene 2 is constrained to a depth range of $\pm 0.250$ m. Scene 1 and 2 are situated in a closed meeting room with little natural light to disturb the depth sensing, whereas scene 3 is situated in a area with wide windows and a substantial amount of sunlight.
+
+\begin{figure}[htbp]
+	\centering
+		\includegraphics[width=0.48\textwidth]{Selection/1.png}
+		\includegraphics[width=0.48\textwidth]{Selection/2.png}
+		\includegraphics[width=0.48\textwidth]{Selection/3.png}
+	\caption{Two views of each of the three scenes shown in the RGB, thermal, and depth modalities, respectively.}
+	\label{fig:samplescenes}
+\end{figure}
+
+\begin{table}[htpb]
+\centering
+\begin{tabular}{llll}
+\hline
+Scene & Frames 	& Annotated frames 	& Depth range \\ \hline
+1 		& 4693		& 1767	 						& 1-4 m \\
+2 		& 2216		& 2016	 						& 1.4-1.9 m \\
+3 		& 4628		& 1941	 						& 1-4 m \\ 
+\hline
+\end{tabular}
+\caption{Annotated number of frames and spatial constraints of the scenes.}
+\label{tab:scenes}
+\end{table}
+
+
+\subsection{Acquisition}
 \label{sec:setup}
 The tri-modal data stream is recorded using a Microsoft Kinect for XBOX 360 capturing the RGB and depth image streams, and an AXIS Q1922 thermal camera. The resolution of the imagery is fixed at 640x480 pixels. As seen in Figure \ref{fig:camerasetup}, the cameras are vertically aligned in order to reduce perspective distortion. 
 
@@ -166,7 +195,7 @@ Using the Camera Calibration Toolbox of \cite{bouguet2004camera}, we are able to
 \end{figure}
 
 
-\section{Registration}
+\subsection{Registration}
 \label{sec:registration}
 The depth sensor of the Kinect is factory registered to the RGB camera and a point-to-point correspondence is obtained from the SDK. The registration is static and might thus be saved in two look-up-tables for $\text{RGB} \Leftrightarrow \text{depth}$. %The LUT shows to be inaccurate at positions where the Kinect cannot estimate the depth. This inaccuracy can be solved, however, by smoothing the LUT by a linear polynomial. 
 
@@ -226,8 +255,38 @@ An example of the registration is seen from Figure \ref{fig:registeredImagery}.
 \label{fig:registeredImagery}
 \end{figure}
 
+\subsection{Annotation}
+%The frames are annotated using a pixel annotator tool ***ANDREAS TEXT HERE****
+%
+ %For each scene, human objects are annotated in the RGB modality. Each person is given a unique ID which he maintains throughout the scene. To obtain the corresponding masks in the thermal and depth modalities, the RGB masks are mapped using the registration algorithm of Section \ref{sec:registration}.
+The acquired video was manually annotated frame-by-frame in a custom annotation program called Pixel Annotator. The dataset contains a large number of frames divided over a number of different sequences. All sequences have three modalities: RGB, depth, and thermal. The focus of the annotation has been on the people in the scene and a mask-based annotation philosophy has been employed. That means that each person is covered by a mask and each mask (person) has a unique ID, which is consistent over frames. In this way the dataset can be used not only for background subtraction, but also for tracking and re-identification purposes. Since the main purpose of the dataset is background subtraction, a pixel-level annotation scheme was necessary - bounding boxes would not be sufficient.
+ 
+As seen from Figure \ref{fig:pixelannotator}, Pixel Annotator provides a view of each modality with the current mask overlaid, as well as a raw view of the mask. It implements the registration algorithm described above so that the annotator can judge whether the mask fits in all modalities. Because the modalities are registered to each other, there is not specific masks for each modality, but a single mask for all.
+
+\begin{figure}%
+\includegraphics[width=0.48\textwidth]{pixelannotator2.png}%
+\caption{Pixel Annotator showing the RGB masks and the corresponding, registered masks in the other views.}%
+\label{fig:pixelannotator}%
+\end{figure}
+
+Each annotation can be initialized with an automatic segmentation using the GrabCut algorithm \cite{rother2004grabcut} to get quickly off the ground. Then Pixel Annotator provides pixel-wise editing functions to further refine the mask. Each annotation is associated with a numerical ID, and can have an arbitrary number of property fields associated with it. They can be boolean or contain strings, so advanced annotation can take place, all the way from simple occluded/not occluded fields to fields describing the current activity. Pixel Annotator is written in C++ on the Qt framework and is fully cross-platform compatible.
+
+The data set and the registration algorithm is freely available at \cite{vapgroup}.
+
+
 \section{Tri-modal human body segmentation}
 \label{sec:trimodalhumanbodysegmentation}
+
+% TODO: correct the baseline's figure, removing the objects' GMM
+
+The method consists in several steps. First, ... blablabla. Then, blablabal ... In Fig.~\ref{fig:baseline}, the different steps of the baseline up to this point are illustrated.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=\linewidth]{pictures/diagram.png}
+	\caption{The main steps of the proposed baseline method, before reaching the fusion step.}
+	\label{fig:baseline}
+\end{figure}
 
 %Let us write $\mathbf{F}_i = \{\mathbf{C}_i, \mathbf{D}_i, \mathbf{T}_i\}$ for a determined tri-modal frame, and $\mathbf{p}$ a pixel at an arbitrary location $(x,y)$ in an image.
 %continue this intro
@@ -419,16 +478,7 @@ The descriptor got from a cell in the thermal cue $\mathbf{G}_{rij}^{\mathrm{the
 \subsection{Cell classification}
 Since we are intended to segment human body regions, we need to distinguish those from the other foreground regions segmented by the background subtraction algorithm. These other foreground regions, apart from subjects, are the objects -- they could be other living beings, e.g. cats or dogs, though those are not considered in this work.
 
-From the previous step, each grid cell has been described using the different descriptors $\mathcal{D}$. For the purpose of classification, we train a Gaussian Mixture Model for each grid position $(i,j)$ and kind of description $d \in \mathcal{D}$. Thus, obtaining the set of all the modeled GMMs $\mathcal{M} = \{\mathcal{M}_{ij}^{d} \;|\; \forall i \in \{1,...,n\}, \forall j \in \{1,...,m\}, \forall d \in \mathcal{D} \}$. In Fig.~\ref{fig:baseline}, the different steps of the baseline up to this point are illustrated.
-
-% TODO: correct the baseline's figure, removing the objects' GMM
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=\linewidth]{pictures/diagram.png}
-	\caption{The main steps of the proposed baseline method, before reaching the fusion step.}
-	\label{fig:baseline}
-\end{figure}
+From the previous step, each grid cell has been described using the different descriptors $\mathcal{D}$. For the purpose of classification, we train a Gaussian Mixture Model for each grid position $(i,j)$ and kind of description $d \in \mathcal{D}$. Thus, obtaining the set of all the modeled GMMs $\mathcal{M} = \{\mathcal{M}_{ij}^{d} \;|\; \forall i \in \{1,...,n\}, \forall j \in \{1,...,m\}, \forall d \in \mathcal{D} \}$.
 
 Then, in order to predict a new unseen cell $\mathbf{G}$ to be either a subject or an object, it is evaluated the log-likelihood value in the probability density functions (PDFs) modeled for the different descriptions' mixtures. We will denote the log-likelihood values got by a particular cell $\mathbf{G}_{rij}$ in its corresponding GMMs $\{\mathcal{M}_{ij}^{d} \;|\; \forall d \in \mathcal{D}\}$ by $\{\ell_{ij}^{d} \;|\; \forall d \in \mathcal{D}\}$. The category -- either subject or object -- according $d$ is predicted by comparing the log-likelihood $\ell_{rij}^{d}$ (got by $\mathbf{G}_{rij}$ in $\mathcal{M}_{ij}^{d}$) to an experimentally selected threshold value $\tau_{ij}^d$. 
 
@@ -603,51 +653,8 @@ Among many existing state-of-the-art supervised learning algorithms for classifi
 
 %Such parameters have influence on the model accuracy, for that reason a proper parameter selection has to be performed
 
-
-\section{Evaluation}
-\label{sec:evaluation}
-The proposed method is evaluated on a data set with a total of 11537 frames, of which 5724 frames are annotated as this requires a significant amount of resources. Sample imagery of the scenes is pictured in Figure \ref{fig:samplescenes} whereas Table \ref{tab:scenes} shows the number of annotated frames and the depth range. Activity in scene 1 and 3 is using the full depth range of the Kinect sensor whereas activity in scene 2 is constrained to a depth range of $\pm 0.250$ m. Scene 1 and 2 are situated in a closed meeting room with little natural light to disturb the depth sensing, whereas scene 3 is situated in a area with wide windows and a substantial amount of sunlight.
-
-\begin{figure}[htbp]
-	\centering
-		\includegraphics[width=0.48\textwidth]{Selection/1.png}
-		\includegraphics[width=0.48\textwidth]{Selection/2.png}
-		\includegraphics[width=0.48\textwidth]{Selection/3.png}
-	\caption{Two views of each of the three scenes shown in the RGB, thermal, and depth modalities, respectively.}
-	\label{fig:samplescenes}
-\end{figure}
-
-\begin{table}[htpb]
-\centering
-\begin{tabular}{llll}
-\hline
-Scene & Frames 	& Annotated frames 	& Depth range \\ \hline
-1 		& 4693		& 1767	 						& 1-4 m \\
-2 		& 2216		& 2016	 						& 1.4-1.9 m \\
-3 		& 4628		& 1941	 						& 1-4 m \\ 
-\hline
-\end{tabular}
-\caption{Annotated number of frames and spatial constraints of the scenes.}
-\label{tab:scenes}
-\end{table}
-
-\subsection{Annotation}
-%The frames are annotated using a pixel annotator tool ***ANDREAS TEXT HERE****
-%
- %For each scene, human objects are annotated in the RGB modality. Each person is given a unique ID which he maintains throughout the scene. To obtain the corresponding masks in the thermal and depth modalities, the RGB masks are mapped using the registration algorithm of Section \ref{sec:registration}.
-The acquired video was manually annotated frame-by-frame in a custom annotation program called Pixel Annotator. The dataset contains a large number of frames divided over a number of different sequences. All sequences have three modalities: RGB, depth, and thermal. The focus of the annotation has been on the people in the scene and a mask-based annotation philosophy has been employed. That means that each person is covered by a mask and each mask (person) has a unique ID, which is consistent over frames. In this way the dataset can be used not only for background subtraction, but also for tracking and re-identification purposes. Since the main purpose of the dataset is background subtraction, a pixel-level annotation scheme was necessary - bounding boxes would not be sufficient.
- 
-As seen from Figure \ref{fig:pixelannotator}, Pixel Annotator provides a view of each modality with the current mask overlaid, as well as a raw view of the mask. It implements the registration algorithm described above so that the annotator can judge whether the mask fits in all modalities. Because the modalities are registered to each other, there is not specific masks for each modality, but a single mask for all.
-
-\begin{figure}%
-\includegraphics[width=0.48\textwidth]{pixelannotator2.png}%
-\caption{Pixel Annotator showing the RGB masks and the corresponding, registered masks in the other views.}%
-\label{fig:pixelannotator}%
-\end{figure}
-
-Each annotation can be initialized with an automatic segmentation using the GrabCut algorithm \cite{rother2004grabcut} to get quickly off the ground. Then Pixel Annotator provides pixel-wise editing functions to further refine the mask. Each annotation is associated with a numerical ID, and can have an arbitrary number of property fields associated with it. They can be boolean or contain strings, so advanced annotation can take place, all the way from simple occluded/not occluded fields to fields describing the current activity. Pixel Annotator is written in C++ on the Qt framework and is fully cross-platform compatible.
-
-The data set and the registration algorithm is freely available at \cite{vapgroup}.
+\section{Results}
+\label{ssec:results}
 
 \subsection{Parameters and settings}
 \label{ssec:parametersandsettings}
@@ -685,12 +692,15 @@ This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect
 
 As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect around people or objects, thus complicating an accurate pixel-level segmentation at blob contours when applying background subtraction. This lack of accuracy is also caused by possible distortions, noise or other problems, and decreases the final overlap. Hence, a \emph{do not care region} (DCR) is often used. Such region is taken per frame by centering a morphology operator of different sizes at the ground truth binary masks blob contours and subtract it from those masks and from the predicted ones to compute the overlap. This way, we can compare the effect of using a growing DCR to the actual overlap.
 
-\section{Experimental results}
-\label{ssec:experimentalresults}
-
 As explained in the last section, we assess the performance of the proposed baseline using both a detection accuracy and overlap measure (Eq. \ref{eq:jaccard}). 
 
-First, we illustrate the results obtained in the subject detection accuracy experiments in Table~\ref{tab:subject_detection_accuracy}. Note we achieve nearly perfect subject detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction.
+\subsection{Experiments}
+
+First, we illustrate the results obtained in the subject detection accuracy experiments in Table~\ref{tab:subject_detection_accuracy}. 
+
+\subsubsection{Experiment 1: Subject detection}
+
+Note we achieve nearly perfect  detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction.
 
 \begin{table}[ht]
 \caption{Subject detection accuracy}
@@ -718,6 +728,8 @@ First, we illustrate the results obtained in the subject detection accuracy expe
 \end{center}
 \label{tab:subject_detection_accuracy}
 \end{table}
+
+\subsubsection{Experiment 2: Subject segmentation }
 
 Tables \ref{tab:individual}, \ref{tab:simplefusion} and \ref{tab:learningfusion} depict the obtained overlap for individual and fusion predictions with different fusion approaches. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with RBF SVM, which is the one that gives the best overlap results.
 
@@ -878,11 +890,6 @@ DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Co
 	\caption{Examples of results using RBG images comparing the foreground masks obtained with background subtraction (middle) to the final predicted masks (right) with RBF SVM}
 	\label{fig:results}
 \end{figure}
-
-\subsection{Discussion}
-\label{ssec:discussion}
-
-%add more comments
 
 %overlap discussion:
 The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions -  up to 3\%, but subtantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. More precisely, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
