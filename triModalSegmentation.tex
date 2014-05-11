@@ -101,7 +101,7 @@ In this context, we propose adding a third modality: thermal imagery got from th
 
 In this context, we introduce a novel tri-modal dataset that contains people acting in three different video sequences -- consisting of more than 10,000 frames in total -- recorded with a fixed multi-sensory device setup, consisting of a Microsoft\textsuperscript\textregistered Kinect\textsuperscript\texttrademark and a thermal camera. In them, three different people appear concurrently in two different indoor scenarios, performing diverse actions that involve interaction with objects, such as reading, working with a laptop, speaking on the phone, and so on and so forth. The dataset is presented along with an algorithm that performs the calibration and registration among modalities. In addition, we propose a baseline methodology to automatically segment people appearing in the video sequences. Firstly, color and depth cues are registered using intrinsic parameters of the Kinect\textsuperscript\texttrademark device, whereas thermal is registered to color at nearly pixel-level. Secondly, we learn a model of the background using the initial set of depth frames of each sequence to subsequently perform background subtraction, segmenting subject candidate regions. Having candidate regions segmented in all the available and registered modalities, they are described using simple but reliable feature uni-modal feature descriptors. Then, the descriptions are used to learn probabilistic models (e.g. Gaussian Mixture Models) so as to predict the candidate regions actually belonging to people. The predictions got from different models are subsequently fused using both heuristic and learning-based approaches. We will compare results from applying segmentation to the different modalities separately to results obtained by fusing features from all modalities. To the best of our knowledge, this is the first dataset and work that combines color, depth and thermal modalities to perform the people segmentation task in videos, aiming to bring further benefits towards developing more robust solutions.
 
-The rest of this paper is organized as follows: Section~\ref{sec:relatedwork} reviews the different approaches for human body segmentation that appear in the recent literature. Section~\ref{sec:setup} explains the acquisition and multi-modal calibration process, whereas Section~\ref{sec:registration} describes the registration algorithm between modalities. Section~\ref{sec:trimodalhumanbodysegmentation} introduces and exhaustively explains the proposed baseline methodology, which will be experimentally evaluated in Section~\ref{sec:evaluation} along with the registration algorithm. Finally, Section~\ref{sec:conclusions} concludes the paper.
+The remainder of this paper is organized as follows: Section~\ref{sec:relatedwork} reviews the different approaches for human body segmentation that appear in the recent literature. Section~\ref{sec:setup} explains the acquisition and multi-modal calibration process, whereas Section~\ref{sec:registration} describes the registration algorithm between modalities. Section~\ref{sec:trimodalhumanbodysegmentation} introduces and exhaustively explains the proposed baseline methodology, which will be experimentally evaluated in Section~\ref{sec:evaluation} along with the registration algorithm. Finally, Section~\ref{sec:conclusions} concludes the paper.
 
 \section{Related work}
 \label{sec:relatedwork}
@@ -728,15 +728,15 @@ Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predic
     \hline
     DCR & Color & Motion & Depth & Thermal \\
     \hline
-    -  & 0.365 $\pm$ 0.019 & 0.545 $\pm$ 0.007 & 0.444 $\pm$ 0.019 & 0.438 $\pm$ 0.003 \\
-    3 & 0.382 $\pm$  0.019 & 0.571 $\pm$ 0.007 & 0.467 $\pm$ 0.019 & 0.455 $\pm$ 0.003 \\
-    5 & 0.394 $\pm$ 0.020 & 0.590 $\pm$ 0.008 & 0.482 $\pm$ 0.020 & 0.472 $\pm$ 0.003 \\
-    7 & 0.402 $\pm$ 0.021 & 0.603 $\pm$ 0.008 & 0.494 $\pm$ 0.020 & 0.487 $\pm$ 0.003 \\
-    9 & 0.408 $\pm$ 0.021 & 0.612 $\pm$ 0.008 & 0.502 $\pm$ 0.020 & 0.500 $\pm$ 0.003 \\
-    11 & 0.412 $\pm$ 0.021 & 0.618 $\pm$ 0.008 & 0.507 $\pm$ 0.021 & 0.512 $\pm$ 0.003 \\
-    13 & 0.414 $\pm$ 0.021 & 0.621 $\pm$ 0.008 & 0.511 $\pm$ 0.021 & 0.522 $\pm$ 0.004 \\
-    15 & 0.416 $\pm$ 0.021 & 0.623 $\pm$ 0.008 & 0.513 $\pm$ 0.021 & 0.530 $\pm$ 0.004 \\
-    17 & 0.416 $\pm$ 0.021 & 0.624 $\pm$ 0.008 & 0.515 $\pm$ 0.021 & 0.537 $\pm$ 0.004 \\
+    -  & 36.52\% $\pm$ 1.86 & 54.53\% $\pm$ 0.70 & 44.44\% $\pm$ 1.87 & 43.78\% $\pm$ 0.28 \\
+    3 & 38.20\% $\pm$  1.95 & 57.12\% $\pm$ 0.74 & 46.66\% $\pm$ 1.94 & 45.54\% $\pm$ 0.29 \\
+    5 & 39.28\% $\pm$ 2.02 & 58.95\% $\pm$ 0.77 & 48.22\% $\pm$ 1.99 & 47.19\% $\pm$ 0.31 \\
+    7 & 40.21\% $\pm$ 2.06 & 60.26\% $\pm$ 0.78 & 49.35\% $\pm$ 2.02 & 48.69\% $\pm$ 0.32 \\
+    9 & 40.81\% $\pm$ 2.09 & 61.18\% $\pm$ 0.79 & 50.16\% $\pm$ 2.05 & 50.01\% $\pm$ 0.33 \\
+    11 & 41.22\% $\pm$ 2.11 & 61.79\% $\pm$ 0.80 & 50.73\% $\pm$ 2.06 & 51.17\% $\pm$ 0.35 \\
+    13 & 41.45\% $\pm$ 2.12 & 62.14\% $\pm$ 0.80 & 51.09\% $\pm$ 2.07 & 52.17\% $\pm$ 0.36 \\
+    15 & 41.57\% $\pm$ 2.11 & 62.32\% $\pm$ 0.80 & 51.33\% $\pm$ 2.08 & 53.02\% $\pm$ 0.37 \\
+    17 & 41.59\% $\pm$ 2.10 & 62.38\% $\pm$ 0.79 & 51.46\% $\pm$ 2.08 & 53.73\% $\pm$ 0.39 \\
 \end{tabular}
 \end{center}
 \label{tab:individual}
@@ -751,15 +751,15 @@ Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predic
     \cline{1-7}
     DCR & Color/Depth & Thermal & Color/Depth & Thermal & Color/Depth & Thermal\\
     \hline
-    -  & 0.517 $\pm$ 0.007 & 0.428 $\pm$ 0.006 & 0.526 $\pm$ 0.005 & 0.434 $\pm$ 0.004 & 0.528 $\pm$ 0.005 & 0.435 $\pm$ 0.004 \\
-    3 & 0.541 $\pm$ 0.007 & 0.445 $\pm$ 0.006  & 0.551 $\pm$ 0.005 & 0.452 $\pm$ 0.004 & 0.553 $\pm$ 0.005 & 0.453 $\pm$ 0.004 \\
-    5 & 0.559 $\pm$ 0.007 & 0.462 $\pm$ 0.007  & 0.569 $\pm$ 0.006 & 0.468 $\pm$ 0.004 & 0.571 $\pm$ 0.006 & 0.469 $\pm$ 0.004 \\
-    7 & 0.571 $\pm$ 0.007 & 0.476 $\pm$ 0.007  & 0.582 $\pm$ 0.006 & 0.483 $\pm$ 0.005 & 0.584 $\pm$ 0.006 & 0.484 $\pm$ 0.005 \\
-    9 & 0.580 $\pm$ 0.007 & 0.490 $\pm$ 0.007  & 0.591 $\pm$ 0.006 & 0.496 $\pm$ 0.005 & 0.593 $\pm$ 0.006 & 0.498 $\pm$ 0.005 \\
-    11 & 0.587 $\pm$ 0.008 & 0.501 $\pm$ 0.007  & 0.597 $\pm$ 0.006 & 0.508 $\pm$ 0.005 & 0.599 $\pm$ 0.006 & 0.509 $\pm$ 0.005 \\
-    13 & 0.591 $\pm$ 0.008 & 0.511 $\pm$ 0.007  & 0.601 $\pm$ 0.006 & 0.518 $\pm$ 0.005 & 0.603 $\pm$ 0.006 & 0.520 $\pm$ 0.005 \\
-    15 & 0.593 $\pm$ 0.008 & 0.520 $\pm$ 0.007  & 0.604 $\pm$ 0.006 & 0.527 $\pm$ 0.005 & 0.606 $\pm$ 0.006 & 0.528 $\pm$ 0.005 \\
-    17 & 0.594 $\pm$ 0.008 & 0.527 $\pm$ 0.007  & 0.605 $\pm$ 0.006 & 0.534 $\pm$ 0.005 & 0.607 $\pm$ 0.006 & 0.536 $\pm$ 0.005 \\
+    -  & 51.69\% $\pm$ 0.68 & 42.82\% $\pm$ 0.62 & 52.63\% $\pm$ 0.53 & 43.42\% $\pm$ 0.43 & 52.80\% $\pm$ 0.53 & 43.54\% $\pm$ 0.42 \\
+    3 & 54.15\% $\pm$ 0.71 & 44.54\% $\pm$ 0.64  & 55.13\% $\pm$ 0.55 & 45.16\% $\pm$ 0.45 & 55.32\% $\pm$ 0.55 & 45.29\% $\pm$ 0.44 \\
+    5 & 55.87\% $\pm$ 0.73 & 46.16\% $\pm$ 0.67  & 56.89\% $\pm$ 0.57 & 46.80\% $\pm$ 0.46 & 57.08\% $\pm$ 0.57 & 46.93\% $\pm$ 0.46 \\
+    7 & 57.12\% $\pm$ 0.75 & 47.64\% $\pm$ 0.69  & 58.16\% $\pm$ 0.59 & 48.30\% $\pm$ 0.48 & 58.35\% $\pm$ 0.59 & 48.44\% $\pm$ 0.47 \\
+    9 & 58.03\% $\pm$ 0.76 & 48.95\% $\pm$ 0.70  & 59.07\% $\pm$ 0.59 & 49.63\% $\pm$ 0.49 & 59.28\% $\pm$ 0.59 & 49.77\% $\pm$ 0.49 \\
+    11 & 58.66\% $\pm$ 0.76 & 50.12\% $\pm$ 0.72  & 59.71\% $\pm$ 0.60 & 50.80\% $\pm$ 0.51 & 59.92\% $\pm$ 0.59 & 50.95\% $\pm$ 0.49 \\
+    13 & 59.06\% $\pm$ 0.76 & 51.12\% $\pm$ 0.73  & 60.11\% $\pm$ 0.61 & 51.81\% $\pm$ 0.52 & 60.32\% $\pm$ 0.60 & 51.96\% $\pm$ 0.51 \\
+    15 & 59.31\% $\pm$ 0.76 & 51.97\% $\pm$ 0.74  & 60.36\% $\pm$ 0.60 & 52.67\% $\pm$ 0.54 & 60.58\% $\pm$ 0.59 & 52.83\% $\pm$ 0.52 \\
+    17 & 59.44\% $\pm$ 0.76 & 52.70\% $\pm$ 0.75  & 60.49\% $\pm$ 0.60 & 53.41\% $\pm$ 0.55 & 60.72\% $\pm$ 0.59 & 53.57\% $\pm$ 0.53 \\
 \end{tabular}
 \end{center}
 \label{tab:simplefusion}
@@ -769,20 +769,20 @@ Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predic
 \caption{Overlap and confidence interval results of the learning-based fusion depending on the DCR used}
 \begin{center}
 \begin{tabular}{c|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}}
-& \multicolumn{2}{c|}{AdaBoost} & \multicolumn{2}{c|}{MLP Gaussian} & \multicolumn{2}{c|}{MLP Sigmoid} & \multicolumn{2}{c|}{Linear SVM} & \multicolumn{2}{c}{RBF SVM}  \\
+& \multicolumn{2}{c|}{AdaBoost} & \multicolumn{2}{c|}{Gaussian MLP} & \multicolumn{2}{c|}{Sigmoid MLP} & \multicolumn{2}{c|}{Linear SVM} & \multicolumn{2}{c}{RBF SVM}  \\
 
 \cline{1-11}
 DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal\\
 \hline
--  & 0.597 \par$\pm$ 0.003\strut & 0.487 \par$\pm$ 0.002\strut & 0.588 \par$\pm$ 0.005\strut & 0.480 \par$\pm$ 0.003\strut & 0.589 \par$\pm$ 0.005\strut & 0.481\par$\pm$ 0.003\strut & 0.597 \par$\pm$ 0.004\strut & 0.488 \par$\pm$ 0.002\strut & 0.600 \par$\pm$ 0.002\strut & 0.489 \par$\pm$ 0.001\strut \\
-3 & 0.626 \par$\pm$ 0.003\strut & 0.506 \par$\pm$ 0.002\strut & 0.616 \par$\pm$ 0.005\strut & 0.500 \par$\pm$ 0.003\strut & 0.617 \par$\pm$ 0.005\strut & 0.501 \par$\pm$ 0.003\strut & 0.626 \par$\pm$ 0.004\strut & 0.507 \par$\pm$ 0.002\strut & 0.629 \par$\pm$ 0.003\strut & 0.508 \par$\pm$ 0.001\strut \\
-5 & 0.646 \par$\pm$ 0.003\strut & 0.524 \par$\pm$ 0.002\strut & 0.636 \par$\pm$ 0.005\strut & 0.518 \par$\pm$ 0.004\strut & 0.638 \par$\pm$ 0.005\strut & 0.519 \par$\pm$ 0.004\strut & 0.647 \par$\pm$ 0.005\strut & 0.525 \par$\pm$ 0.002\strut & 0.649 \par$\pm$ 0.003\strut & 0.526 \par$\pm$ 0.002\strut \\
-7 & 0.661 \par$\pm$ 0.003\strut & 0.541 \par$\pm$ 0.002\strut & 0.651 \par$\pm$ 0.006\strut & 0.534 \par$\pm$ 0.004\strut & 0.652 \par$\pm$ 0.005\strut & 0.535 \par$\pm$ 0.004\strut & 0.662 \par$\pm$ 0.005\strut & 0.542 \par$\pm$ 0.003\strut & 0.664 \par$\pm$ 0.003\strut & 0.543 \par$\pm$ 0.002\strut \\
-9 & 0.672 \par$\pm$ 0.003\strut & 0.556 \par$\pm$ 0.002\strut & 0.661 \par$\pm$ 0.006\strut & 0.549 \par$\pm$ 0.004\strut & 0.663 \par$\pm$ 0.005\strut & 0.550 \par$\pm$ 0.004\strut & 0.673 \par$\pm$ 0.005\strut & 0.557 \par$\pm$ 0.003\strut & 0.675 \par$\pm$ 0.003\strut & 0.558 \par$\pm$ 0.002\strut \\
-11 & 0.679 \par$\pm$ 0.003\strut & 0.569 \par$\pm$ 0.002\strut & 0.669 \par$\pm$ 0.006\strut & 0.562 \par$\pm$ 0.004\strut & 0.670 \par$\pm$ 0.005\strut & 0.563 \par$\pm$ 0.004\strut & 0.680 \par$\pm$ 0.005\strut & 0.570 \par$\pm$ 0.003\strut & 0.683 \par$\pm$ 0.003\strut & 0.571 \par$\pm$ 0.002\strut \\
-13 & 0.684 \par$\pm$ 0.003\strut & 0.580 \par$\pm$ 0.002\strut & 0.673 \par$\pm$ 0.006\strut & 0.573 \par$\pm$ 0.004\strut & 0.675 \par$\pm$ 0.005\strut & 0.575 \par$\pm$ 0.004\strut & 0.684 \par$\pm$ 0.005\strut & 0.582 \par$\pm$ 0.003\strut & 0.687 \par$\pm$ 0.003\strut & 0.583 \par$\pm$ 0.002\strut \\
-15 & 0.686 \par$\pm$ 0.003\strut & 0.590 \par$\pm$ 0.002\strut & 0.676 \par$\pm$ 0.005\strut & 0.583 \par$\pm$ 0.004\strut & 0.678 \par$\pm$ 0.005\strut & 0.584 \par$\pm$ 0.004\strut & 0.687 \par$\pm$ 0.005\strut & 0.591 \par$\pm$ 0.003\strut & 0.689 \par$\pm$ 0.003\strut & 0.592 \par$\pm$ 0.002\strut \\ 
-17 &  0.687 \par$\pm$ 0.003\strut & 0.598 \par$\pm$ 0.002\strut & 0.677 \par$\pm$ 0.005\strut & 0.591 \par$\pm$ 0.004\strut & 0.679 \par$\pm$ 0.005\strut & 0.592 \par$\pm$ 0.004\strut & 0.687 \par$\pm$ 0.005\strut & 0.599 \par$\pm$ 0.003\strut & 0.690 \par$\pm$ 0.003\strut & 0.600 \par$\pm$ 0.002\strut \\
+-  & 59.69\% \par$\pm$ 0.29\strut & 48.68\% \par$\pm$ 0.17\strut & 58.76\% \par$\pm$ 0.50\strut & 48.05\% \par$\pm$ 0.33\strut & 58.90\% \par$\pm$ 0.47\strut & 48.15\% \par$\pm$ 0.34\strut & 59.73\% \par$\pm$ 0.43\strut & 48.76\% \par$\pm$ 0.23\strut & 59.96\% \par$\pm$ 0.25\strut & 48.85\% \par$\pm$ 0.15\strut \\
+3 & 62.57\% \par$\pm$ 0.31\strut & 50.62\% \par$\pm$ 0.17\strut & 61.60\% \par$\pm$ 0.53\strut & 49.97\% \par$\pm$ 0.35\strut & 61.74\% \par$\pm$ 0.49\strut & 50.07\% \par$\pm$ 0.35\strut & 62.64\% \par$\pm$ 0.46\strut & 50.71\% \par$\pm$ 0.24\strut & 62.87\% \par$\pm$ 0.27\strut & 50.80\% \par$\pm$ 0.15\strut \\
+5 & 64.63\% \par$\pm$ 0.33\strut & 52.45\% \par$\pm$ 0.18\strut & 63.61\% \par$\pm$ 0.56\strut & 51.77\% \par$\pm$ 0.36\strut & 63.76\% \par$\pm$ 0.51\strut & 51.88\% \par$\pm$ 0.36\strut & 64.71\% \par$\pm$ 0.48\strut & 52.54\% \par$\pm$ 0.25\strut & 64.94\% \par$\pm$ 0.28\strut & 52.63\% \par$\pm$ 0.16\strut \\
+7 & 66.12\% \par$\pm$ 0.34\strut & 54.13\% \par$\pm$ 0.19\strut & 65.08\% \par$\pm$ 0.57\strut & 53.43\% \par$\pm$ 0.38\strut & 65.24\% \par$\pm$ 0.52\strut & 53.54\% \par$\pm$ 0.37\strut & 66.21\% \par$\pm$ 0.49\strut & 54.23\% \par$\pm$ 0.26\strut & 66.45\% \par$\pm$ 0.29\strut & 54.32\% \par$\pm$ 0.17\strut \\
+9 & 67.20\% \par$\pm$ 0.34\strut & 55.61\% \par$\pm$ 0.20\strut & 66.13\% \par$\pm$ 0.58\strut & 54.90\% \par$\pm$ 0.39\strut & 66.31\% \par$\pm$ 0.52\strut & 55.02\% \par$\pm$ 0.38\strut & 67.28\% \par$\pm$ 0.51\strut & 55.72\% \par$\pm$ 0.27\strut & 67.53\% \par$\pm$ 0.30\strut & 55.81\% \par$\pm$ 0.18\strut \\
+11 & 67.92\% \par$\pm$ 0.35\strut & 56.92\% \par$\pm$ 0.21\strut & 66.86\% \par$\pm$ 0.58\strut & 56.20\% \par$\pm$ 0.40\strut & 67.04\% \par$\pm$ 0.52\strut & 56.32\% \par$\pm$ 0.38\strut & 68.01\% \par$\pm$ 0.51\strut & 57.04\% \par$\pm$ 0.27\strut & 68.26\% \par$\pm$ 0.29\strut & 57.13\% \par$\pm$ 0.18\strut \\
+13 & 68.35\% \par$\pm$ 0.34\strut & 58.04\% \par$\pm$ 0.21\strut & 67.30\% \par$\pm$ 0.57\strut & 57.32\% \par$\pm$ 0.40\strut & 67.50\% \par$\pm$ 0.52\strut & 57.45\% \par$\pm$ 0.38\strut & 68.43\% \par$\pm$ 0.51\strut & 58.16\% \par$\pm$ 0.27\strut & 68.69\% \par$\pm$ 0.29\strut & 58.26\% \par$\pm$ 0.18\strut \\
+15 & 68.60\% \par$\pm$ 0.34\strut & 58.98\% \par$\pm$ 0.22\strut & 67.55\% \par$\pm$ 0.56\strut & 58.26\% \par$\pm$ 0.41\strut & 67.78\% \par$\pm$ 0.50\strut & 58.41\% \par$\pm$ 0.38\strut & 68.66\% \par$\pm$ 0.50\strut & 59.11\% \par$\pm$ 0.27\strut & 68.94\% \par$\pm$ 0.28\strut & 59.21\% \par$\pm$ 0.18\strut \\ 
+17 &  68.69\% \par$\pm$ 0.33\strut & 59.76\% \par$\pm$ 0.22\strut & 67.67\% \par$\pm$ 0.54\strut & 59.05\% \par$\pm$ 0.40\strut & 67.93\% \par$\pm$ 0.49\strut & 59.22\% \par$\pm$ 0.37\strut & 68.73\% \par$\pm$ 0.49\strut & 59.89\% \par$\pm$ 0.26\strut & 69.03\% \par$\pm$ 0.27\strut & 60.00\% \par$\pm$ 0.18\strut \\
          
 \end{tabular}
 \end{center}
@@ -865,6 +865,20 @@ DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Co
 %	\label{fig:overlapgraph}
 %\end{figure}
 
+\begin{figure}[htbp]
+	\centering
+		\includegraphics[width=0.48\textwidth]{results1.eps}
+		\includegraphics[width=0.48\textwidth]{results2.eps}
+		\includegraphics[width=0.48\textwidth]{results3.eps}
+		\includegraphics[width=0.48\textwidth]{results4.eps}
+		\includegraphics[width=0.48\textwidth]{results5.eps}
+		\includegraphics[width=0.48\textwidth]{results6.eps}
+		\includegraphics[width=0.48\textwidth]{results7.eps}
+		\includegraphics[width=0.48\textwidth]{results8.eps}
+	\caption{Examples of results comparing the foreground masks obtained with background subtraction (middle) to the final predicted masks (right)}
+	\label{fig:results}
+\end{figure}
+
 \subsection{Discussion}
 \label{ssec:discussion}
 
@@ -875,8 +889,8 @@ Having analyzed the experimental results, it is worth investigating the causes o
 misclassifications. One of the problems is originated in the beginning of the chain. Since
 background subtraction reduces the search space, it may reject some actual person parts.
 That mainly happens when a person is in the same depth than something which belongs
-to the background model. Another issue is that some regions considered as unknown
-mostly those generated when one person overlaps other considerably differ from those
+to the background model. Another issue is that some regions considered as unknown,
+mostly those generated when one person overlaps other, considerably differ from those
 that are used to train the different models. Consequently, the classification of such regions
 is not a trivial task.
 
