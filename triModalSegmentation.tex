@@ -719,7 +719,7 @@ First, we illustrate the results obtained in the subject detection accuracy expe
 \label{tab:subject_detection_accuracy}
 \end{table}
 
-Figure \ref{fig:overlapgraph} depicts the obtained overlap for individual predictions and fusion predictions with different fusion approaches. Tables \ref{table:individual} and \ref{table:linearstacked} are included to compare the differences between using the descriptors separately and after fusing them. Notice that in plots showing fusion results, only two cases are considered, owing to color and depth modalities share the same original foreground masks $FG$.
+Tables \ref{tab:individual}, \ref{tab:simplefusion} and \ref{tab:learningfusion} depict the obtained overlap for individual and fusion predictions with different fusion approaches. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with RBF SVM, which is the one that gives the best overlap results.
 
 \begin{table*}[ht]
 \caption{Overlap and confidence interval results of the different modalities individually depending on the DCR used}
@@ -875,7 +875,7 @@ DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Co
 		\includegraphics[width=0.48\textwidth]{results6.eps}
 		\includegraphics[width=0.48\textwidth]{results7.eps}
 		\includegraphics[width=0.48\textwidth]{results8.eps}
-	\caption{Examples of results comparing the foreground masks obtained with background subtraction (middle) to the final predicted masks (right)}
+	\caption{Examples of results using RBG images comparing the foreground masks obtained with background subtraction (middle) to the final predicted masks (right) with RBF SVM}
 	\label{fig:results}
 \end{figure}
 
@@ -883,6 +883,12 @@ DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Co
 \label{ssec:discussion}
 
 %add more comments
+
+%overlap discussion:
+The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions -  up to 3\%, but subtantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. More precisely, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
+
+It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $FG^{thermal}$ were created from $FG^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the GT and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
+
 Furthermore, an upward trend is observed as the \emph{don't care region} (DCR) grows, although at higher DCR levels it stabilizes. This is comprehensible because usually the contours of the predicted masks are not accurately defined. Indeed, an accurate pixel-level segmentation is a rather complex task in state of the art techniques.
 
 Having analyzed the experimental results, it is worth investigating the causes of some
