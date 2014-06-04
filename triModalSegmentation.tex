@@ -62,7 +62,7 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Tri-modal Human Body Segmentation}
+\title{RGB-Depth-Thermal Human Body Segmentation}
 
 \author{Chris Bahnsen, Andreas Møgelmose, Thomas B. Moeslund\\
 Aalborg University\\
@@ -166,7 +166,7 @@ RGB-D-T Facial \par Database \cite{nikisinsrgb}\strut &	RGB-D-T	&	No	&	Bounding 
 \section{The tri-modal dataset}
 \label{sec:dataset}
 
-The proposed method is evaluated on a data set with a total of 11537 frames, of which 5724 frames are annotated as this requires a significant amount of resources. Sample imagery of the scenes is pictured in Figure \ref{fig:samplescenes} whereas Table \ref{tab:scenes} shows the number of annotated frames and the depth range. Activity in scene 1 and 3 is using the full depth range of the Kinect sensor whereas activity in scene 2 is constrained to a depth range of $\pm 0.250$ m. Scene 1 and 2 are situated in a closed meeting room with little natural light to disturb the depth sensing, whereas scene 3 is situated in a area with wide windows and a substantial amount of sunlight.
+The proposed method is evaluated on a data set with a total of 11537 frames, of which 5724 frames are annotated. Sample imagery of the scenes is pictured in Figure \ref{fig:samplescenes} whereas Table \ref{tab:scenes} shows the number of annotated frames and the depth range. Activity in scene 1 and 3 is using the full depth range of the Kinect sensor whereas activity in scene 2 is constrained to a depth range of $\pm 0.250$ m. Scene 1 and 2 are situated in a closed meeting room with little natural light to disturb the depth sensing, whereas scene 3 is situated in a area with wide windows and a substantial amount of sunlight.
 
 \begin{figure}[htbp]
 	\centering
@@ -296,7 +296,7 @@ An example of the registration is seen from Figure \ref{fig:registeredImagery}.
 %The frames are annotated using a pixel annotator tool ***ANDREAS TEXT HERE****
 %
  %For each scene, human objects are annotated in the RGB modality. Each person is given a unique ID which he maintains throughout the scene. To obtain the corresponding masks in the thermal and depth modalities, the RGB masks are mapped using the registration algorithm of Section \ref{sec:registration}.
-The acquired video was manually annotated frame-by-frame in a custom annotation program called Pixel Annotator. The dataset contains a large number of frames divided over a number of different sequences. All sequences have three modalities: RGB, depth, and thermal. The focus of the annotation has been on the people in the scene and a mask-based annotation philosophy has been employed. That means that each person is covered by a mask and each mask (person) has a unique ID, which is consistent over frames. In this way the dataset can be used not only for background subtraction, but also for tracking and re-identification purposes. Since the main purpose of the dataset is background subtraction, a pixel-level annotation scheme was necessary - bounding boxes would not be sufficient.
+The acquired videos were manually annotated frame-by-frame in a custom annotation program called Pixel Annotator. The dataset contains a large number of frames divided over a number of different sequences. All sequences have three modalities: RGB, depth, and thermal. The focus of the annotation has been on the people in the scene and a mask-based annotation philosophy has been employed. That means that each person is covered by a mask and each mask (person) has a unique ID, which is consistent over frames. In this way the dataset can be used not only for background subtraction, but also for tracking and re-identification purposes. Since the main purpose of the dataset is background subtraction, a pixel-level annotation scheme was necessary - bounding boxes would not be sufficient.
  
 As seen from Figure \ref{fig:pixelannotator}, Pixel Annotator provides a view of each modality with the current mask overlaid, as well as a raw view of the mask. It implements the registration algorithm described above so that the annotator can judge whether the mask fits in all modalities. Because the modalities are registered to each other, there is not specific masks for each modality, but a single mask for all.
 
@@ -332,15 +332,15 @@ We propose a baseline methodology to segment human subjects automatically in mul
 \subsection{Extraction of masks and regions of interest} 
 \label{ssec:bsbb}
 
-The first step of our baseline is to attempt to reduce the search space. A static videocamera with fixed orientation observing an indoor scene is a common practice which enables to detect and isolate new objects entering the scene. However, such practice can only be done under the assumption that the images of the scene without new objects, known as background, exhibit some regular behavior that can be described by a statistical model. Thus, in order to perform background subtraction one has first to learn a model of the background. Once learned, this model is compared against the new incoming images and parts that do not fit are considered foreground.
+The first step of our baseline is to attempt to reduce the search space. For this task, we learn a model of the background and perform background subtraction.
 
 \subsubsection{Background subtraction}
 \label{sect:bs}
  A widely used approach for background modeling in this context is Mixture of Gaussians MOG  \cite{bouwmans2008background}, which assigns a Gaussian Mixture Model (GMM) per pixel with a fixed number of components. Sometimes background presents periodically moving parts such as noise or sudden and gradual illumination changes. Such problems are often tackled with adaptive algorithms that keep learning the pixel's intensity distribution after the learning stage with a decreased learning rate. However, this also causes that intruding objects that stand still for a period of time vanish, so in our case a non-adaptive approach is more convenient.
 
-Although this background subtraction technique performs fairly well, it has to deal with the intrinsic problems of the different image modalities. For instance, color-based algorithms may fail due to shadows, similarities in color between foreground and background, highlighted regions, and sudden lighting changes. Thermal imagery may also have this kind of problems, plus the inconvenience of temperature changes in objects. A halo effect is also observed around warm items. Regarding to depth-based approaches, they may produce misdetections due to the presence of foreground objects with similar depth to the background. Depth data is quite noisy and many pixels in the image may have no depth due to multiple reflections, transparent objects, or scattering in certain surfaces such as human tissue and hair. Furthermore, a halo effect around humans or objects is usually perceived due to parallax issues. However, they are more robust to lighting artifacts and shadows. A comparison is shown in Fig. \ref{fig:bscomparison}, where the actual foreground objects are the human and the objects on the table. As we can observe, RGB fails at extracting the human legs due to the similarities in color with the chair at the back. The thermal cue segments the human body more accurately, but includes some undesired reflections and the jar and mugs with a surrounding halo. The pipe tube is also extracted as foreground due to temperature changes along time. Despite its drawbacks, depth-based background subtraction is the one that seems to give the most accurate result. 
+Although this background subtraction technique performs fairly well, it has to deal with the intrinsic problems of the different image modalities. For instance, color-based algorithms may fail due to shadows, similarities in color between foreground and background, highlighted regions, and sudden lighting changes. Thermal imagery may also have this kind of problems, plus the inconvenience of temperature changes in objects. A halo effect is also observed around warm items. Regarding to depth-based approaches, they may produce misdetections due to the presence of foreground objects with similar depth to the background. Depth data is quite noisy and many pixels in the image may have no depth due to multiple reflections, transparent objects, or scattering in certain surfaces such as human tissue and hair. Furthermore, a halo effect around humans or objects is usually perceived due to parallax issues. However, they are more robust to lighting artifacts and shadows. A comparison is shown in Fig. \ref{fig:bscomparison}, where the actual foreground objects are the human and the objects on the table. As one can observe, RGB fails at extracting the human legs due to the similarities in color with the chair at the back. The thermal cue segments the human body more accurately, but includes some undesired reflections and the jar and mugs with a surrounding halo. The pipe tube is also extracted as foreground due to temperature changes along time. Despite its drawbacks, depth-based background subtraction is the one that seems to give the most accurate result. 
 
-Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $z_i$. The background model $p(z_i|B)$ --where $B$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{Z}$ using the $T$ first frames of a sequence such that $\mathcal{Z} = \{z_1, \ldots, z_T\}$. This way, the estimated model is denoted by $\hat{p}(z_i| \mathcal{Z}, B)$, modeled as a mixture of gaussians. In particular, we use the available implementation in OpenCV of the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. GMMs are further explained in section \ref{section:gmm}.
+Therefore, the binary foreground masks of our proposed baseline are computed applying background subtraction to the depth modality previously registered to the RGB one, thus allowing us to use the same masks for both modalities.  Let us consider the depth value of a pixel at frame $i$ as $z_i$. The background model $p(z_i|B)$ --where $B$ represents the background -- is estimated from a training set of depth images represented by $\mathcal{Z}$ using the $T$ first frames of a sequence such that $\mathcal{Z} = \{z_1, \ldots, z_T\}$. This way, the estimated model is denoted by $\hat{p}(z_i| \mathcal{Z}, B)$, modeled as a mixture of gaussians. In particular, we use the method presented in \cite{zivkovic2004improved}, which uses an on-line clustering algorithm that constantly adapts the number of components of the mixture for each pixel during the learning stage. 
 
  \begin{figure}[!h]
 {\includegraphics[width=\linewidth]{bs.eps}}
@@ -351,7 +351,7 @@ modalities of the same scene (RGB, depth and thermal respectively).
 
 \subsubsection{Regions of interest extraction}
 \label{sssec:extreg}
-Once the binary foreground masks are obtained, a 2-D connected component analysis is performed using basic mathematical morphological operators. We also set a minimum value for each connected component area (except in left and rightmost sides of the image which may be caused by a new incoming item) to clean the noisy output mask. 
+Once the binary foreground masks are obtained, a 2D connected component analysis is performed using basic mathematical morphological operators. We also set a minimum value for each connected component area (except in left and rightmost sides of the image which may be caused by a new incoming item) to clean the noisy output mask. 
 
 A region of interest should contain a separated person or object. However, different subjects or objects may overlap in space, resulting in a bigger component containing more than one item. For this reason, each component has to be analyzed to find each item separately to obtain the correct bounding boxes that surround them.
 
@@ -375,7 +375,7 @@ As stated previously in Section \ref{sect:bs}, depth and color cues use the same
 \label{sssec:tagging}
 The extracted regions of interest are further analyzed to decide whether they belong to objects or subjects. In order to train and test our models and determine final accuracy results, we need to have a ground truth labeling of the bounding boxes apart from the ground truth masks. 
 
-This labeling is done in a semiautomatic manner. First, bounding boxes are extracted from regions of interest of ground-truth masks and compared to those extracted previously from the foreground masks $F$ and the overlap between them is computed. The overlap measure is further explained in Section \ref{ssec:validation}. Defining $y_r$ as the label applied to the $r$ region of interest, the automatic labeling is therefore applied as follows: 
+This labeling is done in a semiautomatic manner. First, bounding boxes are extracted from regions of interest of ground-truth masks and compared to those extracted previously from the foreground masks $F$ and the overlap between them is computed. Defining $y_r$ as the label applied to the $r$ region of interest, the automatic labeling is therefore applied as follows: 
 
 \begin{gather}
 \text{$y_r$} = \left\{ 
@@ -405,21 +405,19 @@ The grid cell is the unit of information processed in the feature extraction and
 \subsection{Feature extraction}
 \label{ssec:feature extraction}
 
-Each modality involves its own specific feature extraction/description processes. In fact, a feature extraction process can be seen as a mathematical function $f$ such that
+%\begin{align}
+%\begin{split}
+%f \colon & \mathbbm{R}^{n \times m} \to \mathbbm{R}^\delta \\
+% \mathbf{G} \xmapsto{\phantom{\mathbbm{R}^{n \times m}}} \mathbf{d}
+%\end{split}
+%\end{align}
 
-\begin{align}
-\begin{split}
-f \colon & \mathbbm{R}^{n \times m} \to \mathbbm{R}^\delta \\
-& \mathbf{G} \xmapsto{\phantom{\mathbbm{R}^{n \times m}}} \mathbf{d}
-\end{split}
-\end{align}
-
-where $\mathbf{d}$ is a $\delta$-dimensional vector, representing the description of $\mathbf{G}$ in a certain feature space (the output space of $f$). Concretely, for the color modality two kinds of descriptions are extracted for each cell, Histogram of Oriented Gradients (HOG) and Histogram of Oriented Optical Flows (HOOF), whereas in the depth and thermal modality the Histogram of Oriented Normals (HON) and Histogram of Intensities and Oriented Gradients (HIOG) are respectively. Hence, we define a set of four different kinds of descriptions $\mathcal{D} = \{\mathrm{HOG}, \mathrm{HOOF}, \mathrm{HON}, \mathrm{HIOG}\}$. This way, for a particular cell $G_{rij}$, we extract the set of descriptions $D_{rij} = \{f^d(\mathbf{G}_{rij}^{(d)}) \;|\; \forall d \in \mathcal{D}\} = \{\mathbf{d}_{rij}^{(d)} \;|\; \forall d \in \mathcal{D}\}$.
+Each modality involves its own specific feature extraction/description processes. In fact, a feature extraction process can be seen as a mathematical function $f$ such that $f \colon \mathbbm{R}^{n \times m} \to \mathbbm{R}^\delta$. Accordingly, $\mathbf{G} \xmapsto{\phantom{\mathbbm{R}^{n \times m}}} \mathbf{d}$, where $\mathbf{d}$ is a $\delta$-dimensional vector, representing the description of $\mathbf{G}$ in a certain feature space (the output space of $f$). Concretely, for the color modality two kinds of descriptions are extracted for each cell, Histogram of Oriented Gradients (HOG) and Histogram of Oriented Optical Flows (HOOF), whereas in the depth and thermal modality the Histogram of Oriented Normals (HON) and Histogram of Intensities and Oriented Gradients (HIOG) are respectively. Hence, we define a set of four different kinds of descriptions $\mathcal{D} = \{\mathrm{HOG}, \mathrm{HOOF}, \mathrm{HON}, \mathrm{HIOG}\}$. This way, for a particular cell $G_{rij}$, we extract the set of descriptions $D_{rij} = \{f^d(\mathbf{G}_{rij}^{(d)}) \;|\; \forall d \in \mathcal{D}\} = \{\mathbf{d}_{rij}^{(d)} \;|\; \forall d \in \mathcal{D}\}$.
 
 \subsubsection{Color modality}
 \label{sssec:color}
 
-The color cue is nowadays the most popular imagery modality and has been extensively used to extract a range of different feature descriptions. It is usually represented by the RGB color space, which expresses the color as a triplet $(\text{red}, \text{green}, \text{blue})$, but other models are also available. Notwithstanding its simplicity and properties, it suffers from several drawbacks such as illumination changes, shadows, camouflage, among others, which may inconvenience some tasks.
+The color cue is nowadays the most popular imagery modality and has been extensively used to extract a range of different feature descriptions. Notwithstanding its simplicity and properties, it suffers from several drawbacks such as illumination changes, shadows, camouflage, among others, which may inconvenience some tasks.
 
 \begin{figure*}[ht]
 	\center
@@ -466,7 +464,7 @@ For the RGB cue, we used a simple implementation of HOG \cite{dalal2005histogram
 Gradient orientation is also computed for each pixel in the dominant channel and assigned into a $\kappa$-bin histogram over each cell using unsigned gradients such that bins are evenly spaced over $0^\circ$ and $180^\circ$. As stated in \cite{dalal2005histograms}, signed contrast is uninformative for humans due to the wide range of clothing and background colors. For each gradient vector, its contribution to the histogram is given by the vector magnitude, that is, stronger magnitudes have a bigger impact on the histogram. Owing to local variations in illumination and foreground-background contrast, gradient strengths vary over a wide range, so cells are grouped into larger, spatially connected blocks. Hence, the information of each cell is concatenated. Then, the gradient strengths are locally normalized applying the L2-norm over each block. Block overlap is not applied in this case so as to reduce the final descriptor dimensions. 
 
 \paragraph{Histogram of oriented optical flow (HOOF)} 
-Since we are working with video sequences, the color cue also allows us to obtain motion information by computing the dense optical flow and describing the distribution of the resultant vectors, known as histogram of oriented optical flow (HOOF)\cite{dalal2006human}. The optical-flow vectors of the whole image are computed using the luminance information of the image with the Gunnar Farneb\"{a}ck's algorithm \cite{farneback2003two} available in OpenCV\footnote{\url{http://code.opencv.org.}} \cite{bradski2008learning}, which is based on modeling the neighborhoods of each pixel of two consecutive frames by quadratic polynomials. It represents the image signal in the neighborhood of each pixel by a 3-D surface and finds where the surface has moved in the next frame. As a result, a set of 2-D vectors denoting the movement of each pixel for the horizontal and vertical directions in the compared frames is found. This implementation allows a wide range of parameterizations, which will be specified in Section \ref{sec:evaluation}.
+Since we are working with video sequences, the color cue also allows us to obtain motion information by computing the dense optical flow and describing the distribution of the resultant vectors, known as histogram of oriented optical flow (HOOF)\cite{dalal2006human}. The optical-flow vectors of the whole image are computed using the luminance information of the image with the Gunnar Farneb\"{a}ck's algorithm \cite{farneback2003two} available in OpenCV\footnote{\url{http://code.opencv.org.}} \cite{bradski2008learning}, which is based on modeling the neighborhoods of each pixel of two consecutive frames by quadratic polynomials. It represents the image signal in the neighborhood of each pixel by a 3D surface and finds where the surface has moved in the next frame. As a result, a set of 2D vectors denoting the movement of each pixel for the horizontal and vertical directions in the compared frames is found. This implementation allows a wide range of parameterizations, which will be specified in Section \ref{sec:evaluation}.
 
  The resulting motion vectors, whose example is shown in Fig. \ref{fig:opticalflow}, are masked and quantized to produce weighted votes for local motion based on their magnitude, only taking into account those motion vector that fall inside the $G^\mathrm{color}$ grids. Such votes are locally accumulated into a $\nu$-bin histogram over each grid cell according to the signed ($0^\circ$ - $360^\circ$) vector orientations. In contrast to HOG, HOOF uses signed optical flow since the orientation information provides more discriminative power. 
  
@@ -475,12 +473,12 @@ Since we are working with video sequences, the color cue also allows us to obtai
 \subsubsection{Depth modality}
 \label{sssec:depth}
 
-The grid cells in the depth modality $G^\mathrm{depth}$ are depth dense maps represented as planar images of pixels that take depth values in millimeters, thus having 3-D points in projective coordinates. From the depth representation in projective coordinates it is possible to obtain the "real world" ones by using the intrinsic parameters of the depth sensor. This conversion generates the set of 3-D point cloud structures $\mathcal{P}$ in which distances among points are actual distances -- those that can be measured in the real world. 
+The grid cells in the depth modality $G^\mathrm{depth}$ are depth dense maps represented as planar images of pixels that take depth values in millimeters, thus having 3D points in projective coordinates. From the depth representation in projective coordinates it is possible to obtain the "real world" ones by using the intrinsic parameters of the depth sensor. This conversion generates the set of 3D point cloud structures $\mathcal{P}$ in which distances among points are actual distances -- those that can be measured in the real world. 
 
 After having the former conversion done, for each particular point cloud $\mathcal{P}_{rij}$ (representing an arbitrary grid cell $\mathbf{G}_{rij}$) the surface normals are computed and their distribution of angles summarized in a $\delta$-bin histogram, eventually describing the cell from the depth modality point of view.
 
 \paragraph{Histogram of oriented depth normals (HON)} 
-In order to describe an arbitrary point cloud $\mathcal{P}_{rij}$ the surface normal vector for each 3-D point have to be computed first. A surface normal of a 3-D point is a perpendicular vector to a 3-D plane which is tangent to the surface in that point. Thus, the normal 3-D vector at a given point $\mathbf{p} = (p_x, p_y, p_z) \in \mathcal{P}$ can be seen as the problem of determining the normal of a 3-D plane tangent to $\mathbf{p}$. A plane is represented by the origin point $\mathbf{q}$ and the normal vector $\mathbf{n}$. From the neighboring points $\mathcal{K}$ of $\mathbf{p} \in \mathcal{P}$, we first set $\mathbf{q}$ to be the average of those points:
+In order to describe an arbitrary point cloud $\mathcal{P}_{rij}$ the surface normal vector for each 3D point have to be computed first. A surface normal of a 3D point is a perpendicular vector to a 3D plane which is tangent to the surface in that point. Thus, the normal 3D vector at a given point $\mathbf{p} = (p_x, p_y, p_z) \in \mathcal{P}$ can be seen as the problem of determining the normal of a 3D plane tangent to $\mathbf{p}$. A plane is represented by the origin point $\mathbf{q}$ and the normal vector $\mathbf{n}$. From the neighboring points $\mathcal{K}$ of $\mathbf{p} \in \mathcal{P}$, we first set $\mathbf{q}$ to be the average of those points:
 
 \begin{gather}
 	\mathbf{q} \equiv \bar{\mathbf{p}} = \frac{1}{|\mathcal{K}|} \sum_{\mathbf{p} \in \mathcal{K}} \mathbf{p}
@@ -505,19 +503,19 @@ where $\lambda_j \in \mathbb{R}$ and $\mathbf{u}_j \in \mathbb{R}^3$ represent t
 
 The sign of $\mathbf{n}$ can be either positive or negative, and it cannot be disambiguated from the calculations. We adopt the convention of re-orienting consistently all the computed normal vectors towards the depth sensor $\mathbf{z}$ viewpoint. Moreover, a neighborhood radius parameter determines the cardinality of $\mathcal{K}$, that is, the number of points used to compute the normal vector in each of the points in $\mathcal{P}$. The computed normal vectors over a human body region is shown in Figure~\ref{fig:normals}. Points are illustrated in white, whereas normal vectors are red lines (instead of arrows for the sake of visual comprehension). The next step is to build the histogram describing the distribution of the normal vectors' orientations.
 
-A 3-D normal vector got from the previous calculations is expressed in cartesian coordinates $\mathbf{n} = (n_x, n_y, n_z)$. Nonetheless, a normal vector can be also expressed in spherical coordinates using three parameters: the radius, the inclination $\theta$, and the azimuth $\varphi$. In our case, the radius is a constant value, so this parameter can be omitted. Regarding $\theta$ and $\varphi$, the cartesian to spherical coordinates transformation is calculated as:
+A 3D normal vector got from the previous calculations is expressed in cartesian coordinates $\mathbf{n} = (n_x, n_y, n_z)$. Nonetheless, a normal vector can be also expressed in spherical coordinates using three parameters: the radius, the inclination $\theta$, and the azimuth $\varphi$. In our case, the radius is a constant value, so this parameter can be omitted. Regarding $\theta$ and $\varphi$, the cartesian to spherical coordinates transformation is calculated as:
 
 \begin{gather}	
 	\theta  = \arctan{\left( \frac{n_z}{n_y} \right)},\;\;
 	\varphi = \arccos{\frac{ \sqrt{(n_y^2 + n_z^2)} }{n_x}}
 \end{gather}
 
-Therefore, a 3-D normal vector can be characterized by a pair ($\theta$, $\varphi$) and the depth description of a cell consists of a pair of concatenated $\delta_\theta$-bin and $\delta_\varphi$-bin histograms, describing the two angular distributions of the body surface normals within the cell. Moreover, each of the two histograms is normalized before the concatenation, dividing by the number of elements, to end up with a relative angles frequency count.
+Therefore, a 3D normal vector can be characterized by a pair ($\theta$, $\varphi$) and the depth description of a cell consists of a pair of concatenated $\delta_\theta$-bin and $\delta_\varphi$-bin histograms, describing the two angular distributions of the body surface normals within the cell. Moreover, each of the two histograms is normalized before the concatenation, dividing by the number of elements, to end up with a relative angles frequency count.
 
 \subsubsection{Thermal modality}
 \label{sssec:thermal}
 
-The thermal cue is a very informative feature for the task of people detection/segmentation. A pixel part of a human region gives off heat and hence a relatively large value in terms of thermal intensity.
+Whereas neither raw values of color intensity nor depth values of a pixel provide especially meaningful information for the human detection task, raw values of thermal intensity are on their own much more informative. Despite we cannot ensure human presence just because of large thermal intensity readings -- since we usually find many non-human entities, such as animals or unanimated objects, that emit a considerable amount of heat in cluttered scenes --, relatively low thermal intensities are very likely to imply the absence of human presence, That, in our case, yields to the classification of that pixel as background category. And hence, in this context of human-background pixel classification, we consider this "human heat" prior a valuable piece of information that used together with the thermal gradients, and lately fused with other cues, enhances the overall performance of our method.
 
 \paragraph{Histogram of thermal intensities and oriented gradients (HIOG)} 
 The descriptor obtained from a cell in the thermal cue $\mathbf{G}_{rij}^{\mathrm{thermal}}$ is the concatenation of two histograms. The first one is a histogram summarizing the thermal intensities, which range in the interval $[0, 255]$. The intensities are the ones in the masked region of the cell, i.e. not taking into account the background pixels. In turn, the second histogram summarizes the orientations of thermal gradients. Such gradients are computed convolving a first derivative kernel in both directions, as done previously for HOG descriptor. Then, their orientation is calculated and binned in the histogram weighted by their magnitude. Finally, the two histograms are normalized dividing by the sum of the accumulations in the bins and concatenated. We used $\alpha_{\mathrm{i}}$ bins for the intensities part and $\alpha_{\mathrm{g}}$ bins for the gradients' orientations.
@@ -530,53 +528,55 @@ Since we are intended to segment human body regions, we need to distinguish thos
 
 From the previous step, each grid cell has been described using the different descriptors $\mathcal{D}$. For the purpose of classification, we train a Gaussian Mixture Model for each grid position $(i,j)$ and type of description $d \in \mathcal{D}$. Thus, the set of all the modeled GMMs $\mathcal{M} = \{\mathcal{M}_{ij}^{(d)} \;|\; \forall i \in \{1,...,n\}, \forall j \in \{1,...,m\}, \forall d \in \mathcal{D} \}$ is obtained.
 
-Then, in order to predict a new unseen cell $\mathbf{G}$ to be either a subject or an object, the log-likelihood value is evaluated in the probability density functions (PDFs) modeled for the mixtures of the different descriptions. We denote the log-likelihood values got by a particular cell $\mathbf{G}_{rij}$ in its corresponding GMMs $\{\mathcal{M}_{ij}^{d} \;|\; \forall d \in \mathcal{D}\}$ by $\{\ell_{ij}^{d} \;|\; \forall d \in \mathcal{D}\}$. The category -- either subject or object -- according to $d$ is predicted by comparing the log-likelihood $\ell_{rij}^{d}$ (got by $\mathbf{G}_{rij}$ in $\mathcal{M}_{ij}^{d}$) to an experimentally selected threshold value $\tau_{ij}^d$. 
+Then, in order to predict a new unseen cell $\mathbf{G}$ to be either a subject or an object, the log-likelihood value is evaluated in the probability density functions (PDFs) modeled for the mixtures of the different descriptions. We denote the log-likelihood values got by a particular cell $\mathbf{G}_{rij}$ in its corresponding GMMs $\{\mathcal{M}_{ij}^{(d)} \;|\; \forall d \in \mathcal{D}\}$ by $\{\ell_{ij}^{(d)} \;|\; \forall d \in \mathcal{D}\}$. The category -- either subject or object -- according to $d$ is predicted by comparing the log-likelihood $\ell_{rij}^{(d)}$ (got by $\mathbf{G}_{rij}$ in $\mathcal{M}_{ij}^{(d)}$) to an experimentally selected threshold value $\tau_{ij}^{(d)}$. 
 
-Since, for each cell, $|\mathcal{D}|$ predictions are obtained, an strategy to fuse them has to be developed. Some approaches are proposed in Section~\ref{ssec:fusion}, but first some details about the log-likelihoods computation in Gaussian Mixture Models are given below.
+Since, for each cell, $|\mathcal{D}|$ predictions are obtained, an strategy to fuse them has to be developed. Some approaches are described below.
 
-\subsubsection{Gaussian Mixture Models} \label{section:gmm}
+%proposed in Section~\ref{ssec:fusion}, but first some details about the log-likelihoods computation in Gaussian Mixture Models are given below.
 
-Gaussian Mixture Models is an unsupervised learning method for fitting multiple Gaussians to a set of multi-dimensional data points\footnote{This technique uses properties of gaussians, thus its generalization to fit other functions is not straightforward.}. It is often used as a probabilistic clustering and as an alternative method to the k-means algorithm. As in the case of k-means, the number of components $K$ (or gaussians) in the mixture is a parameter that needs to be specified to the algorithm. The GMMs are trained using the very general Expectation-Maximization algorithm~\cite{moon1996expectation}. The goal is to end up maximizing the overall likelihood $\mathcal{L}$ of the model:
-
-\begin{gather}
-	\mathcal{L} = \prod_{\mathbf{a} \in \mathbf{A}} p(\mathbf{a})
-\end{gather}
-where $\mathbf{a}$ is a multi-dimensional data point (in this case representing the descriptor of an arbitrary grid cell $\mathbf{G}_{rij}^{d}$) belonging to the set $\mathbf{A}$, and $p(\mathbf{a})$ is the probability of $\mathbf{a}$ being drawn from the model. This probability is the value assigned by the mixture PDF to that point, which is in fact a linear combination of $K$ gaussian PDFs:
-
-\begin{gather}
-	p(\mathbf{a}) = \prod_{k=1}^{K} p(\mathbf{a}|k) P(k)
-\end{gather}
-being $p(\mathbf{a}|k)$ the value assigned by the $k$-th gaussian PDF to $\mathbf{a}$ (the height of the PDF function at that point), whereas $P(k)$ is the importance, or weight, of the $k$-th component in the mixture. In fact, since the model is a mixture of gaussians, $p(\mathbf{a})$ can be expressed as the mixture of parametrized gaussian functions:
-
-\begin{gather}
-	p(\mathbf{a}) = \prod_{k=1}^{K} \mathcal{N}(\mathbf{a}|\boldsymbol{\mu}_{k}, \mathbf{\Sigma}_{k}) P(k), \\
-	\mathcal{N}(\mathbf{a}|\boldsymbol{\mu},\mathbf{\Sigma}) = \frac{1}{2\pi^{\rho/2}|\mathbf{\Sigma}|^{1/2}} \exp^{-\frac{1}{2} (\mathbf{a}-\boldsymbol{\mu})^\mathrm{T} \mathbf{\Sigma}^{-1} (\mathbf{a}-\boldsymbol{\mu}) }
-\end{gather}
-
-In order to be able to predict at some point new given examples, a training procedure is needed to model the parameters of the mixture, i.e. the means $\boldsymbol{\mu} = \{ \mathbf{\boldsymbol{\mu}}_1, ..., \boldsymbol{\mu}_K \}$ and covariances matrices $\mathbf{\Sigma} = \{ \mathbf{\Sigma}_1, ..., \mathbf{\Sigma}_K \}$. This is done by the two-step procedure called Expectaction-Maximization.
-
-\subsubsection{Expectation-Maximization: modeling a GMM}
-
-%Let be $\mathbf{A}$ the set of $\rho$-dimensional points and have initialized the parameters for the $K$ components $\boldsymbol{\mu}$ and $\mathbf{\Sigma}$ and the contribution of the components $\{P(k_1), ..., P(k_K)\}$. 
-
-The first step to perform is the expectation calculation, or \emph{E-Step}, that consists on computing the $K$ posteriors for all the points $\mathbf{a} \in \mathbf{A}$.  A typical initialization is to start with $K$ randomly chosen data points as starting means, and equal covariance matrices. Nonetheless, convergence is sometimes slow on account of having many points laying in "plateaus". Another possibility, as it has been done in this work, is to use \emph{k-means} to have a better initialization due to a more robust estimate of the initial parameters, thus increasing the convergence speed and the chances of finding a better solution. The posterior $P(k|\mathbf{a})$ is the probability the point $\mathbf{a}$ belongs to the component $k$, and it is exactly:
-
-\begin{gather}
-	p_{k\mathbf{a}} = P(k|\mathbf{a}) = \frac{\mathcal{N}(\mathbf{a}|\boldsymbol{\mu}_{k}, \mathbf{\Sigma}_{k}) P(k)}{p(\mathbf{a})}
-\end{gather}
-
-Next, it is the turn of the maximization step, or \emph{M-step}. In this step, it is supposed that the assignments of individual points are known but not the model. The parameters of the components and their weights are re-estimated -- because of the previous calculations -- as:
-
-\begin{gather}
-	\hat{\boldsymbol{\mu}}_k = \frac{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}} \, \mathbf{a}}{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}}} \\
-	~
-	\hat{\mathbf{\Sigma}}_k = \frac{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}} \, (\mathbf{a}_i - \hat{\boldsymbol{\mu}}_k)(\mathbf{a} - \hat{\boldsymbol{\mu}}_k)^{\mathrm{T}} }{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}}}\\
-	~
-	\hat{P}(k) = \frac{1}{|\mathbf{A}|} \sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}}
-\end{gather}
-
-It can be proven that alternating E and M steps, the algorithm converges to at least a local maximum of overall likelihoods. Moreover, though not explained, dealing with likelihoods may cause underflow problems in the computations. The approach to cope with this problem is to apply logarithms, that is dealing with log-likelihoods instead of likelihoods. Despite this changes some calculations re-formulated using the so-called "log-sum-exp" trick, the EM algorithm is still a valid approach to maximize the log-likelihood of the model given $\mathbf{A}$.
-
+%\subsubsection{Gaussian Mixture Models} \label{section:gmm}
+%
+%Gaussian Mixture Models is an unsupervised learning method for fitting multiple Gaussians to a set of multi-dimensional data points\footnote{This technique uses properties of gaussians, thus its generalization to fit other functions is not straightforward.}. It is often used as a probabilistic clustering and as an alternative method to the k-means algorithm. As in the case of k-means, the number of components $K$ (or gaussians) in the mixture is a parameter that needs to be specified to the algorithm. The GMMs are trained using the very general Expectation-Maximization algorithm~\cite{moon1996expectation}. The goal is to end up maximizing the overall likelihood $\mathcal{L}$ of the model:
+%
+%\begin{gather}
+%	\mathcal{L} = \prod_{\mathbf{a} \in \mathbf{A}} p(\mathbf{a})
+%\end{gather}
+%where $\mathbf{a}$ is a multi-dimensional data point (in this case representing the descriptor of an arbitrary grid cell $\mathbf{G}_{rij}^{d}$) belonging to the set $\mathbf{A}$, and $p(\mathbf{a})$ is the probability of $\mathbf{a}$ being drawn from the model. This probability is the value assigned by the mixture PDF to that point, which is in fact a linear combination of $K$ gaussian PDFs:
+%
+%\begin{gather}
+%	p(\mathbf{a}) = \prod_{k=1}^{K} p(\mathbf{a}|k) P(k)
+%\end{gather}
+%being $p(\mathbf{a}|k)$ the value assigned by the $k$-th gaussian PDF to $\mathbf{a}$ (the height of the PDF function at that point), whereas $P(k)$ is the importance, or weight, of the $k$-th component in the mixture. In fact, since the model is a mixture of gaussians, $p(\mathbf{a})$ can be expressed as the mixture of parametrized gaussian functions:
+%
+%\begin{gather}
+%	p(\mathbf{a}) = \prod_{k=1}^{K} \mathcal{N}(\mathbf{a}|\boldsymbol{\mu}_{k}, \mathbf{\Sigma}_{k}) P(k), \\
+%	\mathcal{N}(\mathbf{a}|\boldsymbol{\mu},\mathbf{\Sigma}) = \frac{1}{2\pi^{\rho/2}|\mathbf{\Sigma}|^{1/2}} \exp^{-\frac{1}{2} (\mathbf{a}-\boldsymbol{\mu})^\mathrm{T} \mathbf{\Sigma}^{-1} (\mathbf{a}-\boldsymbol{\mu}) }
+%\end{gather}
+%
+%In order to be able to predict at some point new given examples, a training procedure is needed to model the parameters of the mixture, i.e. the means $\boldsymbol{\mu} = \{ \mathbf{\boldsymbol{\mu}}_1, ..., \boldsymbol{\mu}_K \}$ and covariances matrices $\mathbf{\Sigma} = \{ \mathbf{\Sigma}_1, ..., \mathbf{\Sigma}_K \}$. This is done by the two-step procedure called Expectaction-Maximization.
+%
+%\subsubsection{Expectation-Maximization: modeling a GMM}
+%
+%%Let be $\mathbf{A}$ the set of $\rho$-dimensional points and have initialized the parameters for the $K$ components $\boldsymbol{\mu}$ and $\mathbf{\Sigma}$ and the contribution of the components $\{P(k_1), ..., P(k_K)\}$. 
+%
+%The first step to perform is the expectation calculation, or \emph{E-Step}, that consists on computing the $K$ posteriors for all the points $\mathbf{a} \in \mathbf{A}$.  A typical initialization is to start with $K$ randomly chosen data points as starting means, and equal covariance matrices. Nonetheless, convergence is sometimes slow on account of having many points laying in "plateaus". Another possibility, as it has been done in this work, is to use \emph{k-means} to have a better initialization due to a more robust estimate of the initial parameters, thus increasing the convergence speed and the chances of finding a better solution. The posterior $P(k|\mathbf{a})$ is the probability the point $\mathbf{a}$ belongs to the component $k$, and it is exactly:
+%
+%\begin{gather}
+%	p_{k\mathbf{a}} = P(k|\mathbf{a}) = \frac{\mathcal{N}(\mathbf{a}|\boldsymbol{\mu}_{k}, \mathbf{\Sigma}_{k}) P(k)}{p(\mathbf{a})}
+%\end{gather}
+%
+%Next, it is the turn of the maximization step, or \emph{M-step}. In this step, it is supposed that the assignments of individual points are known but not the model. The parameters of the components and their weights are re-estimated -- because of the previous calculations -- as:
+%
+%\begin{gather}
+%	\hat{\boldsymbol{\mu}}_k = \frac{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}} \, \mathbf{a}}{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}}} \\
+%	~
+%	\hat{\mathbf{\Sigma}}_k = \frac{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}} \, (\mathbf{a}_i - \hat{\boldsymbol{\mu}}_k)(\mathbf{a} - \hat{\boldsymbol{\mu}}_k)^{\mathrm{T}} }{\sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}}}\\
+%	~
+%	\hat{P}(k) = \frac{1}{|\mathbf{A}|} \sum_{\mathbf{a} \in \mathbf{A}} p_{k\mathbf{a}}
+%\end{gather}
+%
+%It can be proven that alternating E and M steps, the algorithm converges to at least a local maximum of overall likelihoods. Moreover, though not explained, dealing with likelihoods may cause underflow problems in the computations. The approach to cope with this problem is to apply logarithms, that is dealing with log-likelihoods instead of likelihoods. Despite this changes some calculations re-formulated using the so-called "log-sum-exp" trick, the EM algorithm is still a valid approach to maximize the log-likelihood of the model given $\mathbf{A}$.
+%
 \subsection{Multi-modal fusion} 
 \label{ssec:fusion}
 
@@ -587,7 +587,7 @@ Nonetheless, before fusing the results got from the different descriptions, a no
 \subsubsection{Description-level predictions}
 \label{sssec:descriptionlevelpredictions}
 
-Prior to the fusion step, it may be necessary to provide a prediction at grid-level (instead of cell-level) for each of the four descriptions individually. For this reason, a strategy is needed to achieve the grid cells' predictions consensus. 
+Prior to the fusion step, it may be necessary to provide a prediction at grid-level (instead of cell-level) for each of the four descriptions individually. For this reason, a strategy is needed to achieve the predictions consensus of the grid cells. 
 
 The consensus is attained by a voting scheme. In case of draw the magnitude of the mean normalized log-likelihoods obtained for both categories are compared; since normalized log-likelihood values $\varrho$ are centered at the decision threshold $\tau$, $\varrho$, which is in fact a distance to the predictor margin, can be interpreted as a \textit{confidence} value. Thus, a grid consensus function $g(\cdot)$ is defined as follows:
 
@@ -627,7 +627,7 @@ In the grid cells pre-consensus strategy, the categories determined from the dif
 
 \begin{gather*}\tiny
 \vartheta_r^{(0)} = \sum_{d} \mathbbm{1}\{ g^{(d)}(r) = 0 \} \; , \;\; \vartheta_r^{(1)} = \sum_{d} \mathbbm{1}\{ g^{(d)}(r) = 1 \} \\
-\hat{\varrho}_r^{(0)} = \sum_{d \,|\, g^{(d)}(r) = 0} \hat{\varrho}_r^d \; , \;\; \hat{\varrho}_r^{(1)}  =\sum_{d \,|\, g^{(d)}(r) = 1} \hat{\varrho}_r^d \\
+\hat{\varrho}_r^{(0)} = \sum_{d \,|\, g^{(d)}(r) = 0} \hat{\varrho}_r^{(d)} \; , \;\; \hat{\varrho}_r^{(1)}  =\sum_{d \,|\, g^{(d)}(r) = 1} \hat{\varrho}_r^{(d)} \\
 \mathcal{F}(r) =
 \left\{
 	\begin{array}{ll}
@@ -674,7 +674,7 @@ An alternative approach to the pre-consensus fusion is simply performing the fus
 %\end{gather*}
 
 
-\paragraph{Distance-based fusion and cells' post-consensus}
+\paragraph{Distance-based fusion and cells post-consensus}
 
 The difference between this last approach and the former one is the way to fuse the information at description-level. While the former determines the category at cell-level by voting, not taking into account the normalized log-likelihood value but the sign (except for draw cases), this later approach uses as a basis the magnitude of the normalized log-likelihood values in the descriptions fusion process. As in \textit{cells post-consensus} the grid cells decisions are consensued by voting.
 
@@ -682,7 +682,7 @@ The main drawback of heuristic fusion approaches is the impossibility to determi
 
 \subsubsection{Learning-based fusion approach}
 
-As before, the category of a grid $r$ is intended to be predicted, but instead of directly making use of the descriptors computed from the different modalities, we exploit the predictions got from the GMMs in different cells and each type of description. This approach follows the Stacked Learning scheme \cite{cohen2005stacked, gatta2011multi}, which involves training a new learning algorithm combining previous predictions obtained with other learning algorithms. More precisely, each grid $r$ is represented by a vector $\mathbf{v}_r$ of normalized log-likelihoods:
+As before, the category of a grid $r$ is intended to be predicted, but instead of directly making use of the descriptors computed from the different modalities, we exploit the predictions got from the GMMs in different cells and each type of description. This approach follows the Stacked Learning scheme \cite{cohen2005stacked, puertas2013generalized}, which involves training a new learning algorithm combining previous predictions obtained with other learning algorithms. More precisely, each grid $r$ is represented by a vector $\mathbf{v}_r$ of normalized log-likelihoods:
 
 $$\mathbf{v}_r = (\varrho_{r11}^{(1)}, ..., \varrho_{rNM}^{(1)}, ..., \varrho_{r11}^{(|\mathcal{D}|)}, ..., \varrho_{rNM}^{(|\mathcal{D}|)}, y_r)$$
 where $y_r$ is the actual category of the $r$ grid. Using such representation of the normalized log-likelihoods in the different grid cells and modalities, a data sample containing the $R$ feature vectors of this kind is built. This way, any supervised learning algorithm can be used to try to learn from this data and infer more reliable predictions than using the previous handcrafted heuristics. 
@@ -709,7 +709,8 @@ Among many existing state-of-the-art supervised learning algorithms for classifi
 \subsection{Parameters and settings}
 \label{ssec:parametersandsettings}
 
-After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, we set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, or  $\sigma_\text{otsu} = 12$ for other cases. This settings were established in order to maintain a trade-off between finding the maximum number of overlapping people situations without dividing a subject in different regions depending on the variation of depth of the body parts.
+%After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, 
+We experimentally set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, and  $\sigma_\text{otsu} = 12$ for other cases. This settings were established in order to maintain a trade-off between finding the maximum number of overlapping people situations without dividing a subject in different regions depending on the variation of depth of the body parts.
 
 Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $m \times n$ cells, being $m = 2$ and $n = 2$. The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
 
@@ -957,19 +958,19 @@ mostly those generated when one person overlaps other, considerably differ from 
 that are used to train the different models. Consequently, the classification of such regions
 is not a trivial task.
 
-\section{Conclusions}
+\section{Conclusions and future work}
 \label{sec:conclusions}
-A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal data set of several video sequences has been introduced, which contains several
+A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal data set of video sequences has been introduced, which contains several
 subjects interacting with everyday objects.
 
-The first contribution of this work was an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest coming
+We proposed an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest coming
 from the different data modalities, different state of the art descriptors have been used
 and adapted to describe different feature vectors from each region. In particular, HOG and HOOF have been computed from RGB still images and image sequences, histogram of intensity gradients from thermal data, and histograms of normal vectors from depth maps coming from infrared sensors. The set of descriptors have been selected as the most discriminative ones given the results previously reported in literature.
 
-Despite the obtained results, this proposal clearly leaves further room of improvement. To
+Despite the obtained results, this proposal leaves further room of improvement. To
 begin with, the first background subtraction stage could combine the different modalities
 in order to learn the model. Furthermore, a clustering of poses at cell-level could be
-added before learning the GMMs. GrabCuts could also be applied to the predicted
+added before learning the GMMs. GrabCuts or other post-segmentation approaches could also be applied to the predicted
 segmentation binary masks to refine and smooth the contours, which would also produce
 a rise in the segmentation accuracy.
 {\small
