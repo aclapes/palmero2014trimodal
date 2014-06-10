@@ -80,13 +80,8 @@ Sofiendalsvej 11, 9200 Aalborg SV, Denmark\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   The ABSTRACT is to be in fully-justified italicized text, at the top
-   of the left-hand column, below the author and affiliation
-   information. Use the word ``Abstract'' as the title, in 12-point
-   Times, boldface type, centered relative to the column, initially
-   capitalized. The abstract is to be in 10-point, single-spaced type.
-   Leave two blank lines after the Abstract, then begin the main text.
-   Look at previous CVPR abstracts to get a feel for style and length.
+In this paper, we address the problem of human body segmentation from multi-modal visual cues. The generation of new multi-modal descriptors and fusion strategies aims to enrich the data representation in order to improve segmentation results. We therefore propose a multi-modal segmentation approach which, combining RGB, depth and thermal cues, automatically detects those regions of interest belonging to a human subject. To do so, several state-of-the-art descriptors have been tested and adapted to extract information from the different modalities. The different feature spaces are modeled via Gaussian Mixture Models for both subject and non-subject categories, providing a confidence score for each grid of region of interest. The feature descriptions have been tested independently to evaluate their performance for subject segmentation. In addition, three voting-based heuristic approaches have been proposed, along with a learning-based fusion approach that applies some state-of-the-art supervised algorithms for classification in a stacked learning fashion. Such proposal can act as a baseline for further developments. Furthermore, we present a novel registered multi-modal RGB-Depth-Thermal dataset of continuous image sequences, which has been manually annotated at pixel-level in all three modalities at those regions containing human subjects. Results show variable performance for the different modalities when segmenting people in multi-modal data, and improved segmentation accuracy of the multi-modal GMM- stacked learning method.
+
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -135,27 +130,27 @@ Similarly to the RGB-D combination, thermal imaging has also been fused with col
 
 Eventually, several approaches have considered the fusion of RGB, depth and thermal features (RGB-D-T) in order to improve detection and classification abilities. The latest contributions include people following \cite{susperregi2013rgb}, human motion tracking \cite{chun2013applications}, person re-identification \cite{mogelmosetri} and, more recently, face recognition \cite{nikisinsrgb}. However, little attention has been paid to human segmentation applications combining such cues.
 
-Despite the extensive review of methods and related work, our contribution focuses on fast and reliable descriptors for multi-modal segmentation. Such task is often used as a first step for further sophisticated pose and behavior analysis approaches. To advance research in this area, it is necessary to have the right means to compare existent methods so as to allow improvements to be measured. There exist several static and continuous image-based human-labeled datasets that can be used for that purpose \cite{moeslund2011visual}, which try to provide realistic settings and environmental conditions. The best known of these is the Berkeley Segmentation Dataset and Benchmark \cite{martin2001database}, which consists of 12,000 segmentations of 1,000 Corel dataset color images, containing people or different objects. It also includes figure-ground labelings for a subset of the images. Authors of \cite{alpert2007} made also available a database containing 200 gray level images along with ground truth segmentations, which was specially designed to avoid potential ambiguities by only incorporating images that clearly depict one or two objects in the foreground that differ from its surroundings by either texture, intensity, or other low level cues, but it does not represent uncontrolled scenarios. The well known PASCAL Visual Object Classes Challenge \cite{everingham2012pascal} tended to include a subset of the color images annotated in a pixel-wise fashion for the segmentation competition. Although not considered to be benchmarks, Kinect-based datasets are also available, since this device is being widely used in human pose related works. In \cite{gulshan2011humanising} a novel dataset was presented, which contains 3,386 images of segmented humans and ground truth automatically created by Kinect, and consisting of different human subjects across 4 different locations. Unfortunately, depth map images are not included in the public dataset. 
+Despite the extensive review of methods and related work, our contribution focuses on fast and reliable descriptors for multi-modal segmentation. Such task is often used as a first step for further sophisticated pose and behavior analysis approaches. To advance research in this area, it is necessary to have the right means to compare existent methods so as to allow improvements to be measured. There exist several static and continuous image-based human-labeled datasets that can be used for that purpose \cite{moeslund2011visual}, which try to provide realistic settings and environmental conditions. The best known of these is the Berkeley Segmentation dataset and Benchmark \cite{martin2001database}, which consists of 12,000 segmentations of 1,000 Corel dataset color images, containing people or different objects. It also includes figure-ground labelings for a subset of the images. Authors of \cite{alpert2007} made also available a database containing 200 gray level images along with ground truth segmentations, which was specially designed to avoid potential ambiguities by only incorporating images that clearly depict one or two objects in the foreground that differ from its surroundings by either texture, intensity, or other low level cues, but it does not represent uncontrolled scenarios. The well known PASCAL Visual Object Classes Challenge \cite{everingham2012pascal} tended to include a subset of the color images annotated in a pixel-wise fashion for the segmentation competition. Although not considered to be benchmarks, Kinect-based datasets are also available, since this device is being widely used in human pose related works. In \cite{gulshan2011humanising} a novel dataset was presented, which contains 3,386 images of segmented humans and ground truth automatically created by Kinect, and consisting of different human subjects across 4 different locations. Unfortunately, depth map images are not included in the public dataset. 
 
-Nevertheless, there is a lack of multi-modal video datasets, especially combining RGB, depth and thermal modalities focused on human body segmentation. We underline the collective datasets of Project ETISEO \cite{nghiem2007etiseo}, owing to the fact that for some of the scenes the authors include, apart from color images, an additional imaging modality such as infrared footage. It consists of indoor and outdoor scenes of public places such as an airport apron or a subway station, and also includes a frame-based annotated ground truth. Depth maps computed from stereo pairs of images are used in Inria 3D Movie Dataset \cite{alahari2013pose}, which contains sequences from 3D movies. Such sequences show various people performing a broad variety of activities from a range of orientations and with different levels of occlusions. A comparison of existing multi-modal datasets focused on human body related approaches is provided in Table \ref{tab:datasets}.
+Nevertheless, little attention has been given to multi-modal video datasets. We underline the collective datasets of Project ETISEO \cite{nghiem2007etiseo}, owing to the fact that for some of the scenes the authors include, apart from color images, an additional imaging modality such as infrared footage. It consists of indoor and outdoor scenes of public places such as an airport apron or a subway station, and also includes a frame-based annotated ground truth. Depth maps computed from stereo pairs of images are used in Inria 3D Movie dataset \cite{alahari2013pose}, which contains sequences from 3D movies. Such sequences show various people performing a broad variety of activities from a range of orientations and with different levels of occlusions. A comparison of existing multi-modal datasets focused on human body related approaches is provided in Table \ref{tab:datasets}. As one can observe, there is a lack of datasets combining RGB, depth and thermal modalities focused on the human body segmentation task, which we propose in this paper. Such dataset is described in the next section.  
 
 \begin{table*}[htpb]
 \centering
 \begin{tabular}{p{4cm}p{1.5cm}p{0.7cm}p{3cm}p{1.2cm}p{4.1cm}}
 \hline
-Dataset & Data \par Format\strut & Video \par Seq.\strut & Annotation & Scenario & Purpose \\ \hline
+dataset & Data \par Format\strut & Video \par Seq.\strut & Annotation & Scenario & Purpose \\ \hline
 ETISEO Project \cite{nghiem2007etiseo} & RGB-T & Yes & Bounding Box & Indoor/ \par Outdoor\strut & Video Surveillance \\
 IRIS Thermal/Visible \par Face Database \cite{iris2007dataset}\strut	&	RGB-T	&	No	&	-	&	Indoor	&	Face Detection \\
 OSU Color-Thermal \par Database \cite{davis2007background}\strut	&	RGB-T	&	Yes	&	Bounding box	&	Outdoor	&	Object Detection \\
-RGB-D People Dataset \cite{spinello2011people}	&	RGB-D	&	Yes	&	Bounding Box	&	Indoor	&	Human Detection \\
-H2View Dataset \cite{sheasby2012simultaneous}	&	RGB-D  \par(stereo)\strut 	&	Yes	&	Segmentation masks, \par Ground-truth depth,\strut \par Human pose\strut	&	Indoor	&	3D Pose Estimation \\
+RGB-D People dataset \cite{spinello2011people}	&	RGB-D	&	Yes	&	Bounding Box	&	Indoor	&	Human Detection \\
+H2View dataset \cite{sheasby2012simultaneous}	&	RGB-D  \par(stereo)\strut 	&	Yes	&	Segmentation masks, \par Ground-truth depth,\strut \par Human pose\strut	&	Indoor	&	3D Pose Estimation \\
 LIRIS Human activities \par dataset \cite{wolf2012liris}\strut	&	RGB-D	&	Yes	& Bounding box, \par Activity class\strut	&	Indoor	&	Human Activity Recognition \\
-RGB-D Person \par Re-identification Dataset \cite{barbosa2012re}\strut	&	RGB-D	&	Yes	&	Foreground masks, \par Skeleton,\strut \par3D mesh\strut 	&	Indoor	&	Person Re-identification \\
+RGB-D Person \par Re-identification dataset \cite{barbosa2012re}\strut	&	RGB-D	&	Yes	&	Foreground masks, \par Skeleton,\strut \par3D mesh\strut 	&	Indoor	&	Person Re-identification \\
 VAP RGB-D Face \par dataset \cite{hg2012rgb}\strut	&	RGB-D	&	No	&	Pose class	&	Indoor	&	Face Detection, \par Pose Estimation\strut \\
 Biwi Kinect Head Pose \par Database \cite{fanelli2013random}\strut	&	RGB-D	&	Yes	&	Head 3D position, \par Head rotation\strut	&	Indoor	&	Head Pose Estimation \\
-Cornell Activity \par Datasets \cite{koppula2013learning}\strut	&	RGB-D	&	Yes	&	Bounding box, \par Activity class,\strut \par Skeleton\strut	&	Indoor	&	Human Activity Recognition \\
-Eurecom Kinect Face \par Dataset \cite{huynh2013efficient}\strut	&	RGB-D	&	No	&	6 facial landmarks, \par Person information\strut	&	Indoor	&	Face Recognition \\
-Inria 3D Movie Dataset \cite{alahari2013pose}	&	RGB-D \par(stereo)\strut 	&	Yes	&	Bounding box, \par Human pose,\strut \par Segmentation masks\strut	&	Indoor/ \par Outdoor\strut	&	Human Detection, \par Human Segmentation,\strut \par Pose Estimation\strut \\
+Cornell Activity \par datasets \cite{koppula2013learning}\strut	&	RGB-D	&	Yes	&	Bounding box, \par Activity class,\strut \par Skeleton\strut	&	Indoor	&	Human Activity Recognition \\
+Eurecom Kinect Face \par dataset \cite{huynh2013efficient}\strut	&	RGB-D	&	No	&	6 facial landmarks, \par Person information\strut	&	Indoor	&	Face Recognition \\
+Inria 3D Movie dataset \cite{alahari2013pose}	&	RGB-D \par(stereo)\strut 	&	Yes	&	Bounding box, \par Human pose,\strut \par Segmentation masks\strut	&	Indoor/ \par Outdoor\strut	&	Human Detection, \par Human Segmentation,\strut \par Pose Estimation\strut \\
 RGB-D-T Facial \par Database \cite{nikisinsrgb}\strut &	RGB-D-T	&	No	&	Bounding box	&	Indoor	&	Face Recognition \\
 \hline
 \end{tabular}
@@ -166,7 +161,7 @@ RGB-D-T Facial \par Database \cite{nikisinsrgb}\strut &	RGB-D-T	&	No	&	Bounding 
 \section{The tri-modal dataset}
 \label{sec:dataset}
 
-The proposed method is evaluated on a data set with a total of 11537 frames, of which 5724 frames are annotated. Sample imagery of the scenes is pictured in Figure \ref{fig:samplescenes} whereas Table \ref{tab:scenes} shows the number of annotated frames and the depth range. Activity in scene 1 and 3 is using the full depth range of the Kinect sensor whereas activity in scene 2 is constrained to a depth range of $\pm 0.250$ m. Scene 1 and 2 are situated in a closed meeting room with little natural light to disturb the depth sensing, whereas scene 3 is situated in a area with wide windows and a substantial amount of sunlight.
+The proposed method is evaluated on a dataset with a total of 11537 frames, of which 5724 frames are annotated. Sample imagery of the scenes is pictured in Figure \ref{fig:samplescenes} whereas Table \ref{tab:scenes} shows the number of annotated frames and the depth range. Activity in scene 1 and 3 is using the full depth range of the Kinect sensor whereas activity in scene 2 is constrained to a depth range of $\pm 0.250$ m. Scene 1 and 2 are situated in a closed meeting room with little natural light to disturb the depth sensing, whereas scene 3 is situated in a area with wide windows and a substantial amount of sunlight.
 
 \begin{figure}[htbp]
 	\centering
@@ -203,7 +198,7 @@ The tri-modal data stream is recorded using a Microsoft Kinect for XBOX 360 capt
 	\label{fig:camerasetup}
 \end{figure}
 
-The image streams are captured using custom recording software that invokes the Kinect for Windows and AXIS Media Control SDKs. The integration of the two SDKs enables the cameras to be calibrated against the same system clock, which enables the post-capture temporal alignment of the image streams. Both cameras are able to record at 30 FPS. However, the data set is recorded at 15 FPS due to performance constraints of the recording software. 
+The image streams are captured using custom recording software that invokes the Kinect for Windows and AXIS Media Control SDKs. The integration of the two SDKs enables the cameras to be calibrated against the same system clock, which enables the post-capture temporal alignment of the image streams. Both cameras are able to record at 30 FPS. However, the dataset is recorded at 15 FPS due to performance constraints of the recording software. 
 
 \subsection{Multi-modal calibration}
 The calibration of the thermal and RGB cameras have been accomplished using a thermal-visible calibration device inspired by \cite{vidas2012mask}. The calibration device consists of two parts; an A3-sized 10 mm polystyrene foam board is used as a backdrop and an equally sized board with cut-out squares is used as the checkerboard. Before using the calibration device, the backdrop is heated and the checkerboard plate is kept at room temperature, thus keeping a suitable thermal contrast when joined, as is seen from Figure \ref{fig:calibrationDevice}. %The depth sensor of the Kinect is factory calibrated and a subsequent calibration is thus not needed.
@@ -243,22 +238,22 @@ Homographies relating RGB and thermal modalities are generated from minimum 50 v
 \begin{enumerate}
 	\item For all $J$ views of the calibration device, calculate the 3D centre of the $K$ extracted points in the image plane:
 \begin{equation}
-\widebar{\mathbf{X}}_{j} = \frac{\sum_{k=1}^K \mathbf{X}_{k_j}}{K} = \frac{\sum_{k=1}^K \mathbf{P}^+ \mathbf{x}_{k_j}}{K}
+\widebar{\mathbf{X}}_{j} = \frac{\sum_{k=1}^K \mathbf{X}_{k_j}}{K} = \frac{\sum_{k=1}^K \mathbf{P}^+ \mathbf{x}_{k_j}}{K}.
 \end{equation}
 The depth coordinate of $\mathbf{X}$ is estimated from the registered point in the depth image. $\mathbf{P}^+$ is the pseudoinverse of the projection matrix.
 \item Find the distance from the reprojected point $\mathbf{X}$ to the homography centres:
 \begin{equation}
-\omega(j) = \lvert \mathbf{X} - \widebar{\mathbf{X}}_{j} \rvert
+\omega(j) = \lvert \mathbf{X} - \widebar{\mathbf{X}}_{j} \rvert.
 \end{equation}
 \item Centre a 3D coordinate system around the reprojected point $\mathbf{X}$ and find $\min \omega(j)$ for each octant of the coordinate system. Set $\omega(j) = 0$ for all other weights. Normalize the weights:
 \begin{equation}
-\omega^*(j) = \frac{\omega(j)}{\sum_{j=1}^J \omega(j)}
+\omega^*(j) = \frac{\omega(j)}{\sum_{j=1}^J \omega(j)}.
 \end{equation}
 \item Perform the registration $\mathbf{x} \Rightarrow \mathbf{x}'$ by using a weighted sum of the homographies:
 \begin{equation}
-\mathbf{x}' = \sum_{j=1}^J \omega^*(j) \ \mathbf{H}_j \mathbf{x}
+\mathbf{x}' = \sum_{j=1}^J \omega^*(j) \ \mathbf{H}_j \mathbf{x},
 \end{equation}
-Where $\mathbf{H}_j$ is the homography induced by the j\textsuperscript{th} view of the calibration device.
+where $\mathbf{H}_j$ is the homography induced by the j\textsuperscript{th} view of the calibration device.
 \end{enumerate}
 
 %The spatial dependency of the registration algorithm implies that no fixed registration or look-up-table is possible. Thus, in order to register an image, one must know the spatial properties of each pixel, including depth information. 
@@ -308,7 +303,7 @@ As seen from Figure \ref{fig:pixelannotator}, Pixel Annotator provides a view of
 
 Each annotation can be initialized with an automatic segmentation using the GrabCut algorithm \cite{rother2004grabcut} to get quickly off the ground. Then Pixel Annotator provides pixel-wise editing functions to further refine the mask. Each annotation is associated with a numerical ID, and can have an arbitrary number of property fields associated with it. They can be boolean or contain strings, so advanced annotation can take place, all the way from simple occluded/not occluded fields to fields describing the current activity. Pixel Annotator is written in C++ on the Qt framework and is fully cross-platform compatible.
 
-The data set and the registration algorithm is freely available at \cite{vapgroup}.
+The dataset and the registration algorithm is freely available at \cite{vapgroup}.
 
 
 \section{Tri-modal human body segmentation}
@@ -445,7 +440,9 @@ The color cue is nowadays the most popular imagery modality and has been extensi
 %For the RGB cue, a simple implementation of HOG \cite{dalal2005histograms} is computed for each grid cell, known as detection window in the HOG context.
 %thus having 4 cells per block and 8 blocks per window. 
 
-For the RGB cue, we used a simple implementation of HOG \cite{dalal2005histograms} with a lower descriptor dimension than the original. It is computed for each grid cell, known as detection window in the HOG context. Each window is resized to a $h_\mathrm{w}^\mathrm{HOG} \times v_\mathrm{w}^\mathrm{HOG}$ pixel area and divided in rectangular blocks of $h_\mathrm{b}^\mathrm{HOG} \times v_\mathrm{b}^\mathrm{HOG}$ pixels, which are in turn divided into rectangular local spatial regions called cells of size $h_\mathrm{c}^\mathrm{HOG} \times v_\mathrm{c}^\mathrm{HOG}$ pixels. We use RGB color space with no gamma correction. In order to compute the gradients, two Sobel kernels $\mbox{[-1 0 1]}$ in the x and y directions with no smoothing are used for each channel so as to find and take the channel with the greatest gradient magnitude for each pixel. 
+For the RGB cue, we used a simple implementation of HOG \cite{dalal2005histograms} with a lower descriptor dimension than the original. It is computed for each grid cell, known as detection window in the HOG context. Each window is resized to a $h_\text{w}$ pixel area and divided in rectangular blocks of $h_\text{b}$ pixels, which are in turn divided into rectangular local spatial regions called cells of size $h_\text{c}$ pixels. We use RGB color space with no gamma correction. In order to compute the gradients, two Sobel kernels $\mbox{[-1 0 1]}$ in the x and y directions with no smoothing are used for each channel so as to find and take the channel with the greatest gradient magnitude for each pixel. 
+
+%Each window is resized to a $h_\mathrm{w}^\mathrm{HOG} \times v_\mathrm{w}^\mathrm{HOG}$ pixel area and divided in rectangular blocks of $h_\mathrm{b}^\mathrm{HOG} \times v_\mathrm{b}^\mathrm{HOG}$ pixels, which are in turn divided into rectangular local spatial regions called cells of size $h_\mathrm{c}^\mathrm{HOG} \times v_\mathrm{c}^\mathrm{HOG}$ pixels.
 
 %The gradient at point $\mathbf{p}$ of detection window is:
 
@@ -481,24 +478,24 @@ After having the former conversion done, for each particular point cloud $\mathc
 In order to describe an arbitrary point cloud $\mathcal{P}_{rij}$ the surface normal vector for each 3D point have to be computed first. A surface normal of a 3D point is a perpendicular vector to a 3D plane which is tangent to the surface in that point. Thus, the normal 3D vector at a given point $\mathbf{p} = (p_x, p_y, p_z) \in \mathcal{P}$ can be seen as the problem of determining the normal of a 3D plane tangent to $\mathbf{p}$. A plane is represented by the origin point $\mathbf{q}$ and the normal vector $\mathbf{n}$. From the neighboring points $\mathcal{K}$ of $\mathbf{p} \in \mathcal{P}$, we first set $\mathbf{q}$ to be the average of those points:
 
 \begin{gather}
-	\mathbf{q} \equiv \bar{\mathbf{p}} = \frac{1}{|\mathcal{K}|} \sum_{\mathbf{p} \in \mathcal{K}} \mathbf{p}
+	\mathbf{q} \equiv \bar{\mathbf{p}} = \frac{1}{|\mathcal{K}|} \sum_{\mathbf{p} \in \mathcal{K}} \mathbf{p}.
 \end{gather}
  
 Then, the solution of $\mathbf{n}$ can be approximated using the covariance matrix $C \in \mathbb{R}^{3 \times 3}$ of the points in $\mathcal{P}_\mathbf{p}^{\mathcal{K}}$. The covariance matrix $C$ is computed as follows: 
 
 \begin{gather}
-	C = \frac{1}{|\mathcal{K}|} \sum_{\mathbf{p} \in \mathcal{K}} (\mathbf{p} - \bar{\mathbf{p}}) (\mathbf{p} - \bar{\mathbf{p}})^{\mathrm{T}}
+	C = \frac{1}{|\mathcal{K}|} \sum_{\mathbf{p} \in \mathcal{K}} (\mathbf{p} - \bar{\mathbf{p}}) (\mathbf{p} - \bar{\mathbf{p}})^{\mathrm{T}},
 \end{gather}
 being $C$ a symmetric positive semi-definite matrix. Solving the next equation by means of eigenvalue decomposition:
 
 \begin{gather}
-	C \mathbf{u}_j = \lambda_j \mathbf{u}_j, \; j \in \{0,1,2\}
+	C \mathbf{u}_j = \lambda_j \mathbf{u}_j, \; j \in \{0,1,2\},
 \end{gather}
-where $\lambda_j \in \mathbb{R}$ and $\mathbf{u}_j \in \mathbb{R}^3$ represent the $j$-th eigenvalue and eigenvector of $C$ respectively. A solution for $\mathbf{n}$ is found to be the eigenvector $\mathbf{u}_j$ with the associated smaller $\lambda_j$. Formally,
+where $\lambda_j \in \mathbb{R}$ and $\mathbf{u}_j \in \mathbb{R}^3$ represent the $j$-th eigenvalue and eigenvector of $C$ respectively. A solution for $\mathbf{n}$ is found to be the eigenvector $\mathbf{u}_j$ with the associated smaller $\lambda_j$. Formally:
 
 % fix argmin
 \begin{gather}
-	\mathbf{n} = \mathbf{u}_s, \;\; \mathrm{where}\;  s = \argmin_{j}{\lambda_j},\; j \in \{0,1,2\}
+	\mathbf{n} = \mathbf{u}_s, \;\; \mathrm{where}\;  s = \argmin_{j}{\lambda_j},\; j \in \{0,1,2\}.
 \end{gather}
 
 The sign of $\mathbf{n}$ can be either positive or negative, and it cannot be disambiguated from the calculations. We adopt the convention of re-orienting consistently all the computed normal vectors towards the depth sensor $\mathbf{z}$ viewpoint. Moreover, a neighborhood radius parameter determines the cardinality of $\mathcal{K}$, that is, the number of points used to compute the normal vector in each of the points in $\mathcal{P}$. The computed normal vectors over a human body region is shown in Figure~\ref{fig:normals}. Points are illustrated in white, whereas normal vectors are red lines (instead of arrows for the sake of visual comprehension). The next step is to build the histogram describing the distribution of the normal vectors' orientations.
@@ -507,7 +504,7 @@ A 3D normal vector got from the previous calculations is expressed in cartesian 
 
 \begin{gather}	
 	\theta  = \arctan{\left( \frac{n_z}{n_y} \right)},\;\;
-	\varphi = \arccos{\frac{ \sqrt{(n_y^2 + n_z^2)} }{n_x}}
+	\varphi = \arccos{\frac{ \sqrt{(n_y^2 + n_z^2)} }{n_x}}.
 \end{gather}
 
 Therefore, a 3D normal vector can be characterized by a pair ($\theta$, $\varphi$) and the depth description of a cell consists of a pair of concatenated $\delta_\theta$-bin and $\delta_\varphi$-bin histograms, describing the two angular distributions of the body surface normals within the cell. Moreover, each of the two histograms is normalized before the concatenation, dividing by the number of elements, to end up with a relative angles frequency count.
@@ -600,7 +597,7 @@ g(r) =
 		0  & \mbox{if }  v_r^{(0)} > v_r^{(1)} \\
 		\mathbbm{1}\left\{ |\varrho_{r}^{(0)}| < |\varrho_{r}^{(1)}| \right\} &  \mbox{if } v_r^{(0)} = v_r^{(1)} \\
 		1 & \mbox{if }  v_r^{(0)} < v_r^{(1)} \\
-	\end{array}
+	\end{array},
 \right.
 \end{gather*}
 where $v_r^{(0)}$ and $v_r^{(1)}$ keep count of the votes of the $r$ grid cells for object (negative normalized log-likelihood) and subject (positive normalized log-likelihood) respectively. $\varrho_r^{(0)}$ and $\varrho_r^{(1)}$ are the accumulations of negative and positive normalized log-likelihoods respectively. Eventually, the consensus log-likelihood $\hat{\varrho}$ is also computed for further usage:
@@ -634,7 +631,7 @@ In the grid cells pre-consensus strategy, the categories determined from the dif
 		0  &  \mbox{if } \vartheta_r^{(0)} < \vartheta_r^{(1)}   \\
 		\mathbbm{1}\left\{ | \hat{\varrho}_r^{(0)} | < | \hat{\varrho}_r^{(1)} | \right\} &  \mbox{if } \vartheta_r^{(0)} = \vartheta_r^{(1)}   \\
 		1 &  \mbox{if } \vartheta_r^{(0)} > \vartheta_r^{(1)}   \\
-	\end{array}
+	\end{array},
 \right.
 \end{gather*}
 where $\vartheta_r^{(0)}$ and $\vartheta_r^{(1)}$ count the votes of the descriptions for object (0 category in the cells consensus function $g(\cdot)$) and subject (1 category in the cells'consensus function $g(\cdot)$) and $\hat{\varrho}_r^{(0)}$ respectively. $\hat{\varrho}_r^{(1)}$ are the accumulations of negative and positive consensus log-likelihoods respectively.
@@ -684,7 +681,7 @@ The main drawback of heuristic fusion approaches is the impossibility to determi
 
 As before, the category of a grid $r$ is intended to be predicted, but instead of directly making use of the descriptors computed from the different modalities, we exploit the predictions got from the GMMs in different cells and each type of description. This approach follows the Stacked Learning scheme \cite{cohen2005stacked, puertas2013generalized}, which involves training a new learning algorithm combining previous predictions obtained with other learning algorithms. More precisely, each grid $r$ is represented by a vector $\mathbf{v}_r$ of normalized log-likelihoods:
 
-$$\mathbf{v}_r = (\varrho_{r11}^{(1)}, ..., \varrho_{rNM}^{(1)}, ..., \varrho_{r11}^{(|\mathcal{D}|)}, ..., \varrho_{rNM}^{(|\mathcal{D}|)}, y_r)$$
+$$\mathbf{v}_r = (\varrho_{r11}^{(1)}, ..., \varrho_{rNM}^{(1)}, ..., \varrho_{r11}^{(|\mathcal{D}|)}, ..., \varrho_{rNM}^{(|\mathcal{D}|)}, y_r) ,$$
 where $y_r$ is the actual category of the $r$ grid. Using such representation of the normalized log-likelihoods in the different grid cells and modalities, a data sample containing the $R$ feature vectors of this kind is built. This way, any supervised learning algorithm can be used to try to learn from this data and infer more reliable predictions than using the previous handcrafted heuristics. 
 
 Among many existing state-of-the-art supervised learning algorithms for classification, we have selected the following ones: Adaptive Boosting (gentle version)~\cite{freund1999short}, Artificial Neural Networks (Multi-Layer Perceptron~\cite{rosenblatt1961principles} with both sigmoidal and radial basis activation function), and Support Vector Machines~\cite{cortes1995support} (linear and radial basis function kernels).
@@ -705,6 +702,7 @@ Among many existing state-of-the-art supervised learning algorithms for classifi
 
 \section{Evaluation}
 \label{sec:evaluation}
+The former approaches are used to eventually predict the final binary masks which aim to discard non-subject regions. We test our approach on the aforementioned tri-modal dataset, and evaluate the obtained results in terms of both per-region detection accuracy and per-frame overlap. The evaluation parameters and experimental procedures are detailed below. 
 
 \subsection{Parameters and settings}
 \label{ssec:parametersandsettings}
@@ -714,44 +712,55 @@ We experimentally set $\sigma_\text{otsu} = 8.3$ for a connected component area 
 
 Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $m \times n$ cells, being $m = 2$ and $n = 2$. The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
 
-For the HOG descriptor our purpose was to have a low dimensional - lower than the original - yet descriptive feature vector, so we defined $H_\text{w} = 64 \times 128$, $H_\text{b} = 32 \times 32$, $H_\text{c}=16 \times 16$, and $H_{h} = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. 
+For the HOG descriptor our purpose was to have a low dimensional - lower than the original - yet descriptive feature vector, so we defined $h_\text{w} = 64 \times 128$, $h_\text{b} = 32 \times 32$, $h_\text{c}=16 \times 16$, and $\kappa = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. 
 
-In order to compute the optical flow, and based on the tests performed in \cite{brkic2013combining}, we set the parameters of the given implementation according to the values that gave the best performance. In particular, the averaging window size was set to 2, the size of the pixel neighborhood considered when finding polynomial expansion in each pixel was set to 5 and the standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion to 1.1.  The remaining parameters were set to their default OpenCV values. For the motion descriptor (HOOF), we defined $V_\text{b}$ = 8, to finally produce an 8-dimensional feature vector. 
+In order to compute the optical flow, and based on the tests performed in \cite{brkic2013combining}, we set the parameters of the given implementation according to the values that gave the best performance. In particular, the averaging window size was set to 2, the size of the pixel neighborhood considered when finding polynomial expansion in each pixel was set to 5 and the standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion to 1.1.  The remaining parameters were set to their default OpenCV values. For the motion descriptor (HOOF), we defined $\nu = 8$ to finally produce an 8-dimensional feature vector. 
 
-Then, for the depth descriptors (HON), we defined $\theta_{I} = 8$ and $\phi_{G} = 8$, whereas for the thermal descriptors (HIOG), we defined $T_{I} = 8$ and $T_{G} = 8$. A very large number of bins is not convenient for generalization. Besides, we wanted the number of bins describing orientations in the different descriptions to coincide for comparison purposes in the later experiments; and 8 bins for describing normal vectors' orientations seem a quite reasonable amount of bins in view of the depth sensor's noisy measurements. In fact, to deal with this noise the neighborhood radius $s$ in the normal computation needs to be adjusted. Thus, we empirically selected between two values ($\{0.02, 0.04\}$) the one performing better (according to our validation measures next explained), that in this case has been $s = 0.02$. That demonstrated that larger values would be providing worse performances, while smaller ones are not reasonable because affects the orientations.
+Then, for the depth descriptors (HON), we defined $\delta_\theta = 8$ and $\delta_\varphi = 8$, whereas for the thermal descriptors (HIOG), we defined $\upsilon_{\mathrm{i}} = 8$ and $\upsilon_{\mathrm{g}} = 8$. A very large number of bins is not convenient for generalization. In addition, we wanted the number of bins describing orientations in the different descriptions to coincide for comparison purposes in later experiments; and 8 bins for describing the orientations of the normal vectors seem a quite reasonable amount of bins in view of the depth sensor noisy measurements. In fact, to deal with this noise the neighborhood radius in the normal computation needs to be adjusted. Thus, we empirically selected between two values ($\{0.02, 0.04\}$) the one performing better (according to our validation measures explained next), that in this case has been 0.02. That demonstrated that larger values would be providing worse performances, while smaller ones are not reasonable as they affect the orientations.
 
-Other more sensitive parameters, specially the ones related to learning algorithms, have been experimentally selected. In the GMM-related experiments, $k = \{2,3, ..., 9, 11, 13\}$ and $\tau = (-2,2)$ (in 32 equal width steps). In the AdaBoost experiment, the number of possible weak classifiers and the weight trimming rates  $\{10, 20, 50, 100, 200, 500, 1000\}$ and $\{0, 0.7, 0.75, 0.8, \ldots, 1\}$ respectively; in the MLP, $h = \{2, 5, 10, \ldots, 50, 60, \ldots, 100\}$; and, in the SVM, $\zeta = \{1e-7, 1e-6, \ldots, 1e4\}$ and $\gamma = \{1e-7, 1e-6, \ldots, 1e2\}$.
+Other more sensitive parameters, especially the ones related to learning algorithms, have been experimentally selected. In the GMM-related experiments, $k = \{2,3, ..., 9, 11, 13\}$ and $\tau = (-2,2)$ (in 32 equal width steps). In the AdaBoost experiment, the number of possible weak classifiers and the weight trimming rates $\{10, 20, 50, 100, 200, 500, 1000\}$ and $\{0, 0.7, 0.75, 0.8, \ldots, 1\}$ respectively; in the MLP, the number of neurons of the hidden layer was set to $h = \{2, 5, 10, 15, \ldots, 50, 60, 70, \ldots, 100\}$; and, in the SVM, $\zeta = \{1e-7, 1e-6, \ldots, 1e4\}$ and $\gamma = \{1e-7, 1e-6, \ldots, 1e2\}$.
+
 
 
 \subsection{Experimental methodology and validation measures}
 \label{ssec:validation}
 
-The proposed baseline has been validated by means of cross-validation (CV). For this purpose, we divided the dataset at frame-level in 10 non-overlapping partitions, with each partition containing perhaps a slightly different number of frames but the same number of subject regions. This ensures a fair training of the models across different folds, i.e. training the models with the same number of subject examples. In order to do that, we simply stratified the partitions by the number of appearing subject regions in the associated groundtruth masks. The dataset could not be directly partitioned at region-level, because a per-frame overlap measures the performance of our method.
+The proposed baseline has been validated by means of cross-validation (CV). For this purpose, we divided the dataset at frame-level in 10 non-overlapping partitions, with each partition containing perhaps a slightly different number of frames but the same number of subject regions. This ensures a fair training of the models across different folds, i.e. training the models with the same number of subject examples. In order to do that, we simply stratified the partitions by the number of appearing subject regions in the associated ground-truth masks. The dataset could not be directly partitioned at region-level, since the performance of our method is eventually evaluated by a per-frame overlap measure.
 
-In addition, we performed a model selection in each training partition to find the optimal values for the GMMs' experimental parameters ($k$ and $\tau$). We used again the cross-validation strategy, but with a smaller number of partitions (3). In each inner fold, a grid search has been carried out to measure the performance of each $k$-$\tau$ combination. The optimal combination, i.e. the one performing better in average across these inner folds, was used to train the final models eventually validated in the test partitions. In this case, and since we measured the subject prediction accuracy, the data was partitioned at region-level.
+%because a per-frame overlap measures the performance of our method.
 
-The parameters of the learning-based fusion's classifiers were also selected for each training partition of the outer CV, and this is done in the exact same inner 3-fold cross-validation partitions. While the selection of $k$ and $\tau$ were  enough exhaustive, the parameters involved in these supervised learning algorithms often required an even more exhaustive search to fine tune their values. A common strategy to keep the number of parameter combinations manageable is to perform a two-level grid search, which consists of a first coarse grid search followed by a second narrow grid search around the coarse's optimal values.
+In addition, we performed a model selection in each training partition so as to find the optimal values for the GMMs experimental parameters ($k$ and $\tau$). Again, we used the cross-validation strategy, but with a smaller number of partitions (3). In each inner fold, a grid search has been carried out to measure the performance of each $k$-$\tau$ combination. The optimal combination, that is, the one performing better in average across these inner folds, was used to train the final models eventually validated in the test partitions. In this case, and since we measured the subject prediction accuracy, the data was partitioned at region-level.
+
+The parameters of the learning-based fusion classifiers were also selected for each training partition of the outer CV. This is done in the exact same inner 3-fold cross-validation partitions. While the selection of $k$ and $\tau$ was exhaustive enough, the parameters involved in these supervised learning algorithms often require an even more exhaustive search to fine tune their values. A common strategy to keep the number of parameter combinations manageable is to perform a two-level grid search, which consists of a first coarse grid search followed by a second narrow grid search around the coarse optimal values.
+
+For the sake of completeness, we included in some of our experiments the mirrored versions of the regions of interest along a vertical axis to train the model, along with the original ones.  At test stage, only original regions of interest were used. 
 
 % A table of results here
 
-As said before, we used an overlap measure in order to compare the similarity between the groundtruth masks and the predicted masks, thus assessing the performance of the proposed baseline. Concretely, the Jaccard Index \cite{tan2002selecting}, also known as the Jaccard similarity coefficient. The degree of overlap between two binary sets $A$ and $B$ is computed as the ratio between the size of the intersection divided by the size of the union:
+As previously mentioned, we used an overlap measure in order to compare the similarity between the ground-truth masks and the predicted masks. Concretely, the Jaccard Index \cite{tan2002selecting}, also known as the Jaccard similarity coefficient. The degree of overlap between two binary sets $A$ and $B$ is computed as the ratio between the size of the intersection divided by the size of the union:
 \begin{equation} \label{eq:jaccard}
-overlap(A, B) = \frac{|A \cap B|}{|A \cup B|}
+overlap(A, B) = \frac{|A \cap B|}{|A \cup B|}.
 \end{equation}
 
-This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect agreement between sets. For each frame, connected components of the GT masks are compared to the predicted binary masks from the different modalities individually or from the different fusion approaches. The overlap is computed per person id and connected component, in such a way that connected components that have the same person id or are connected in the ground truth constitute a set $A$, and they are compared to the blobs that coincide in the same coordinates in the predicted binary masks, which constitute a set $B$. The overlap of each frame is then averaged by the number of sets found. It is therefore a pessimistic measure because a very tiny blob misclassified as a person in the predicted binary masks will account for 0 overlap, thus decreasing the mean overlap of the frame, so it can be considered as a lower bound on how accurate the prediction is. The final overlap is computed as the mean overlap of all frames of each fold having at least one blob, whether they be in the ground truth or in the predicted binary mask.
+This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect agreement between sets. For each frame, connected components of the ground-truth masks are compared to the predicted binary masks from the different modalities individually or from the different fusion approaches. The overlap is computed per person id and connected component, in such a way that connected components that have the same person id or are connected in the ground truth constitute a set $A$, and they are compared to the blobs that coincide in the same coordinates in the predicted binary masks, which constitute a set $B$. The overlap of each frame is then averaged by the number of sets found. It is therefore a pessimistic measure because a very tiny blob misclassified as a person in the predicted binary masks will account for 0 overlap, thus decreasing the mean overlap of the frame, so it can be considered as a lower bound on how accurate the prediction is. The final overlap is computed as the mean overlap of all frames of each fold having at least one blob, whether it be in the ground truth or in the predicted binary mask.
 
-As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect around people or objects, thus complicating an accurate pixel-level segmentation at blob contours when applying background subtraction. This lack of accuracy is also caused by possible distortions, noise or other problems, and decreases the final overlap. Hence, a \emph{do not care region} (DCR) is often used. Such region is taken per frame by centering a morphology operator of different sizes at the ground truth binary masks blob contours and subtract it from those masks and from the predicted ones to compute the overlap. This way, we can compare the effect of using a growing DCR to the actual overlap.
+As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect around people or objects, thus complicating an accurate pixel-level segmentation at blob contours when applying background subtraction. This lack of accuracy is also caused by possible distortions, noise or other problems, and decreases the final overlap. Hence, a \emph{do not care region} (DCR) is often used. Such region is taken per frame by centering a morphology operator of different sizes at the ground-truth binary masks blob contours and subtracting it from those masks and from the predicted ones to compute the overlap. This way, we can compare the effect of using a growing DCR to the actual overlap.
 
-As explained in the last section, we assess the performance of the proposed baseline using both a detection accuracy and overlap measure (Eq. \ref{eq:jaccard}). 
+%As explained in the last section, we assess the performance of the proposed baseline using both a detection accuracy and overlap measure (Eq. \ref{eq:jaccard}). 
 
 \subsection{Experiments}
 
-First, we illustrate the results obtained in the subject detection accuracy experiments in Table~\ref{tab:subject_detection_accuracy}. 
+The performance of the proposed baseline is assessed using both detection accuracy and overlap measures. We test it both including the mirrored regions at training step and without including them. This way, we can compare the possible differences in terms of both measures.
+The obtained results are presented below.
+
+
+%detection accuracy and segmentation overlap. 
+
+%First, we illustrate the results obtained in the subject detection accuracy experiments with and without mirroring in Table~\ref{tab:subject_detection_accuracy} and Table ~\ref{tab:subject_detection_accuracy} respectively. After that, segmentation overlap experiments with and without mirroring are detailed.
 
 \subsubsection{Experiment 1: Subject detection}
 
-Note we achieve nearly perfect  detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction.
+Table~\ref{tab:subject_detection_accuracy} illustrates the results obtained in the subject detection accuracy experiments with and without mirroring. Note we achieve nearly perfect  detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction. Thermal description is the one that achieves the best accuracy results at the description-level prediction approach, substantially improving the usual color description by 35\%. There is no significant difference among the proposed heuristic fusion approaches, which perform slightly worse than the individual thermal description. However, such description is outperformed by our learning-based fusion approaches. More precisely, we achieve the bests results using SVM with RBF kernel, increasing the individual thermal description accuracy by 7\%.
 
 \begin{table}[ht]
 \caption{Subject detection accuracy}
@@ -782,7 +791,7 @@ Note we achieve nearly perfect  detection when we only consider the two categori
 
 \subsubsection{Experiment 2: Subject segmentation }
 
-Tables \ref{tab:individual}, \ref{tab:simplefusion} and \ref{tab:learningfusion} depict the obtained overlap for individual and fusion predictions with different fusion approaches. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with RBF SVM, which is the one that gives the best overlap results.
+Tables \ref{tab:individual}, \ref{tab:simplefusion} and \ref{tab:learningfusion} show the obtained overlap for individual and fusion predictions with different fusion approaches. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with RBF SVM, which is the one that gives the best overlap results.
 
 \begin{table*}[ht]
 \caption{Overlap and confidence interval results of the different modalities individually depending on the DCR used}
@@ -943,9 +952,9 @@ DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Co
 \end{figure}
 
 %overlap discussion:
-The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions -  up to 3\%, but subtantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. More precisely, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
+The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions -  up to 3\%, but subtantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. As in the subject detection experiment, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
 
-It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $FG^{thermal}$ were created from $FG^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the GT and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
+It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $FG^{thermal}$ were created from $FG^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the ground-truth and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
 
 Furthermore, an upward trend is observed as the \emph{don't care region} (DCR) grows, although at higher DCR levels it stabilizes. This is comprehensible because usually the contours of the predicted masks are not accurately defined. Indeed, an accurate pixel-level segmentation is a rather complex task in state of the art techniques.
 
@@ -960,7 +969,7 @@ is not a trivial task.
 
 \section{Conclusions and future work}
 \label{sec:conclusions}
-A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal data set of video sequences has been introduced, which contains several
+A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal dataset of video sequences has been introduced, which contains several
 subjects interacting with everyday objects.
 
 We proposed an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest coming
