@@ -80,7 +80,7 @@ Sofiendalsvej 11, 9200 Aalborg SV, Denmark\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-In this paper, we address the problem of human body segmentation from multi-modal visual cues. The generation of new multi-modal descriptors and fusion strategies aims to enrich the data representation in order to improve segmentation results. We therefore propose a multi-modal segmentation approach which, combining RGB, depth and thermal cues, automatically detects those regions of interest belonging to a human subject. To do so, several state-of-the-art descriptors have been tested and adapted to extract information from the different modalities. The different feature spaces are modeled via Gaussian Mixture Models for both subject and non-subject categories, providing a confidence score for each grid of region of interest. The feature descriptions have been tested independently to evaluate their performance for subject segmentation. In addition, three voting-based heuristic approaches have been proposed, along with a learning-based fusion approach that applies some state-of-the-art supervised algorithms for classification in a stacked learning fashion. Such proposal can act as a baseline for further developments. Furthermore, we present a novel registered multi-modal RGB-Depth-Thermal dataset of continuous image sequences, which has been manually annotated at pixel-level in all three modalities at those regions containing human subjects. Results show variable performance for the different modalities when segmenting people in multi-modal data, and improved segmentation accuracy of the multi-modal GMM- stacked learning method.
+In this paper, we address the problem of human body segmentation from multi-modal visual cues. The generation of new multi-modal descriptors and fusion strategies aims to enrich the data representation in order to improve segmentation results. We therefore propose a multi-modal segmentation approach which, combining RGB, depth and thermal cues, automatically detects those regions of interest belonging to a human subject. To do so, several state-of-the-art descriptors have been tested and adapted to extract information from the different modalities. The different feature spaces are modeled via Gaussian Mixture Models for both subject and non-subject categories, providing a confidence score for each grid of region of interest. The feature descriptions have been tested independently to evaluate their performance for subject segmentation. In addition, three voting-based heuristic approaches have been proposed, along with a learning-based fusion approach that applies some state-of-the-art supervised algorithms for classification in a stacked learning fashion. Such proposal can act as a baseline for further developments. Furthermore, we present a novel registered multi-modal RGB-Depth-Thermal dataset of continuous image sequences, which has been manually annotated at pixel-level in all three modalities at those regions containing human subjects. Results show variable performance for the different modalities when segmenting people in multi-modal data, and improved segmentation accuracy of the multi-modal GMM-SVM stacked learning method.
 
 \end{abstract}
 
@@ -718,7 +718,7 @@ In order to compute the optical flow, and based on the tests performed in \cite{
 
 Then, for the depth descriptors (HON), we defined $\delta_\theta = 8$ and $\delta_\varphi = 8$, whereas for the thermal descriptors (HIOG), we defined $\upsilon_{\mathrm{i}} = 8$ and $\upsilon_{\mathrm{g}} = 8$. A very large number of bins is not convenient for generalization. In addition, we wanted the number of bins describing orientations in the different descriptions to coincide for comparison purposes in later experiments; and 8 bins for describing the orientations of the normal vectors seem a quite reasonable amount of bins in view of the depth sensor noisy measurements. In fact, to deal with this noise the neighborhood radius in the normal computation needs to be adjusted. Thus, we empirically selected between two values ($\{0.02, 0.04\}$) the one performing better (according to our validation measures explained next), that in this case has been 0.02. That demonstrated that larger values would be providing worse performances, while smaller ones are not reasonable as they affect the orientations.
 
-Other more sensitive parameters, especially the ones related to learning algorithms, have been experimentally selected. In the GMM-related experiments, $k = \{2,4,6,8,10,12\}$ and $\tau = \{-3, -2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.4, \ldots, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3\}$. Additionally, and in order to avoid overfitting problems, a termination criterion of the GMMs was optimized, $\epsilon = \{1e-2, 1e-3, 1e-4, 1e-5\}$. In the AdaBoost experiment, the number of possible weak classifiers and the weight trimming rates $\{10, 20, 50, 100, 200, 500, 1000\}$ and $\{0, 0.7, 0.75, 0.8, \ldots, 1\}$ respectively; in the MLP, the number of neurons of the hidden layer was set to $h = \{2, 5, 10, 15, \ldots, 50, 60, 70, \ldots, 100\}$; and, in the SVM, $\zeta = \{1e-7, 1e-6, \ldots, 1e4\}$ and $\gamma = \{1e-7, 1e-6, \ldots, 1e2\}$.
+Other more sensitive parameters, especially the ones related to learning algorithms, have been experimentally selected. In the GMM-related experiments, $k = \{2,4,6,8,10,12\}$ and $\tau = \{-3, -2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.4, \ldots, \linebreak 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3\}$. Additionally, and in order to avoid overfitting problems, a termination criterion of the GMMs was optimized, $\epsilon = \{1e-2, 1e-3, 1e-4, 1e-5\}$. In the AdaBoost experiment, the number of possible weak classifiers and the weight trimming rates $\{10, 20, 50, 100, 200, 500, 1000\}$ and $\{0, 0.7, 0.75, 0.8, \ldots, 1\}$ respectively; in the MLP, the number of neurons of the hidden layer was set to $h = \{2, 5, 10, 15, \ldots, 50, 60, 70, \ldots, 100\}$; and, in the SVM, $\zeta = \{1e-7, 1e-6, \ldots, 1e4\}$ and $\gamma = \{1e-7, 1e-6, \ldots, 1e2\}$.
 
 
 
@@ -799,75 +799,117 @@ On the other hand, the mirroring strategy is not showing an improvement in terms
 
 \subsubsection{Experiment 2: Subject segmentation }
 
-Tables \ref{tab:individual}, \ref{tab:simplefusion} and \ref{tab:learningfusion} show the obtained overlap for individual and fusion predictions with different fusion approaches. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with RBF SVM, which is the one that gives the best overlap results.
+Figures \ref{fig:overlap_no_mirroring}, and \ref{fig:overlap_mirroring} show the obtained overlap for individual and fusion predictions with different fusion approaches without using mirroring and using it, respectively. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Figure \ref{fig:mirroring_comparison} compares the overlap results when using mirroring and without using it. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with RBF SVM, which is the one that gives the best overlap results.
 
-\begin{table*}[ht]
-\caption{Overlap and confidence interval results of the different modalities individually depending on the DCR used}
-\begin{center}
-\begin{tabular}{c|c|c|c|c}
-    \hline
-    DCR & Color & Motion & Depth & Thermal \\
-    \hline
-    -  & 36.52\% $\pm$ 1.86 & 54.53\% $\pm$ 0.70 & 44.44\% $\pm$ 1.87 & 43.78\% $\pm$ 0.28 \\
-    3 & 38.20\% $\pm$  1.95 & 57.12\% $\pm$ 0.74 & 46.66\% $\pm$ 1.94 & 45.54\% $\pm$ 0.29 \\
-    5 & 39.28\% $\pm$ 2.02 & 58.95\% $\pm$ 0.77 & 48.22\% $\pm$ 1.99 & 47.19\% $\pm$ 0.31 \\
-    7 & 40.21\% $\pm$ 2.06 & 60.26\% $\pm$ 0.78 & 49.35\% $\pm$ 2.02 & 48.69\% $\pm$ 0.32 \\
-    9 & 40.81\% $\pm$ 2.09 & 61.18\% $\pm$ 0.79 & 50.16\% $\pm$ 2.05 & 50.01\% $\pm$ 0.33 \\
-    11 & 41.22\% $\pm$ 2.11 & 61.79\% $\pm$ 0.80 & 50.73\% $\pm$ 2.06 & 51.17\% $\pm$ 0.35 \\
-    13 & 41.45\% $\pm$ 2.12 & 62.14\% $\pm$ 0.80 & 51.09\% $\pm$ 2.07 & 52.17\% $\pm$ 0.36 \\
-    15 & 41.57\% $\pm$ 2.11 & 62.32\% $\pm$ 0.80 & 51.33\% $\pm$ 2.08 & 53.02\% $\pm$ 0.37 \\
-    17 & 41.59\% $\pm$ 2.10 & 62.38\% $\pm$ 0.79 & 51.46\% $\pm$ 2.08 & 53.73\% $\pm$ 0.39 \\
-\end{tabular}
-\end{center}
-\label{tab:individual}
-\end{table*}
+\begin{figure*}[htbp]
+	\centering
+		\includegraphics[width=0.4\textwidth]{individual_overlap.eps} \\
+		\vspace{0.5cm}
+		\includegraphics[width=0.4\textwidth]{simple_fusion_cd_overlap.eps}
+		\hspace{0.1cm}
+		\includegraphics[width=0.4\textwidth]{simple_fusion_t_overlap.eps} \\
+		\vspace{0.5cm}
+		\includegraphics[width=0.4\textwidth]{learning_cd_overlap.eps} 
+		\hspace{0.1cm}
+		\includegraphics[width=0.4\textwidth]{learning_t_overlap.eps}
+	\caption{Overlap results without mirroring.}
+	\label{fig:overlap_no_mirroring}
+\end{figure*}
 
-\begin{table*}[ht]
-\caption{Overlap and confidence interval results of the heuristic fusion approach depending on the DCR used}
-\begin{center}
-\begin{tabular}{c|c|c|c|c|c|c}
-    & \multicolumn{2}{c|}{Pre-consensus} & \multicolumn{2}{c|}{Post-consensus} & \multicolumn{2}{c}{Distance-based} \\
+\begin{figure*}[htbp]
+	\centering
+		\includegraphics[width=0.4\textwidth]{individual_mirroroverlap.eps} \\
+		\vspace{0.5cm}
+		\includegraphics[width=0.4\textwidth]{simple_fusion_cd_mirroroverlap.eps}
+		\hspace{0.1cm}
+		\includegraphics[width=0.4\textwidth]{simple_fusion_t_mirroroverlap.eps} \\
+		\vspace{0.5cm}
+		\includegraphics[width=0.4\textwidth]{learning_cd_mirroroverlap.eps} 
+		\hspace{0.1cm}
+		\includegraphics[width=0.4\textwidth]{learning_t_mirroroverlap.eps}
+	\caption{Overlap results with mirroring.}
+	\label{fig:overlap_mirroring}
+\end{figure*}
 
-    \cline{1-7}
-    DCR & Color/Depth & Thermal & Color/Depth & Thermal & Color/Depth & Thermal\\
-    \hline
-    -  & 51.69\% $\pm$ 0.68 & 42.82\% $\pm$ 0.62 & 52.63\% $\pm$ 0.53 & 43.42\% $\pm$ 0.43 & 52.80\% $\pm$ 0.53 & 43.54\% $\pm$ 0.42 \\
-    3 & 54.15\% $\pm$ 0.71 & 44.54\% $\pm$ 0.64  & 55.13\% $\pm$ 0.55 & 45.16\% $\pm$ 0.45 & 55.32\% $\pm$ 0.55 & 45.29\% $\pm$ 0.44 \\
-    5 & 55.87\% $\pm$ 0.73 & 46.16\% $\pm$ 0.67  & 56.89\% $\pm$ 0.57 & 46.80\% $\pm$ 0.46 & 57.08\% $\pm$ 0.57 & 46.93\% $\pm$ 0.46 \\
-    7 & 57.12\% $\pm$ 0.75 & 47.64\% $\pm$ 0.69  & 58.16\% $\pm$ 0.59 & 48.30\% $\pm$ 0.48 & 58.35\% $\pm$ 0.59 & 48.44\% $\pm$ 0.47 \\
-    9 & 58.03\% $\pm$ 0.76 & 48.95\% $\pm$ 0.70  & 59.07\% $\pm$ 0.59 & 49.63\% $\pm$ 0.49 & 59.28\% $\pm$ 0.59 & 49.77\% $\pm$ 0.49 \\
-    11 & 58.66\% $\pm$ 0.76 & 50.12\% $\pm$ 0.72  & 59.71\% $\pm$ 0.60 & 50.80\% $\pm$ 0.51 & 59.92\% $\pm$ 0.59 & 50.95\% $\pm$ 0.49 \\
-    13 & 59.06\% $\pm$ 0.76 & 51.12\% $\pm$ 0.73  & 60.11\% $\pm$ 0.61 & 51.81\% $\pm$ 0.52 & 60.32\% $\pm$ 0.60 & 51.96\% $\pm$ 0.51 \\
-    15 & 59.31\% $\pm$ 0.76 & 51.97\% $\pm$ 0.74  & 60.36\% $\pm$ 0.60 & 52.67\% $\pm$ 0.54 & 60.58\% $\pm$ 0.59 & 52.83\% $\pm$ 0.52 \\
-    17 & 59.44\% $\pm$ 0.76 & 52.70\% $\pm$ 0.75  & 60.49\% $\pm$ 0.60 & 53.41\% $\pm$ 0.55 & 60.72\% $\pm$ 0.59 & 53.57\% $\pm$ 0.53 \\
-\end{tabular}
-\end{center}
-\label{tab:simplefusion}
-\end{table*}
+\begin{figure}[htbp]
+	\centering
+		\includegraphics[width=0.5\textwidth]{individual_mirroring.eps} \\
+		\vspace{0.1cm}
+		\includegraphics[width=0.5\textwidth]{simple_fusion_mirroring.eps} \\
+		\vspace{0.1cm}
+		\includegraphics[width=0.5\textwidth]{learning_fusion_mirroring.eps} 
+	\caption{Mirroring vs. non-mirroring comparison.}
+	\label{fig:mirroring_comparison}
+\end{figure}
 
-\begin{table*}[ht]
-\caption{Overlap and confidence interval results of the learning-based fusion depending on the DCR used}
-\begin{center}
-\begin{tabular}{c|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}}
-& \multicolumn{2}{c|}{AdaBoost} & \multicolumn{2}{c|}{Gaussian MLP} & \multicolumn{2}{c|}{Sigmoid MLP} & \multicolumn{2}{c|}{Linear SVM} & \multicolumn{2}{c}{RBF SVM}  \\
 
-\cline{1-11}
-DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal\\
-\hline
--  & 59.69\% \par$\pm$ 0.29\strut & 48.68\% \par$\pm$ 0.17\strut & 58.76\% \par$\pm$ 0.50\strut & 48.05\% \par$\pm$ 0.33\strut & 58.90\% \par$\pm$ 0.47\strut & 48.15\% \par$\pm$ 0.34\strut & 59.73\% \par$\pm$ 0.43\strut & 48.76\% \par$\pm$ 0.23\strut & 59.96\% \par$\pm$ 0.25\strut & 48.85\% \par$\pm$ 0.15\strut \\
-3 & 62.57\% \par$\pm$ 0.31\strut & 50.62\% \par$\pm$ 0.17\strut & 61.60\% \par$\pm$ 0.53\strut & 49.97\% \par$\pm$ 0.35\strut & 61.74\% \par$\pm$ 0.49\strut & 50.07\% \par$\pm$ 0.35\strut & 62.64\% \par$\pm$ 0.46\strut & 50.71\% \par$\pm$ 0.24\strut & 62.87\% \par$\pm$ 0.27\strut & 50.80\% \par$\pm$ 0.15\strut \\
-5 & 64.63\% \par$\pm$ 0.33\strut & 52.45\% \par$\pm$ 0.18\strut & 63.61\% \par$\pm$ 0.56\strut & 51.77\% \par$\pm$ 0.36\strut & 63.76\% \par$\pm$ 0.51\strut & 51.88\% \par$\pm$ 0.36\strut & 64.71\% \par$\pm$ 0.48\strut & 52.54\% \par$\pm$ 0.25\strut & 64.94\% \par$\pm$ 0.28\strut & 52.63\% \par$\pm$ 0.16\strut \\
-7 & 66.12\% \par$\pm$ 0.34\strut & 54.13\% \par$\pm$ 0.19\strut & 65.08\% \par$\pm$ 0.57\strut & 53.43\% \par$\pm$ 0.38\strut & 65.24\% \par$\pm$ 0.52\strut & 53.54\% \par$\pm$ 0.37\strut & 66.21\% \par$\pm$ 0.49\strut & 54.23\% \par$\pm$ 0.26\strut & 66.45\% \par$\pm$ 0.29\strut & 54.32\% \par$\pm$ 0.17\strut \\
-9 & 67.20\% \par$\pm$ 0.34\strut & 55.61\% \par$\pm$ 0.20\strut & 66.13\% \par$\pm$ 0.58\strut & 54.90\% \par$\pm$ 0.39\strut & 66.31\% \par$\pm$ 0.52\strut & 55.02\% \par$\pm$ 0.38\strut & 67.28\% \par$\pm$ 0.51\strut & 55.72\% \par$\pm$ 0.27\strut & 67.53\% \par$\pm$ 0.30\strut & 55.81\% \par$\pm$ 0.18\strut \\
-11 & 67.92\% \par$\pm$ 0.35\strut & 56.92\% \par$\pm$ 0.21\strut & 66.86\% \par$\pm$ 0.58\strut & 56.20\% \par$\pm$ 0.40\strut & 67.04\% \par$\pm$ 0.52\strut & 56.32\% \par$\pm$ 0.38\strut & 68.01\% \par$\pm$ 0.51\strut & 57.04\% \par$\pm$ 0.27\strut & 68.26\% \par$\pm$ 0.29\strut & 57.13\% \par$\pm$ 0.18\strut \\
-13 & 68.35\% \par$\pm$ 0.34\strut & 58.04\% \par$\pm$ 0.21\strut & 67.30\% \par$\pm$ 0.57\strut & 57.32\% \par$\pm$ 0.40\strut & 67.50\% \par$\pm$ 0.52\strut & 57.45\% \par$\pm$ 0.38\strut & 68.43\% \par$\pm$ 0.51\strut & 58.16\% \par$\pm$ 0.27\strut & 68.69\% \par$\pm$ 0.29\strut & 58.26\% \par$\pm$ 0.18\strut \\
-15 & 68.60\% \par$\pm$ 0.34\strut & 58.98\% \par$\pm$ 0.22\strut & 67.55\% \par$\pm$ 0.56\strut & 58.26\% \par$\pm$ 0.41\strut & 67.78\% \par$\pm$ 0.50\strut & 58.41\% \par$\pm$ 0.38\strut & 68.66\% \par$\pm$ 0.50\strut & 59.11\% \par$\pm$ 0.27\strut & 68.94\% \par$\pm$ 0.28\strut & 59.21\% \par$\pm$ 0.18\strut \\ 
-17 &  68.69\% \par$\pm$ 0.33\strut & 59.76\% \par$\pm$ 0.22\strut & 67.67\% \par$\pm$ 0.54\strut & 59.05\% \par$\pm$ 0.40\strut & 67.93\% \par$\pm$ 0.49\strut & 59.22\% \par$\pm$ 0.37\strut & 68.73\% \par$\pm$ 0.49\strut & 59.89\% \par$\pm$ 0.26\strut & 69.03\% \par$\pm$ 0.27\strut & 60.00\% \par$\pm$ 0.18\strut \\
-         
-\end{tabular}
-\end{center}
-\label{tab:learningfusion}
-\end{table*}
+%\begin{table*}[ht]
+%\caption{Overlap and confidence interval results of the different modalities individually depending on the DCR used}
+%\begin{center}
+%\begin{tabular}{c|c|c|c|c}
+%    \hline
+%    DCR & Color & Motion & Depth & Thermal \\
+%    \hline
+%    -  & 36.52\% $\pm$ 1.86 & 54.53\% $\pm$ 0.70 & 44.44\% $\pm$ 1.87 & 43.78\% $\pm$ 0.28 \\
+%    3 & 38.20\% $\pm$  1.95 & 57.12\% $\pm$ 0.74 & 46.66\% $\pm$ 1.94 & 45.54\% $\pm$ 0.29 \\
+%    5 & 39.28\% $\pm$ 2.02 & 58.95\% $\pm$ 0.77 & 48.22\% $\pm$ 1.99 & 47.19\% $\pm$ 0.31 \\
+%    7 & 40.21\% $\pm$ 2.06 & 60.26\% $\pm$ 0.78 & 49.35\% $\pm$ 2.02 & 48.69\% $\pm$ 0.32 \\
+%    9 & 40.81\% $\pm$ 2.09 & 61.18\% $\pm$ 0.79 & 50.16\% $\pm$ 2.05 & 50.01\% $\pm$ 0.33 \\
+%    11 & 41.22\% $\pm$ 2.11 & 61.79\% $\pm$ 0.80 & 50.73\% $\pm$ 2.06 & 51.17\% $\pm$ 0.35 \\
+%    13 & 41.45\% $\pm$ 2.12 & 62.14\% $\pm$ 0.80 & 51.09\% $\pm$ 2.07 & 52.17\% $\pm$ 0.36 \\
+%    15 & 41.57\% $\pm$ 2.11 & 62.32\% $\pm$ 0.80 & 51.33\% $\pm$ 2.08 & 53.02\% $\pm$ 0.37 \\
+%    17 & 41.59\% $\pm$ 2.10 & 62.38\% $\pm$ 0.79 & 51.46\% $\pm$ 2.08 & 53.73\% $\pm$ 0.39 \\
+%\end{tabular}
+%\end{center}
+%\label{tab:individual}
+%\end{table*}
+
+%\begin{table*}[ht]
+%\caption{Overlap and confidence interval results of the heuristic fusion approach depending on the DCR used}
+%\begin{center}
+%\begin{tabular}{c|c|c|c|c|c|c}
+%    & \multicolumn{2}{c|}{Pre-consensus} & \multicolumn{2}{c|}{Post-consensus} & \multicolumn{2}{c}{Distance-based} \\
+%
+%    \cline{1-7}
+%    DCR & Color/Depth & Thermal & Color/Depth & Thermal & Color/Depth & Thermal\\
+%    \hline
+%    -  & 51.69\% $\pm$ 0.68 & 42.82\% $\pm$ 0.62 & 52.63\% $\pm$ 0.53 & 43.42\% $\pm$ 0.43 & 52.80\% $\pm$ 0.53 & 43.54\% $\pm$ 0.42 \\
+%    3 & 54.15\% $\pm$ 0.71 & 44.54\% $\pm$ 0.64  & 55.13\% $\pm$ 0.55 & 45.16\% $\pm$ 0.45 & 55.32\% $\pm$ 0.55 & 45.29\% $\pm$ 0.44 \\
+%    5 & 55.87\% $\pm$ 0.73 & 46.16\% $\pm$ 0.67  & 56.89\% $\pm$ 0.57 & 46.80\% $\pm$ 0.46 & 57.08\% $\pm$ 0.57 & 46.93\% $\pm$ 0.46 \\
+%    7 & 57.12\% $\pm$ 0.75 & 47.64\% $\pm$ 0.69  & 58.16\% $\pm$ 0.59 & 48.30\% $\pm$ 0.48 & 58.35\% $\pm$ 0.59 & 48.44\% $\pm$ 0.47 \\
+%    9 & 58.03\% $\pm$ 0.76 & 48.95\% $\pm$ 0.70  & 59.07\% $\pm$ 0.59 & 49.63\% $\pm$ 0.49 & 59.28\% $\pm$ 0.59 & 49.77\% $\pm$ 0.49 \\
+%    11 & 58.66\% $\pm$ 0.76 & 50.12\% $\pm$ 0.72  & 59.71\% $\pm$ 0.60 & 50.80\% $\pm$ 0.51 & 59.92\% $\pm$ 0.59 & 50.95\% $\pm$ 0.49 \\
+%    13 & 59.06\% $\pm$ 0.76 & 51.12\% $\pm$ 0.73  & 60.11\% $\pm$ 0.61 & 51.81\% $\pm$ 0.52 & 60.32\% $\pm$ 0.60 & 51.96\% $\pm$ 0.51 \\
+%    15 & 59.31\% $\pm$ 0.76 & 51.97\% $\pm$ 0.74  & 60.36\% $\pm$ 0.60 & 52.67\% $\pm$ 0.54 & 60.58\% $\pm$ 0.59 & 52.83\% $\pm$ 0.52 \\
+%    17 & 59.44\% $\pm$ 0.76 & 52.70\% $\pm$ 0.75  & 60.49\% $\pm$ 0.60 & 53.41\% $\pm$ 0.55 & 60.72\% $\pm$ 0.59 & 53.57\% $\pm$ 0.53 \\
+%\end{tabular}
+%\end{center}
+%\label{tab:simplefusion}
+%\end{table*}
+%
+%\begin{table*}[ht]
+%\caption{Overlap and confidence interval results of the learning-based fusion depending on the DCR used}
+%\begin{center}
+%\begin{tabular}{c|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}|C{1.2cm}}
+%& \multicolumn{2}{c|}{AdaBoost} & \multicolumn{2}{c|}{Gaussian MLP} & \multicolumn{2}{c|}{Sigmoid MLP} & \multicolumn{2}{c|}{Linear SVM} & \multicolumn{2}{c}{RBF SVM}  \\
+%
+%\cline{1-11}
+%DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal\\
+%\hline
+%-  & 59.69\% \par$\pm$ 0.29\strut & 48.68\% \par$\pm$ 0.17\strut & 58.76\% \par$\pm$ 0.50\strut & 48.05\% \par$\pm$ 0.33\strut & 58.90\% \par$\pm$ 0.47\strut & 48.15\% \par$\pm$ 0.34\strut & 59.73\% \par$\pm$ 0.43\strut & 48.76\% \par$\pm$ 0.23\strut & 59.96\% \par$\pm$ 0.25\strut & 48.85\% \par$\pm$ 0.15\strut \\
+%3 & 62.57\% \par$\pm$ 0.31\strut & 50.62\% \par$\pm$ 0.17\strut & 61.60\% \par$\pm$ 0.53\strut & 49.97\% \par$\pm$ 0.35\strut & 61.74\% \par$\pm$ 0.49\strut & 50.07\% \par$\pm$ 0.35\strut & 62.64\% \par$\pm$ 0.46\strut & 50.71\% \par$\pm$ 0.24\strut & 62.87\% \par$\pm$ 0.27\strut & 50.80\% \par$\pm$ 0.15\strut \\
+%5 & 64.63\% \par$\pm$ 0.33\strut & 52.45\% \par$\pm$ 0.18\strut & 63.61\% \par$\pm$ 0.56\strut & 51.77\% \par$\pm$ 0.36\strut & 63.76\% \par$\pm$ 0.51\strut & 51.88\% \par$\pm$ 0.36\strut & 64.71\% \par$\pm$ 0.48\strut & 52.54\% \par$\pm$ 0.25\strut & 64.94\% \par$\pm$ 0.28\strut & 52.63\% \par$\pm$ 0.16\strut \\
+%7 & 66.12\% \par$\pm$ 0.34\strut & 54.13\% \par$\pm$ 0.19\strut & 65.08\% \par$\pm$ 0.57\strut & 53.43\% \par$\pm$ 0.38\strut & 65.24\% \par$\pm$ 0.52\strut & 53.54\% \par$\pm$ 0.37\strut & 66.21\% \par$\pm$ 0.49\strut & 54.23\% \par$\pm$ 0.26\strut & 66.45\% \par$\pm$ 0.29\strut & 54.32\% \par$\pm$ 0.17\strut \\
+%9 & 67.20\% \par$\pm$ 0.34\strut & 55.61\% \par$\pm$ 0.20\strut & 66.13\% \par$\pm$ 0.58\strut & 54.90\% \par$\pm$ 0.39\strut & 66.31\% \par$\pm$ 0.52\strut & 55.02\% \par$\pm$ 0.38\strut & 67.28\% \par$\pm$ 0.51\strut & 55.72\% \par$\pm$ 0.27\strut & 67.53\% \par$\pm$ 0.30\strut & 55.81\% \par$\pm$ 0.18\strut \\
+%11 & 67.92\% \par$\pm$ 0.35\strut & 56.92\% \par$\pm$ 0.21\strut & 66.86\% \par$\pm$ 0.58\strut & 56.20\% \par$\pm$ 0.40\strut & 67.04\% \par$\pm$ 0.52\strut & 56.32\% \par$\pm$ 0.38\strut & 68.01\% \par$\pm$ 0.51\strut & 57.04\% \par$\pm$ 0.27\strut & 68.26\% \par$\pm$ 0.29\strut & 57.13\% \par$\pm$ 0.18\strut \\
+%13 & 68.35\% \par$\pm$ 0.34\strut & 58.04\% \par$\pm$ 0.21\strut & 67.30\% \par$\pm$ 0.57\strut & 57.32\% \par$\pm$ 0.40\strut & 67.50\% \par$\pm$ 0.52\strut & 57.45\% \par$\pm$ 0.38\strut & 68.43\% \par$\pm$ 0.51\strut & 58.16\% \par$\pm$ 0.27\strut & 68.69\% \par$\pm$ 0.29\strut & 58.26\% \par$\pm$ 0.18\strut \\
+%15 & 68.60\% \par$\pm$ 0.34\strut & 58.98\% \par$\pm$ 0.22\strut & 67.55\% \par$\pm$ 0.56\strut & 58.26\% \par$\pm$ 0.41\strut & 67.78\% \par$\pm$ 0.50\strut & 58.41\% \par$\pm$ 0.38\strut & 68.66\% \par$\pm$ 0.50\strut & 59.11\% \par$\pm$ 0.27\strut & 68.94\% \par$\pm$ 0.28\strut & 59.21\% \par$\pm$ 0.18\strut \\ 
+%17 &  68.69\% \par$\pm$ 0.33\strut & 59.76\% \par$\pm$ 0.22\strut & 67.67\% \par$\pm$ 0.54\strut & 59.05\% \par$\pm$ 0.40\strut & 67.93\% \par$\pm$ 0.49\strut & 59.22\% \par$\pm$ 0.37\strut & 68.73\% \par$\pm$ 0.49\strut & 59.89\% \par$\pm$ 0.26\strut & 69.03\% \par$\pm$ 0.27\strut & 60.00\% \par$\pm$ 0.18\strut \\
+%         
+%\end{tabular}
+%\end{center}
+%\label{tab:learningfusion}
+%\end{table*}
 
 %
 %\begin{table}[h]\footnotesize
@@ -965,6 +1007,8 @@ The obtained results show that, effectively, fusing different descriptions enhan
 It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $FG^{thermal}$ were created from $FG^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the ground-truth and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
 
 Furthermore, an upward trend is observed as the \emph{don't care region} (DCR) grows, although at higher DCR levels it stabilizes. This is comprehensible because usually the contours of the predicted masks are not accurately defined. Indeed, an accurate pixel-level segmentation is a rather complex task in state of the art techniques.
+
+Finally, the comparison between overlap results with and without mirroring shows that the mirrored versions of our proposed predictions show a slight improvement with respect to the non-mirrored versions.
 
 Having analyzed the experimental results, it is worth investigating the causes of some
 misclassifications. One of the problems is originated in the beginning of the chain. Since
