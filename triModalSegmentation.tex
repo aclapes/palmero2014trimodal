@@ -80,7 +80,7 @@ Sofiendalsvej 11, 9200 Aalborg SV, Denmark\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-In this paper, we address the problem of human body segmentation from multi-modal visual cues. The generation of new multi-modal descriptors and fusion strategies aims to enrich the data representation in order to improve segmentation results. We therefore propose a multi-modal segmentation approach which, combining RGB, depth and thermal cues, automatically detects those regions of interest belonging to a human subject. To do so, several state-of-the-art descriptors have been tested and adapted to extract information from the different modalities. The different feature spaces are modeled via Gaussian Mixture Models for both subject and non-subject categories, providing a confidence score for each grid of region of interest. The feature descriptions have been tested independently to evaluate their performance for subject segmentation. In addition, three voting-based heuristic approaches have been proposed, along with a learning-based fusion approach that applies some state-of-the-art supervised algorithms for classification in a stacked learning fashion. Such proposal can act as a baseline for further developments. Furthermore, we present a novel registered multi-modal RGB-Depth-Thermal dataset of continuous image sequences, which has been manually annotated at pixel-level in all three modalities at those regions containing human subjects. Results show variable performance for the different modalities when segmenting people in multi-modal data, and improved segmentation accuracy of the multi-modal GMM-SVM stacked learning method.
+In this paper, we address the problem of human body segmentation from multi-modal visual cues. We propose a multi-modal segmentation approach which, combining RGB, depth and thermal cues, automatically detects those regions of interest belonging to a human subject. To do so, several state-of-the-art descriptors have been tested and adapted to extract information from the different modalities. The different feature spaces are modeled via Gaussian Mixture Models for both subject and non-subject categories, providing a confidence score for each grid of region of interest. The feature descriptions have been tested independently to evaluate their performance for subject segmentation. In addition, three voting-based heuristic approaches have been proposed, along with a learning-based fusion approach that applies some state-of-the-art supervised algorithms for classification in a stacked learning fashion. Furthermore, we present a novel registered multi-modal RGB-Depth-Thermal dataset of continuous image sequences, which has been manually annotated at pixel-level in all three modalities at those regions containing human subjects. Results show variable performance for the different modalities when segmenting people in multi-modal data, and improved segmentation accuracy of the multi-modal GMM-SVM stacked learning method.
 
 \end{abstract}
 
@@ -702,7 +702,7 @@ Among many existing state-of-the-art supervised learning algorithms for classifi
 
 \section{Evaluation}
 \label{sec:evaluation}
-The former approaches are used to eventually predict the final binary masks which aim to discard non-subject regions. We test our approach on the aforementioned tri-modal dataset, and evaluate the obtained results in terms of both per-region detection accuracy and per-frame overlap. The evaluation parameters and experimental procedures are detailed below. 
+We test our approach on the aforementioned tri-modal dataset, and evaluate the obtained results in terms of both per-region detection accuracy and per-frame overlap. The evaluation parameters and experimental procedures are detailed below. 
 
 \subsection{Parameters and settings}
 \label{ssec:parametersandsettings}
@@ -710,13 +710,17 @@ The former approaches are used to eventually predict the final binary masks whic
 %After some experiments regarding the use of Otsu's threshold in the background subtraction and generation of bounding boxes stage, 
 We experimentally set $\sigma_\text{otsu} = 8.3$ for a connected component area of at least 0.1\% of the image, and  $\sigma_\text{otsu} = 12$ for other cases. This settings were established in order to maintain a trade-off between finding the maximum number of overlapping people situations without dividing a subject in different regions depending on the variation of depth of the body parts.
 
-Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $m \times n$ cells, being $m = 2$ and $n = 2$. The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
+Since it is not possible to have a pixel-to-pixel correspondence among modalities, we define the correspondence at a grid cell level. The grids have been partitioned in $m \times n$ cells, being $m = 2$ and $n = 2$. 
 
-For the HOG descriptor our purpose was to have a low dimensional - lower than the original - yet descriptive feature vector, so we defined $h_\text{w} = 64 \times 128$, $h_\text{b} = 32 \times 32$, $h_\text{c}=16 \times 16$, and $\kappa = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. 
+%The main idea of the grid partitioning is to reduce the variability of the regions in each GMM. At the same time, they are large enough to not condition the eventually computed overlap measure.
+%our purpose was to have a low dimensional - lower than the original - yet descriptive feature vector, so
+For the HOG descriptor we defined $h_\text{w} = 64 \times 128$, $h_\text{b} = 32 \times 32$, $h_\text{c}=16 \times 16$, and $\kappa = 9$. The information of each cell is concatenated resulting in a vector of 36 values per block. This brings the final vector size of a grid cell to 4 blocks vertically $\times$ 2 blocks horizontally $\times$ 4 cells per block $\times$ 9 bins per cell, making a total of 288 components/dimensions. 
 
 In order to compute the optical flow, and based on the tests performed in \cite{brkic2013combining}, we set the parameters of the given implementation according to the values that gave the best performance. In particular, the averaging window size was set to 2, the size of the pixel neighborhood considered when finding polynomial expansion in each pixel was set to 5 and the standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion to 1.1.  The remaining parameters were set to their default OpenCV values. For the motion descriptor (HOOF), we defined $\nu = 8$ to finally produce an 8-dimensional feature vector. 
 
-Then, for the depth descriptors (HON), we defined $\delta_\theta = 8$ and $\delta_\varphi = 8$, whereas for the thermal descriptors (HIOG), we defined $\upsilon_{\mathrm{i}} = 8$ and $\upsilon_{\mathrm{g}} = 8$. A very large number of bins is not convenient for generalization. In addition, we wanted the number of bins describing orientations in the different descriptions to coincide for comparison purposes in later experiments; and 8 bins for describing the orientations of the normal vectors seem a quite reasonable amount of bins in view of the depth sensor noisy measurements. In fact, to deal with this noise the neighborhood radius in the normal computation needs to be adjusted. Thus, we empirically selected between two values ($\{0.02, 0.04\}$) the one performing better (according to our validation measures explained next), that in this case has been 0.02. That demonstrated that larger values would be providing worse performances, while smaller ones are not reasonable as they affect the orientations.
+Then, for the depth descriptors (HON), we defined $\delta_\theta = 8$ and $\delta_\varphi = 8$, whereas for the thermal descriptors (HIOG), we defined $\upsilon_{\mathrm{i}} = 8$ and $\upsilon_{\mathrm{g}} = 8$. 
+
+%A very large number of bins is not convenient for generalization. In addition, we wanted the number of bins describing orientations in the different descriptions to coincide for comparison purposes in later experiments; and 8 bins for describing the orientations of the normal vectors seem a quite reasonable amount of bins in view of the depth sensor noisy measurements. In fact, to deal with this noise the neighborhood radius in the normal computation needs to be adjusted. Thus, we empirically selected between two values ($\{0.02, 0.04\}$) the one performing better (according to our validation measures explained next), that in this case has been 0.02. That demonstrated that larger values would be providing worse performances, while smaller ones are not reasonable as they affect the orientations.
 
 Other more sensitive parameters, especially the ones related to learning algorithms, have been experimentally selected. In the GMM-related experiments, $k = \{2,4,6,8,10,12\}$ and $\tau = \{-3, -2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.4, \ldots, \linebreak 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3\}$. Additionally, and in order to avoid overfitting problems, a termination criterion of the GMMs was optimized, $\epsilon = \{1e-2, 1e-3, 1e-4, 1e-5\}$. In the AdaBoost experiment, the number of possible weak classifiers and the weight trimming rates $\{10, 20, 50, 100, 200, 500, 1000\}$ and $\{0, 0.7, 0.75, 0.8, \ldots, 1\}$ respectively; in the MLP, the number of neurons of the hidden layer was set to $h = \{2, 5, 10, 15, \ldots, 50, 60, 70, \ldots, 100\}$; and, in the SVM, $\zeta = \{1e-7, 1e-6, \ldots, 1e4\}$ and $\gamma = \{1e-7, 1e-6, \ldots, 1e2\}$.
 
@@ -742,7 +746,8 @@ As previously mentioned, we used an overlap measure in order to compare the simi
 overlap(A, B) = \frac{|A \cap B|}{|A \cup B|}.
 \end{equation}
 
-This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect agreement between sets. For each frame, connected components of the ground-truth masks are compared to the predicted binary masks from the different modalities individually or from the different fusion approaches. The overlap is computed per person id and connected component, in such a way that connected components that have the same person id or are connected in the ground truth constitute a set $A$, and they are compared to the blobs that coincide in the same coordinates in the predicted binary masks, which constitute a set $B$. The overlap of each frame is then averaged by the number of sets found. It is therefore a pessimistic measure because a very tiny blob misclassified as a person in the predicted binary masks will account for 0 overlap, thus decreasing the mean overlap of the frame, so it can be considered as a lower bound on how accurate the prediction is. The final overlap is computed as the mean overlap of all frames of each fold having at least one blob, whether it be in the ground truth or in the predicted binary mask.
+This measure takes values in $[0,1]$, 0 meaning no overlap and 1 meaning perfect agreement between sets. For each frame, connected components of the ground-truth masks are compared to the predicted binary masks from the different modalities individually or from the different fusion approaches. The overlap is computed per person id and connected component, in such a way that connected components that have the same person id or are connected in the ground truth constitute a set $A$, and they are compared to the blobs that coincide in the same coordinates in the predicted binary masks, which constitute a set $B$. The overlap of each frame is then averaged by the number of sets found. The final overlap is computed as the mean overlap of all frames of each fold having at least one blob, whether it be in the ground truth or in the predicted binary mask.
+%It is therefore a pessimistic measure because a very tiny blob misclassified as a person in the predicted binary masks will account for 0 overlap, thus decreasing the mean overlap of the frame, so it can be considered as a lower bound on how accurate the prediction is.
 
 As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect around people or objects, thus complicating an accurate pixel-level segmentation at blob contours when applying background subtraction. This lack of accuracy is also caused by possible distortions, noise or other problems, and decreases the final overlap. Hence, a \emph{do not care region} (DCR) is often used. Such region is taken per frame by centering a morphology operator of different sizes at the ground-truth binary masks blob contours and subtracting it from those masks and from the predicted ones to compute the overlap. This way, we can compare the effect of using a growing DCR to the actual overlap.
 
@@ -765,7 +770,7 @@ Table~\ref{tab:subject_detection_accuracy} illustrates the results obtained in t
 Thermal description is the one that achieves the best accuracy results at the description-level prediction approach, substantially improving the usual color description by 27\%. Unfortunately, we found there is no significant difference among the proposed heuristic fusion approaches, which in turn 	perform slightly worse than the individual thermal description. However, such description is outperformed by our learning-based fusion approaches; we achieved the bests results in terms of detection accuracy using a MLP with sigmoidal activation function, increasing the individual thermal description accuracy by 3.5\%.
 
 \begin{table*}[ht]
-\caption{Subject detection accuracy}
+\caption{Subject detection accuracy.}
 \begin{center}
 \begin{tabular}{lccc}
     \hline
@@ -776,14 +781,14 @@ Thermal description is the one that achieves the best accuracy results at the de
     \multirow{2}{*}{Description-level} & HOG & 66.79\% $\pm$ 1.90\% & 58.67\% $\pm$ 1.56\% \\
     & HOOF & 76.86\% $\pm$ 0.86\% & 74.80\% $\pm$ 0.56\% \\
     & HON & 81.79\% $\pm$ 0.85\% & 75.35\% $\pm$ 0.88\% \\
-    & HIOG & 93.80\% $\pm$ 0.81\% & 87.04\% $\pm$ 0.74\% \\
+    & HIOG & \textbf{93.80\% $\pm$ 0.81\%} & \textbf{87.04\% $\pm$ 0.74\%} \\
     \hline
     \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 87.14\% $\pm$ 0.79\% & 86.09\% $\pm$ 1.04\% \\
-    & Post-consensus & 87.79\% $\pm$ 0.72\% & 86.77\% $\pm$ 0.74\% \\
-    & Distance-based & 87.87\% $\pm$ 0.79\% & 86.76\% $\pm$ 0.85\% \\
+    & Post-consensus & 87.79\% $\pm$ 0.72\% & \textbf{86.77\% $\pm$ 0.74\%} \\
+    & Distance-based & \textbf{87.87\% $\pm$ 0.79\%} & 86.76\% $\pm$ 0.85\% \\
     \hline
     \multirow{2}{*}{Learning-based fusion} & AdaBoost & 94.46\% $\pm$ 1.16\% & 94.11\% $\pm$ 1.44\% \\
-    & MLP (sigmoid) & 97.27\% $\pm$ 0.49\% & 95.76\% $\pm$ 0.97\% \\
+    & MLP (sigmoid) & \textbf{97.27\% $\pm$ 0.49\%} & \textbf{95.76\% $\pm$ 0.97\%} \\
     & MLP (gaussian) & 96.91\% $\pm$ 0.49\% & 95.56\% $\pm$ 1.16\% \\
     & SVM (linear) & 92.13\% $\pm$ 1.50\% & 89.53\% $\pm$ 2.44\% \\
     & SVM (rbf) & 95.82\% $\pm$ 0.73\% & 94.31\% $\pm$ 1.07\%\\
@@ -1002,7 +1007,7 @@ Figures \ref{fig:overlap_no_mirroring}, and \ref{fig:overlap_mirroring} show the
 \end{figure}
 
 %overlap discussion:
-The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions - up to 3\%, but substantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. As in the subject detection experiment, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
+The obtained results show that fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions - up to 3\%, but substantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. As in the subject detection experiment, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
 
 It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $FG^{thermal}$ were created from $FG^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the ground-truth and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
 
@@ -1021,7 +1026,7 @@ is not a trivial task.
 
 \section{Conclusions and future work}
 \label{sec:conclusions}
-A solution for human body segmentation using a calibrated and registered multi-modal data has been proposed. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal dataset of video sequences has been introduced, which contains several
+We have proposed a multi-modal human body segmentation approach using calibrated and registered multi-modal data. Furthermore, a novel registered and annotated multi-modal RGB-Depth-Thermal dataset of video sequences has been introduced, which contains several
 subjects interacting with everyday objects.
 
 We proposed an algorithm to register the different data modalities using multiple homographies generated from several views of the proposed calibration device. In addition, we presented a baseline for segmenting people which starts by an adaptive multi-modal background subtraction approach in order to extract the regions of interest that belong to a user or a moving object in the scene with high confidence. From the set of regions of interest coming
