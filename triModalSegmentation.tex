@@ -769,7 +769,9 @@ Thermal description is the one that achieves the best accuracy results at the de
 \begin{center}
 \begin{tabular}{lccc}
     \hline
-    Prediction approach & & Accuracy $\pm$ CI & Accuracy $\pm$ CI\\
+   Prediction approach & &  \multicolumn{2}{c}{Accuracy $\pm$ CI} \\
+   \cline{3-4}
+    & & No mirroring & Mirroring\\
     \hline
     \multirow{2}{*}{Description-level} & HOG & 66.79\% $\pm$ 1.90\% & 58.67\% $\pm$ 1.56\% \\
     & HOOF & 76.86\% $\pm$ 0.86\% & 74.80\% $\pm$ 0.56\% \\
@@ -777,7 +779,7 @@ Thermal description is the one that achieves the best accuracy results at the de
     & HIOG & 93.80\% $\pm$ 0.81\% & 87.04\% $\pm$ 0.74\% \\
     \hline
     \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 87.14\% $\pm$ 0.79\% & 86.09\% $\pm$ 1.04\% \\
-    & Pos-consensus & 87.79\% $\pm$ 0.72\% & 86.77\% $\pm$ 0.74\% \\
+    & Post-consensus & 87.79\% $\pm$ 0.72\% & 86.77\% $\pm$ 0.74\% \\
     & Distance-based & 87.87\% $\pm$ 0.79\% & 86.76\% $\pm$ 0.85\% \\
     \hline
     \multirow{2}{*}{Learning-based fusion} & AdaBoost & 94.46\% $\pm$ 1.16\% & 94.11\% $\pm$ 1.44\% \\
