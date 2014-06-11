@@ -760,34 +760,40 @@ The obtained results are presented below.
 
 \subsubsection{Experiment 1: Subject detection}
 
-Table~\ref{tab:subject_detection_accuracy} illustrates the results obtained in the subject detection accuracy experiments with and without mirroring. Note we achieve nearly perfect  detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction. Thermal description is the one that achieves the best accuracy results at the description-level prediction approach, substantially improving the usual color description by 35\%. There is no significant difference among the proposed heuristic fusion approaches, which perform slightly worse than the individual thermal description. However, such description is outperformed by our learning-based fusion approaches. More precisely, we achieve the bests results using SVM with RBF kernel, increasing the individual thermal description accuracy by 7\%.
+Table~\ref{tab:subject_detection_accuracy} illustrates the results obtained in the subject detection accuracy experiments with and without mirroring. Note we achieve nearly perfect detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction. The accuracy took into account the greater amount of subject regions, thus weighting the rate of detection of each category (0 and 1).
 
-\begin{table}[ht]
+Thermal description is the one that achieves the best accuracy results at the description-level prediction approach, substantially improving the usual color description by 27\%. Unfortunately, we found there is no significant difference among the proposed heuristic fusion approaches, which in turn 	perform slightly worse than the individual thermal description. However, such description is outperformed by our learning-based fusion approaches; we achieved the bests results in terms of detection accuracy using a MLP with sigmoidal activation function, increasing the individual thermal description accuracy by 3.5\%.
+
+\begin{table*}[ht]
 \caption{Subject detection accuracy}
 \begin{center}
-\begin{tabular}{lll}
+\begin{tabular}{lccc}
     \hline
-    Prediction approach & & Accuracy $\pm$ CI \\
+    Prediction approach & & Accuracy $\pm$ CI & Accuracy $\pm$ CI\\
     \hline
-    \multirow{2}{*}{Description-level} & Color & 54.17\% $\pm$ 0.77 \\
-    & Motion & 78.69\% $\pm$ 1.12\\
-    & Depth & 78.63\% $\pm$ 1.94\\
-    & Motion & 89.10\% $\pm$ 0.70\\
+    \multirow{2}{*}{Description-level} & HOG & 66.79\% $\pm$ 1.90\% & 58.67\% $\pm$ 1.56\% \\
+    & HOOF & 76.86\% $\pm$ 0.86\% & 74.80\% $\pm$ 0.56\% \\
+    & HON & 81.79\% $\pm$ 0.85\% & 75.35\% $\pm$ 0.88\% \\
+    & HIOG & 93.80\% $\pm$ 0.81\% & 87.04\% $\pm$ 0.74\% \\
     \hline
-    \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 86.61\% $\pm$ 1.05 \\
-    & Pos-consensus & 88.23\% $\pm$ 0.84 \\
-    & Distance-based & 88.19\% $\pm$ 0.75 \\
+    \multirow{2}{*}{Heuristic fusion} & Pre-consensus & 87.14\% $\pm$ 0.79\% & 86.09\% $\pm$ 1.04\% \\
+    & Pos-consensus & 87.79\% $\pm$ 0.72\% & 86.77\% $\pm$ 0.74\% \\
+    & Distance-based & 87.87\% $\pm$ 0.79\% & 86.76\% $\pm$ 0.85\% \\
     \hline
-    \multirow{2}{*}{Learning-based fusion} & AdaBoost & 94.97\% $\pm$ 1.14 \\
-    & MLP (sigmoid) & 95.68\% $\pm$ 0.70 \\
-    & MLP (gaussian) & 94.94\% $\pm$ 2.98 \\
-    & SVM (linear) & 91.96\% $\pm$ 2.03 \\
-    & SVM (rbf) & 96.03\% $\pm$ 0.99 \\
+    \multirow{2}{*}{Learning-based fusion} & AdaBoost & 94.46\% $\pm$ 1.16\% & 94.11\% $\pm$ 1.44\% \\
+    & MLP (sigmoid) & 97.27\% $\pm$ 0.49\% & 95.76\% $\pm$ 0.97\% \\
+    & MLP (gaussian) & 96.91\% $\pm$ 0.49\% & 95.56\% $\pm$ 1.16\% \\
+    & SVM (linear) & 92.13\% $\pm$ 1.50\% & 89.53\% $\pm$ 2.44\% \\
+    & SVM (rbf) & 95.82\% $\pm$ 0.73\% & 94.31\% $\pm$ 1.07\%\\
     \hline
 \end{tabular}
 \end{center}
 \label{tab:subject_detection_accuracy}
-\end{table}
+\end{table*}
+
+In fact, the computed detection accuracy is an optimistic measure because of the omission of that -1 category, which turn out to contain the most ambiguous regions (and hence more difficult to predict). However, as shown in the second experiment, the learning-based fusion strategies prove to be quite successful categorizing those kind regions; increasing the difference in performance relative to the one achieved by the individual prediction from the thermal modality. 
+
+On the other hand, the mirroring strategy is not showing an improvement in terms of detection accuracy neither, but in the next experiment the more complex models obtained using richer data samples are also shown to achieve better predictions in the -1 category.
 
 \subsubsection{Experiment 2: Subject segmentation }
 
@@ -952,7 +958,7 @@ DCR & Color /\par Depth\strut & Thermal & Color /\par Depth\strut & Thermal & Co
 \end{figure}
 
 %overlap discussion:
-The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions -  up to 3\%, but subtantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. As in the subject detection experiment, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
+The obtained results show that, effectively, fusing different descriptions enhances the representation of the scene, thus increasing the final overlap when segmenting subjects and discriminating from other artifacts present in the scene. However, the selection of the fusion approach is crucial. Our proposed naive approach for fusing individual confidences of each modality decreases the overlap of the motion modality - the one that gives the best result among individual predictions - up to 3\%, but substantially improves the results if we compare them to the other modalities. On the other hand, as observed by the learning-based fusion experiments, we obtain significant performance improvements regarding each individual modality and the heuristic fusion strategy. As in the subject detection experiment, we achieve the best results using SVM with RBF kernel, which outperforms the motion modality by 6\%.
 
 It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $FG^{thermal}$ were created from $FG^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the ground-truth and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
 
