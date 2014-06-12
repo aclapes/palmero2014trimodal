@@ -757,8 +757,7 @@ As commented in Section~\ref{sect:bs}, the depth cue suffers from a halo effect 
 
 \subsection{Experiments}
 
-The performance of the proposed baseline is assessed using both detection accuracy and overlap measures. We test it both including the mirrored regions at training step and without including them. This way, we can compare the possible differences in terms of both measures.
-The obtained results are presented below.
+The performance of the proposed baseline is assessed using both detection accuracy and overlap measures. We test it both including the mirrored regions at training step and without including them. This way, we can compare the possible differences in terms of both measures. The obtained results are presented below.
 
 
 %detection accuracy and segmentation overlap. 
@@ -767,9 +766,18 @@ The obtained results are presented below.
 
 \subsubsection{Experiment 1: Subject detection}
 
-Table~\ref{tab:subject_detection_accuracy} illustrates the results obtained in the subject detection accuracy experiments with and without mirroring. Note we achieve nearly perfect detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction. The accuracy computation took into account the greater amount of subject regions, thus weighting the rate of detection of each category (0 and 1).
+We first depict the detection accuracy results got by the different feature descriptors in the different cells without mirroring (Figure~\ref{fig:descriptions_cells_prediction_accuracy}). One can notice, for instance, the better detection results in the right cells when using HOG. This seems to indicate the presence of static poses along the sequences, which enrich the human regions representation in some cells but not in the others. As a result, biased models towards certain human postures would be obtained. This was the fact that suggested the inclusion of the mirrored frames in the training of the gaussian mixtures.
 
-The thermal description is the one that achieves the best accuracy results in the description-level prediction approach, substantially improving the usual color description by 27\%. Unfortunately, we found there is no significant difference among the proposed heuristic fusion approaches, which in turn 	perform slightly worse than the individual thermal description. However, such description is outperformed by our learning-based fusion approaches. We achieved the bests results in terms of detection accuracy using a MLP with sigmoidal activation function, increasing the individual thermal description accuracy by 3.5\%.
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[b]{\columnwidth}
+	\includegraphics[width=\columnwidth]{descriptions_cells_prediction_accuracy.eps}%
+\end{subfigure}
+\caption{Individual descriptions prediction accuracy at the different grid cells.}
+\label{fig:descriptions_cells_prediction_accuracy}
+\end{figure}
+
+Table~\ref{tab:subject_detection_accuracy} illustrates the results obtained in the subject detection accuracy experiments with and without mirroring. We achieve nearly perfect detection when we only consider the two categories, 0 (object) and 1 (subject), omitting the -1 category prediction. The accuracy computation took into account the greater amount of subject regions, thus weighting the rate of detection of each category (0 and 1). Note the grid consensus was applied in the individual predictions, thus the results shown are not the average of the ones illustrated~\ref{fig:descriptions_cells_prediction_accuracy}.
 
 \begin{table*}[ht]
 \caption{Subject detection accuracy.}
@@ -799,6 +807,8 @@ The thermal description is the one that achieves the best accuracy results in th
 \end{center}
 \label{tab:subject_detection_accuracy}
 \end{table*}
+
+The thermal description is the one that achieves the best accuracy results in the description-level prediction approach, substantially improving the most common color description by 27\%. Unfortunately, we found there is no significant difference among the proposed heuristic fusion approaches, which in turn perform slightly worse than the individual thermal description. However, such description is outperformed by our learning-based fusion approaches. We achieved the bests results in terms of detection accuracy using a MLP with sigmoidal activation function, increasing the individual thermal description accuracy by 3.5\%.
 
 In fact, the computed detection accuracy is an optimistic measure because of the omission of that -1 category, which is the one containing the most ambiguous regions (and hence more difficult to predict). However, as shown in the second experiment, the learning-based fusion strategies prove to be quite successful categorizing those kind regions; increasing the advantageous difference in performance relative to the one achieved by the individual prediction from the thermal description. 
 
