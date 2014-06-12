@@ -816,48 +816,84 @@ On the other hand, the mirroring strategy is not showing an improvement in terms
 
 \subsubsection{Experiment 2: Subject segmentation }
 
-Figures \ref{fig:overlap_no_mirroring}, and \ref{fig:overlap_mirroring} show the obtained overlap for individual and fusion predictions with different fusion approaches without using mirroring and using it, respectively. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Figure \ref{fig:mirroring_comparison} compares the overlap results when using mirroring and without using it. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with the learning-based fusion approach, which is the one that gives the best overlap results.
-
-\begin{figure*}[htbp]
-	\centering
-		\includegraphics[width=0.4\textwidth]{individual_overlap.eps} \\
-		\vspace{0.5cm}
-		\includegraphics[width=0.4\textwidth]{simple_fusion_cd_overlap.eps}
-		\hspace{0.1cm}
-		\includegraphics[width=0.4\textwidth]{simple_fusion_t_overlap.eps} \\
-		\vspace{0.5cm}
-		\includegraphics[width=0.4\textwidth]{learning_cd_overlap.eps} 
-		\hspace{0.1cm}
-		\includegraphics[width=0.4\textwidth]{learning_t_overlap.eps}
-	\caption{Overlap results without mirroring.}
-	\label{fig:overlap_no_mirroring}
-\end{figure*}
-
-\begin{figure*}[htbp]
-	\centering
-		\includegraphics[width=0.4\textwidth]{individual_mirroroverlap.eps} \\
-		\vspace{0.5cm}
-		\includegraphics[width=0.4\textwidth]{simple_fusion_cd_mirroroverlap.eps}
-		\hspace{0.1cm}
-		\includegraphics[width=0.4\textwidth]{simple_fusion_t_mirroroverlap.eps} \\
-		\vspace{0.5cm}
-		\includegraphics[width=0.4\textwidth]{learning_cd_mirroroverlap.eps} 
-		\hspace{0.1cm}
-		\includegraphics[width=0.4\textwidth]{learning_t_mirroroverlap.eps}
-	\caption{Overlap results with mirroring.}
-	\label{fig:overlap_mirroring}
-\end{figure*}
+Figures \ref{fig:individual_overlap}, and \ref{fig:fusion_overlap} show the obtained overlap for individual and fusion predictions with different fusion approaches without using mirroring and using it, respectively. Notice that in tables showing fusion results, only two cases are considered, since color and depth modalities share the same original foreground masks. Figure \ref{fig:mirroring_comparison} compares the overlap results when using mirroring and without using it. Finally, Figure \ref{fig:results} shows some examples of final results comparing the initial masks extracted from background subtraction to the final predicted masks obtained with the learning-based fusion approach, which is the one that gives the best overlap results.
 
 \begin{figure}[htbp]
-	\centering
-		\includegraphics[width=0.5\textwidth]{individual_mirroring.eps} \\
-		\vspace{0.1cm}
-		\includegraphics[width=0.5\textwidth]{simple_fusion_mirroring.eps} \\
-		\vspace{0.1cm}
-		\includegraphics[width=0.5\textwidth]{learning_fusion_mirroring.eps} 
-	\caption{Mirroring vs. non-mirroring comparison.}
-	\label{fig:mirroring_comparison}
+\centering
+	\includegraphics[width=1\columnwidth]{individual.png}
+	\caption{Individual description-level prediction overlaps with and without mirroring. Mirroring is labeled as (M).}
+	\label{fig:individual_overlap}
 \end{figure}
+
+
+\begin{figure*}[htpb]
+\centering
+\begin{subfigure}[b]{1\columnwidth}
+	\includegraphics[width=\columnwidth]{simple_fusion.png}%
+	\caption{Simple fusion without mirroring}%
+	\label{}%
+\end{subfigure}
+\begin{subfigure}[b]{1\columnwidth}
+	\includegraphics[width=\columnwidth]{learning_fusion.png}%
+	\caption{Learning-based fusion without mirroring}%
+	\label{}%
+\end{subfigure}
+\begin{subfigure}[b]{1\columnwidth}
+	\includegraphics[width=\columnwidth]{simple_fusion_m.png}%
+	\caption{Simple fusion with mirroring}%
+	\label{}%
+\end{subfigure}
+\begin{subfigure}[b]{1\columnwidth}
+	\includegraphics[width=\columnwidth]{learning_fusion_m.png}%
+	\caption{Learning-based fusion with mirroring}%
+	\label{}%
+\end{subfigure}
+\caption{Overlap results for simple and learning-based fusion approaches, using color/depth masks and thermal masks (T). Mirroring is labeled as (M).}
+\label{fig:fusion_overlap}
+\end{figure*}
+
+
+%
+%\begin{figure*}[htbp]
+%	\centering
+%		\includegraphics[width=0.4\textwidth]{individual_overlap.eps} \\
+%		\vspace{0.5cm}
+%		\includegraphics[width=0.4\textwidth]{simple_fusion_cd_overlap.eps}
+%		\hspace{0.1cm}
+%		\includegraphics[width=0.4\textwidth]{simple_fusion_t_overlap.eps} \\
+%		\vspace{0.5cm}
+%		\includegraphics[width=0.4\textwidth]{learning_cd_overlap.eps} 
+%		\hspace{0.1cm}
+%		\includegraphics[width=0.4\textwidth]{learning_t_overlap.eps}
+%	\caption{Overlap results without mirroring.}
+%	\label{fig:overlap_no_mirroring}
+%\end{figure*}
+%
+%\begin{figure*}[htbp]
+%	\centering
+%		\includegraphics[width=0.4\textwidth]{individual_mirroroverlap.eps} \\
+%		\vspace{0.5cm}
+%		\includegraphics[width=0.4\textwidth]{simple_fusion_cd_mirroroverlap.eps}
+%		\hspace{0.1cm}
+%		\includegraphics[width=0.4\textwidth]{simple_fusion_t_mirroroverlap.eps} \\
+%		\vspace{0.5cm}
+%		\includegraphics[width=0.4\textwidth]{learning_cd_mirroroverlap.eps} 
+%		\hspace{0.1cm}
+%		\includegraphics[width=0.4\textwidth]{learning_t_mirroroverlap.eps}
+%	\caption{Overlap results with mirroring.}
+%	\label{fig:overlap_mirroring}
+%\end{figure*}
+%
+%\begin{figure}[htbp]
+%	\centering
+%		\includegraphics[width=0.5\textwidth]{individual_mirroring.eps} \\
+%		\vspace{0.1cm}
+%		\includegraphics[width=0.5\textwidth]{simple_fusion_mirroring.eps} \\
+%		\vspace{0.1cm}
+%		\includegraphics[width=0.5\textwidth]{learning_fusion_mirroring.eps} 
+%	\caption{Mirroring vs. non-mirroring comparison.}
+%	\label{fig:mirroring_comparison}
+%\end{figure}
 
 
 %\begin{table*}[ht]
@@ -1024,6 +1060,22 @@ The obtained results show that fusing different descriptions enhances the repres
 It is important to note that thermal descriptions cannot reach as good overlap values as the other modalities owing to the fact that the binary masks $F^{thermal}$ were created from $F^{depth}$ using the registration algorithm, which cannot be accurate up to pixel level, in such a way that the ground-truth and registered masks will moderately differ, especially in left and right sides of the image. Therefore, we cannot state whether the proposed thermal description performs accurately.
 
 Furthermore, an upward trend is observed as the \emph{don't care region} (DCR) grows, although at higher DCR levels it stabilizes. This is comprehensible because usually the contours of the predicted masks are not accurately defined. Indeed, an accurate pixel-level segmentation is a rather complex task in state of the art techniques.
+
+\begin{figure*}[htpb]
+\centering
+\begin{subfigure}[b]{1\columnwidth}
+	\includegraphics[width=\columnwidth]{simple_fusion_comparison.png}%
+	\caption{Simple fusion}%
+	\label{}%
+\end{subfigure}
+\begin{subfigure}[b]{1\columnwidth}
+	\includegraphics[width=\columnwidth]{learning_fusion_comparison.png}%
+	\caption{Learning-based fusion}%
+	\label{}%
+\end{subfigure}
+\caption{Mirroring improvement in (a) simple fusion and (b) learning-based fusion prediction overlaps with color/depth masks. Mirroring is labeled as (M).}
+\label{fig:mirroring_comparison}
+\end{figure*}
 
 Finally, the comparison between overlap results with and without mirroring shows that the mirrored versions of our proposed predictions show a slight improvement with respect to the non-mirrored versions.
 
